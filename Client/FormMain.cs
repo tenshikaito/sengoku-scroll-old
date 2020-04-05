@@ -23,17 +23,7 @@ namespace Client
 
         private GameObject gameRoot;
 
-        private Queue<Action> actions = new Queue<Action>();
-
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                var cp = base.CreateParams;
-                cp.ExStyle |= 0x02000000;
-                return cp;
-            }
-        }
+        public Dispatcher dispatcher;
 
         public FormMain()
         {
@@ -100,8 +90,7 @@ namespace Client
             Text = option.title;
             Icon = new Icon("Icon.ico");
 
-            SetStyle(ControlStyles.UserPaint, true);
-            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            dispatcher = new Dispatcher(mainActions);
 
             this.setCenter();
         }
@@ -182,6 +171,9 @@ namespace Client
         {
             draw();
         }
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+        }
 
         private void refreshDrawTimeSpan()
         {
@@ -230,10 +222,7 @@ namespace Client
 
         private void update()
         {
-            lock (actions)
-            {
-                while (actions.Any()) mainActions.Add(actions.Dequeue());
-            }
+            dispatcher.update();
 
             if (mainActions.Any())
             {
@@ -265,12 +254,29 @@ namespace Client
             }
         }
 
-        public void invoke(Action a)
+        public class Dispatcher
         {
-            lock (actions)
+            private Queue<Action> actions = new Queue<Action>();
+            private List<Action> mainActions;
+
+            public Dispatcher(List<Action> mainActions) => this.mainActions = mainActions;
+
+            public void update()
             {
-                actions.Enqueue(a);
+                lock (actions)
+                {
+                    while (actions.Any()) mainActions.Add(actions.Dequeue());
+                }
             }
+
+            public void invoke(Action a)
+            {
+                lock (actions)
+                {
+                    actions.Enqueue(a);
+                }
+            }
+
         }
     }
 

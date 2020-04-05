@@ -78,9 +78,6 @@
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="GameGraphic.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GameOption.cs" />
@@ -193,7 +190,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Image\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

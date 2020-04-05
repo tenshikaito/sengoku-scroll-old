@@ -14,6 +14,6 @@ namespace Client
 
         public int scrollSpeed = 10;
 
-        public int fps = 5;
+        public int fps = 60;
     }
 }

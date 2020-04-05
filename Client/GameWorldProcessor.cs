@@ -68,16 +68,6 @@ namespace Client
                 unit = new Dictionary<int, int>(),
             };
 
-            gm.data.tiles[gm.data.getIndex(new MapPoint(1,1))].terrain = 1;
-            gm.data.tiles[gm.data.getIndex(new MapPoint(1, 2))].terrain = 1;
-            gm.data.tiles[gm.data.getIndex(new MapPoint(1, 3))].terrain = 1;
-            gm.data.tiles[gm.data.getIndex(new MapPoint(2, 1))].terrain = 1;
-            gm.data.tiles[gm.data.getIndex(new MapPoint(2, 2))].terrain = 1;
-            gm.data.tiles[gm.data.getIndex(new MapPoint(2, 3))].terrain = 1;
-            gm.data.tiles[gm.data.getIndex(new MapPoint(3, 1))].terrain = 1;
-            gm.data.tiles[gm.data.getIndex(new MapPoint(3, 2))].terrain = 1;
-            gm.data.tiles[gm.data.getIndex(new MapPoint(3, 3))].terrain = 1;
-
             File.WriteAllText(gameWorldFullPath + MapDataName, gm.toJson(), encoding);
 
             var gwmd = new GameWorldMasterData()

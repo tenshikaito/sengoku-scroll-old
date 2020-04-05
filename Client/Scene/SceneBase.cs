@@ -12,10 +12,10 @@ namespace Client.Scene
 
         protected FormMain formMain => gameSystem.formMain;
 
-        protected FormMain dispatcher => formMain;
+        protected FormMain.Dispatcher dispatcher => formMain.dispatcher;
 
         public SceneBase(GameSystem gs) => gameSystem = gs;
 
-        protected void Invoke(Action a) => formMain.invoke(a);
+        protected void Invoke(Action a) => formMain.dispatcher.invoke(a);
     }
 }
