@@ -10,17 +10,17 @@ namespace Client.Graphic
     public class ZoomableTileMapSprites<T> : GameObject
         where T : TileMapSpritesBase
     {
-        private List<T> outerTileMapSpritesList;
+        private List<T> tileMapSpritesList;
         private int tileMapIndex = 0;
 
-        public T outerTileMap => outerTileMapSpritesList[tileMapIndex];
+        public T outerTileMap => tileMapSpritesList[tileMapIndex];
 
         public ZoomableTileMapSprites(List<T> list)
         {
-            outerTileMapSpritesList = list;
+            tileMapSpritesList = list;
 
             children.AddRange(list);
-            
+
             previous();
         }
 
@@ -28,7 +28,7 @@ namespace Client.Graphic
         {
             hideAll();
 
-            var count = outerTileMapSpritesList.Count;
+            var count = tileMapSpritesList.Count;
 
             if (count == 0) return false;
 
@@ -40,7 +40,7 @@ namespace Client.Graphic
                 flag = false;
             }
 
-            outerTileMapSpritesList[tileMapIndex].isEnable = true;
+            showCurrent();
 
             return flag;
         }
@@ -49,7 +49,7 @@ namespace Client.Graphic
         {
             hideAll();
 
-            if (outerTileMapSpritesList.Count == 0) return false;
+            if (tileMapSpritesList.Count == 0) return false;
 
             var flag = true;
 
@@ -59,14 +59,13 @@ namespace Client.Graphic
                 flag = false;
             }
 
-            outerTileMapSpritesList[tileMapIndex].isEnable = true;
+            showCurrent();
 
             return flag;
         }
 
-        private void hideAll()
-        {
-            outerTileMapSpritesList.ForEach(o => o.isEnable = false);
-        }
+        private void showCurrent() => tileMapSpritesList[tileMapIndex].isEnable = true;
+
+        private void hideAll() => tileMapSpritesList.ForEach(o => o.isEnable = false);
     }
 }

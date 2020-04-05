@@ -16,6 +16,16 @@ namespace Client
 
         public bool isEnable = true;
 
+        public int order;
+
+        public void addChild(GameObject go)
+        {
+            children.Add(go);
+            sort();
+        }
+
+        public void sort() => children.Sort((o1, o2) => o1.order - o2.order);
+
         public virtual void start()
         {
         }

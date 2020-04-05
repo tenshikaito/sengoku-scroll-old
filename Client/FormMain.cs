@@ -146,9 +146,16 @@ namespace Client
             isDragging = false;
         }
 
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            gameRoot.onMousePressed(e);
+        }
+
         protected override void OnMouseUp(MouseEventArgs e)
         {
             dragCount = 0;
+
+            gameRoot.onMouseReleased(e);
         }
 
         protected override void OnMouseWheel(MouseEventArgs e)
@@ -171,6 +178,7 @@ namespace Client
         {
             draw();
         }
+
         protected override void OnPaintBackground(PaintEventArgs e)
         {
         }

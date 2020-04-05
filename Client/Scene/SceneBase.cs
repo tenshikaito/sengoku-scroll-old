@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Client.Scene
 {
-    public abstract class SceneBase : GameObject //GameStatusAdapter
+    public abstract class SceneBase : GameObject
     {
         protected GameSystem gameSystem;
 

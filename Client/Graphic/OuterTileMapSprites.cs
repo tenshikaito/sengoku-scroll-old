@@ -108,6 +108,8 @@ namespace Client.Graphic
             public void resetTileFlag(MapPoint p)
             {
                 tileMap.eachRangedRectangle(p, new Map.Size(1), o => terrainBorder.Remove(tileMap.getIndex(o)));
+
+                tileMap.eachRangedRectangle(p, new Map.Size(1), o => checkTerrainBorder(o));
             }
 
             public byte calculateTileMargin(MapPoint p)

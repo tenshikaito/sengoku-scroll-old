@@ -149,11 +149,13 @@ namespace Client.Scene
 
         public class OuterTileMapStatus : Status
         {
-            public PointerStatus pointerStatus;
-
-            public DrawTileStatus drawTileStatus;
-
             private ZoomableTileMapSprites<OuterTileMapSprites> zoomableTileMapSprites;
+
+            private PointerStatus pointerStatus;
+            private DrawTileStatus drawTileStatus;
+            private DrawTileRectangleStatus drawTileRectangleStatus;
+
+            private Status currentStatus;
 
             public OuterTileMapSprites tileMap => zoomableTileMapSprites.outerTileMap;
 
@@ -167,13 +169,14 @@ namespace Client.Scene
 
                 pointerStatus = new PointerStatus(this);
                 drawTileStatus = new DrawTileStatus(this);
+                drawTileRectangleStatus = new DrawTileRectangleStatus(this);
             }
 
             public override void start()
             {
-                scene.uiEditGameWorldMenuWindow.Show(scene.formMain);
-
                 children.Add(zoomableTileMapSprites);
+
+                scene.uiEditGameWorldMenuWindow.Show(scene.formMain);
 
                 setDrawMode(DrawMode.pointer);
             }
@@ -199,21 +202,17 @@ namespace Client.Scene
 
             public override void setDrawMode(DrawMode dm)
             {
+                if (currentStatus != null) children.Remove(currentStatus);
+
                 switch (dm)
                 {
-                    case DrawMode.pointer:
-
-                        switchStatus(pointerStatus);
-
-                        break;
-
-                    case DrawMode.brush:
-
-                        switchStatus(drawTileStatus);
-
-                        break;
+                    case DrawMode.pointer: addStatus(pointerStatus); break;
+                    case DrawMode.brush: addStatus(drawTileStatus); break;
+                    case DrawMode.rectangle: addStatus(drawTileRectangleStatus); break;
                 }
             }
+
+            private void addStatus(Status s) => addChild(currentStatus = s);
 
             public class Status : GameObject
             {
@@ -260,12 +259,86 @@ namespace Client.Scene
                     {
                         case DrawContent.terrain:
 
-                            gameStatus.tileMap.resetTileFlag(p);
-
                             outerMap.data.setTerrain(p, (byte)scene.drawContentId);
+
+                            gameStatus.tileMap.resetTileFlag(p);
 
                             break;
                     }
+                }
+            }
+
+            public class DrawTileRectangleStatus : Status
+            {
+                public Point? startPoint;
+                public Rectangle rectangle;
+
+                public DrawTileRectangleStatus(OuterTileMapStatus s) : base(s)
+                {
+                }
+
+                public override void mousePressed(MouseEventArgs e)
+                {
+                    if (gameWorld.gameOuterMapData.data.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
+
+                    startPoint = e.Location;
+                }
+
+                public override void mouseReleased(MouseEventArgs e)
+                {
+                    if (startPoint == null) return;
+
+                    startPoint = null;
+
+                    switch (scene.drawContent)
+                    {
+                        case DrawContent.terrain:
+
+                            var tlp = rectangle.Location;
+                            var trp = new Point(rectangle.X + rectangle.Width, rectangle.Y);
+                            var blp = new Point(rectangle.X, rectangle.Y + rectangle.Height);
+
+                            var tl = gameStatus.tileMap.getTileLocation(tlp.X, tlp.Y);
+                            var tr = gameStatus.tileMap.getTileLocation(trp.X, trp.Y);
+                            var bl = gameStatus.tileMap.getTileLocation(blp.X, blp.Y);
+
+                            var tm = gameWorld.gameOuterMapData.data;
+
+                            tm.checkBound(ref tl);
+                            tm.checkBound(ref tr);
+                            tm.checkBound(ref bl);
+
+                            var width = tr.x - tl.x;
+                            var height = bl.y - tl.y;
+
+                            tm.eachRectangle(tl, new Map.Size(height, width), o =>
+                            {
+                                outerMap.data.setTerrain(o, (byte)scene.drawContentId);
+
+                                gameStatus.tileMap.resetTileFlag(o);
+
+                            });
+
+                            break;
+                    }
+
+                    rectangle = Rectangle.Empty;
+                }
+
+                public override void mouseDragging(MouseEventArgs e, Point p)
+                {
+                    if (startPoint == null) return;
+
+                    var sp = startPoint.Value;
+
+                    rectangle = new Rectangle(sp.X, sp.Y, e.X - sp.X, e.Y - sp.Y);
+                }
+
+                public override void draw()
+                {
+                    if (startPoint == null) return;
+
+                    gameSystem.gameGraphic.drawRactangle(Color.White, rectangle);
                 }
             }
         }
