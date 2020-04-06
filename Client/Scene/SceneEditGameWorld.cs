@@ -251,7 +251,7 @@ namespace Client.Scene
                 {
                 }
 
-                public override void mouseClicked(MouseEventArgs e) => draw(e);
+                public override void mouseReleased(MouseEventArgs e) => draw(e);
 
                 public override void mouseDragging(MouseEventArgs e, Point p) => draw(e);
 
@@ -311,6 +311,9 @@ namespace Client.Scene
                             tm.checkBound(ref tl);
                             tm.checkBound(ref tr);
                             tm.checkBound(ref bl);
+
+                            ++tr.x;
+                            ++bl.y;
 
                             var width = tr.x - tl.x;
                             var height = bl.y - tl.y;
@@ -392,10 +395,10 @@ namespace Client.Scene
                         {
                             markedPoints.Add(p);
 
-                            if (check(p.x + 1, p.y)) continue;
-                            if (check(p.x - 1, p.y)) continue;
-                            if (check(p.x, p.y + 1)) continue;
-                            if (check(p.x, p.y - 1)) continue;
+                            add(p.x + 1, p.y);
+                            add(p.x - 1, p.y);
+                            add(p.x, p.y + 1);
+                            add(p.x, p.y - 1);
                         }
                         else
                         {
@@ -407,23 +410,14 @@ namespace Client.Scene
 
                     var list = markedPoints.ToList();
                     
-                    list.ForEach(o =>
-                    {
-                        scene.outerTileMapStatus.zoomableTileMapSprites.outerTileMap.removeTileFlag(o);
+                    list.ForEach(o => outerMap.data.setTerrain(o, terrainId));
 
-                        outerMap.data.setTerrain(o, terrainId);
-                    });
-
-                    list.ForEach(scene.outerTileMapStatus.zoomableTileMapSprites.outerTileMap.recoveryTileFlag);
+                    list.ForEach(scene.outerTileMapStatus.zoomableTileMapSprites.outerTileMap.resetTileFlag);
                 }
 
-                private bool check(int x, int y)
+                private void add(int x, int y)
                 {
-                    var p = new MapPoint(x, y);
-
-                    points.Push(p);
-
-                    return false;
+                    points.Push(new MapPoint(x, y));
                 }
             }
         }

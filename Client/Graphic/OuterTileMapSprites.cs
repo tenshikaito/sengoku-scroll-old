@@ -29,8 +29,8 @@ namespace Client.Graphic
             tileMapImageInfo = mii;
             mapSpritesInfo = msi;
 
-            terrainSprite = mii.terrainAnimation.Values.Select(o => new KeyValuePair<int, TileSprite>(o.id, new TileSprite(o))).ToDictionary(o => o.Key, o => o.Value);
-            strongholdSprite = mii.strongholdAnimation.Values.Select(o => new KeyValuePair<int, TileSprite>(o.id, new TileSprite(o))).ToDictionary(o => o.Key, o => o.Value);
+            terrainSprite = mii.terrainAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
+            strongholdSprite = mii.strongholdAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
 
             tileSprite = new AutoTileSprite(this);
 
@@ -66,96 +66,9 @@ namespace Client.Graphic
             if (p == cursorPosition) drawCursor(g, sx, sy);
         }
 
-        private class TileSprite
-        {
-            private TileAnimation tileAnimation;
-            private int index;
-
-            public Point currentPoint => tileAnimation.frames[index];
-
-            public TileSprite(TileAnimation ta)
-            {
-                tileAnimation = ta;
-            }
-
-            public void update()
-            {
-                index = ++index % tileAnimation.frames.Count;
-            }
-        }
-
-        public class MapSpritesInfo
-        {
-            private Dictionary<int, byte> terrainBorder = new Dictionary<int, byte>();
-
-            private GameWorld gameWorld;
-            private TileMap tileMap => gameWorld.gameOuterMapData.data;
-
-            public MapSpritesInfo(GameWorld gw) => gameWorld = gw;
-
-            public byte checkTerrainBorder(MapPoint p)
-            {
-                int index = tileMap.getIndex(p);
-
-                if (!terrainBorder.TryGetValue(index, out var type))
-                {
-                    terrainBorder[index] = calculateTileMargin(p);
-                }
-
-                return type;
-            }
-
-            public void resetTileFlag(MapPoint p)
-            {
-                removeTileFlag(p);
-
-                recoveryTileFlag(p);
-            }
-
-            public void removeTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => terrainBorder.Remove(tileMap.getIndex(o)));
-
-            public void recoveryTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => checkTerrainBorder(o));
-
-            public byte calculateTileMargin(MapPoint p)
-            {
-                if (tileMap.isOutOfBounds(p)) return 0;
-
-                var t = (Tile)tileMap[p];
-                int y = p.y,
-                    x = p.x;
-                var tt = gameWorld.gameWorldMasterData.terrain[t.terrain];
-                byte flag = 0;
-
-                calculateTileMargin(ref flag, x - 1, y - 1, tt, AutoTileCalculator.topLeft);
-                calculateTileMargin(ref flag, x, y - 1, tt, AutoTileCalculator.top);
-                calculateTileMargin(ref flag, x + 1, y - 1, tt, AutoTileCalculator.topRight);
-                calculateTileMargin(ref flag, x - 1, y, tt, AutoTileCalculator.left);
-                calculateTileMargin(ref flag, x + 1, y, tt, AutoTileCalculator.right);
-                calculateTileMargin(ref flag, x - 1, y + 1, tt, AutoTileCalculator.bottomLeft);
-                calculateTileMargin(ref flag, x, y + 1, tt, AutoTileCalculator.bottom);
-                calculateTileMargin(ref flag, x + 1, y + 1, tt, AutoTileCalculator.bottomRight);
-
-                return flag;
-            }
-
-            private void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction)
-            {
-                var p = new MapPoint(x, y);
-
-                if (tileMap.isOutOfBounds(p)) return;
-
-                var tt = tileMap[p];
-                var ttt = (Tile)tt;
-
-                var tttt = gameWorld.gameWorldMasterData.terrain[ttt.terrain];
-
-                if (t.isWater != tttt.isWater) flag |= direction;
-            }
-        }
-
         private AutoTileSprite tileSprite;
 
-        private Dictionary<int, TileSprite> terrainSprite = new Dictionary<int, TileSprite>();
+        private Dictionary<int, TileSpriteAnimation> terrainSprite = new Dictionary<int, TileSpriteAnimation>();
 
         private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, Tile t)
         {
@@ -215,7 +128,7 @@ namespace Client.Graphic
             });
         }
 
-        private Dictionary<int, TileSprite> strongholdSprite = new Dictionary<int, TileSprite>();
+        private Dictionary<int, TileSpriteAnimation> strongholdSprite = new Dictionary<int, TileSpriteAnimation>();
 
         private void drawStronghold(GameGraphic g, int x, int y, int strongholdId)
         {

@@ -121,6 +121,90 @@ namespace Client.Graphic
         protected abstract void draw(GameGraphic g, int fx, int fy, MapPoint p, int sx, int sy);
 
         public override void mouseMoved(MouseEventArgs e) => cursorPosition = getTileLocation(e);
+
+        protected class TileSpriteAnimation
+        {
+            private List<Point> tileAnimation;
+            private int index;
+
+            public Point currentPoint => tileAnimation[index];
+
+            public TileSpriteAnimation(List<Point> ta)
+            {
+                tileAnimation = ta;
+            }
+
+            public void update() => index = ++index % tileAnimation.Count;
+        }
+
+        public class MapSpritesInfo
+        {
+            private Dictionary<int, byte> terrainBorder = new Dictionary<int, byte>();
+
+            private GameWorld gameWorld;
+            private TileMap tileMap => gameWorld.gameOuterMapData.data;
+
+            public MapSpritesInfo(GameWorld gw) => gameWorld = gw;
+
+            public byte checkTerrainBorder(MapPoint p)
+            {
+                int index = tileMap.getIndex(p);
+
+                if (!terrainBorder.TryGetValue(index, out var type))
+                {
+                    terrainBorder[index] = calculateTileMargin(p);
+                }
+
+                return type;
+            }
+
+            public void resetTileFlag(MapPoint p)
+            {
+                removeTileFlag(p);
+
+                recoveryTileFlag(p);
+            }
+
+            public void removeTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => terrainBorder.Remove(tileMap.getIndex(o)));
+
+            public void recoveryTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => checkTerrainBorder(o));
+
+            public byte calculateTileMargin(MapPoint p)
+            {
+                if (tileMap.isOutOfBounds(p)) return 0;
+
+                var t = (Tile)tileMap[p];
+                int y = p.y,
+                    x = p.x;
+                var tt = gameWorld.gameWorldMasterData.terrain[t.terrain];
+                byte flag = 0;
+
+                calculateTileMargin(ref flag, x - 1, y - 1, tt, AutoTileCalculator.topLeft);
+                calculateTileMargin(ref flag, x, y - 1, tt, AutoTileCalculator.top);
+                calculateTileMargin(ref flag, x + 1, y - 1, tt, AutoTileCalculator.topRight);
+                calculateTileMargin(ref flag, x - 1, y, tt, AutoTileCalculator.left);
+                calculateTileMargin(ref flag, x + 1, y, tt, AutoTileCalculator.right);
+                calculateTileMargin(ref flag, x - 1, y + 1, tt, AutoTileCalculator.bottomLeft);
+                calculateTileMargin(ref flag, x, y + 1, tt, AutoTileCalculator.bottom);
+                calculateTileMargin(ref flag, x + 1, y + 1, tt, AutoTileCalculator.bottomRight);
+
+                return flag;
+            }
+
+            private void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction)
+            {
+                var p = new MapPoint(x, y);
+
+                if (tileMap.isOutOfBounds(p)) return;
+
+                var tt = tileMap[p];
+                var ttt = (Tile)tt;
+
+                var tttt = gameWorld.gameWorldMasterData.terrain[ttt.terrain];
+
+                if (t.isWater != tttt.isWater) flag |= direction;
+            }
+        }
     }
 
     //public abstract partial class TileMapSpritesBase<T>

@@ -19,12 +19,12 @@ namespace Library
 
         public string tileObjectImageFileName;
 
-        public Dictionary<int, TileAnimation> terrainAnimation;
+        public Dictionary<int, List<Point>> terrainAnimation;
     }
 
     public class OuterTileMapImageInfo : TileMapImageInfo
     {
-        public Dictionary<int, TileAnimation> strongholdAnimation;
+        public Dictionary<int, List<Point>> strongholdAnimation;
     }
 
     public class InnerTileMapImageInfo : TileMapImageInfo
