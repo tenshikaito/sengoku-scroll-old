@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Client.UI
 {
-    public abstract class UIDialog : UIWindow
+    public class UIDialog : UIWindow
     {
         public Action okButtonClicked;
 
@@ -18,6 +18,17 @@ namespace Client.UI
             CancelButton = btnOk;
 
             btnOk.Click += (s, e) => okButtonClicked?.Invoke();
+        }
+
+        public UIDialog(GameSystem gs, string title, string text, Form owner = null) : this(gs)
+        {
+            this.setCommandWindow(title).addMessage<UIDialog>(text);
+
+            if (owner != null) Owner = owner;
+
+            addConfirmButton();
+
+            okButtonClicked = Close;
         }
 
         protected UIDialog addConfirmButton(string okButtonText = null)

@@ -21,7 +21,16 @@ namespace Client.UI
             btnCancel.Click += (s, e) => cancelButtonClicked?.Invoke();
         }
 
-        protected UIDialog addConfirmButtons(string okButtonText = null, string cancelButtonText = null)
+        public UIConfirmDialog(GameSystem gs, string title, string text, Form owner = null) : this(gs)
+        {
+            this.setCommandWindow(title).addMessage<UIConfirmDialog>(text);
+
+            if (owner != null) Owner = owner;
+
+            addConfirmButtons();
+        }
+
+        public UIConfirmDialog addConfirmButtons(string okButtonText = null, string cancelButtonText = null)
         {
             var tlp = new TableLayoutPanel()
             {

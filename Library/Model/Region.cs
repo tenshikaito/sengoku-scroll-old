@@ -12,7 +12,6 @@ namespace Library.Model
 
         public byte id;
         public string name;
-        public string code;
         /// <summary>气候</summary>
         public Climate climate;
     }

@@ -1,4 +1,5 @@
-﻿using Client.UI;
+﻿using Client.Helper;
+using Client.UI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -70,11 +71,15 @@ namespace Client.Scene
 
         private void onEditGameWorldButtonClicked(string name)
         {
-            if (MessageBox.Show("edit game world?", "confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            var dialog = new UIConfirmDialog(gameSystem, "confirm", "edit game world?");
+
+            dialog.okButtonClicked = () =>
             {
-                uiEditGameWorldDialog.Visible = false;
+                dialog.Close();
+
+                uiEditGameWorldDialog.Close();
+
                 gameSystem.sceneToWaiting();
-                gameSystem.formMain.Focus();
 
                 Task.Run(() =>
                 {
@@ -84,13 +89,19 @@ namespace Client.Scene
 
                     dispatcher.invoke(() => gameSystem.sceneToEditGame(gw));
                 });
-            }
+            };
+
+            dialog.ShowDialog(formMain);
         }
 
         private void onDeleteButtonClicked(string name)
         {
-            if (MessageBox.Show("delete?", "confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            var dialog = new UIConfirmDialog(gameSystem, "confirm", "delete?", formMain);
+
+            dialog.okButtonClicked = () =>
             {
+                dialog.Close();
+
                 var gwp = new GameWorldProcessor(name);
 
                 try
@@ -104,7 +115,9 @@ namespace Client.Scene
                 }
 
                 uiEditGameWorldDialog.delete(name);
-            }
+            };
+
+            dialog.ShowDialog(formMain);
         }
 
         private void onCreateGameWorld(string name, string txtWidth, string txtHeight)
@@ -142,6 +155,7 @@ namespace Client.Scene
             }
 
             uiCreateGameWorldDialog.Close();
+
             loadGameWorldMapList();
         }
 

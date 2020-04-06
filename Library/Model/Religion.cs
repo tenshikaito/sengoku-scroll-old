@@ -8,7 +8,6 @@ namespace Library.Model
     {
         public byte id;
         public string name;
-        public string code;
         public bool isPolytheism;
 
         public class Sect

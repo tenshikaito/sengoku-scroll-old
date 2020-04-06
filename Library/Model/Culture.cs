@@ -8,6 +8,5 @@ namespace Library.Model
     {
         public byte id;
         public string name;
-        public string code;
     }
 }

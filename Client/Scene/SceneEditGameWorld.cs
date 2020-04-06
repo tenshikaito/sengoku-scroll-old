@@ -19,6 +19,8 @@ namespace Client.Scene
 
         private OuterTileMapStatus outerTileMapStatus;
 
+        private UIConfirmDialog uiConfirmDialog;
+
         private UIEditGameWorldMenuWindow uiEditGameWorldMenuWindow;
 
         private UIEditGameWorldDatabaseWindow uiEditGameWorldDatabaseWindow;
@@ -90,7 +92,7 @@ namespace Client.Scene
             };
 
             uiEditGameWorldDatabaseWindow.FormClosing += (s, e) => uiEditGameWorldDatabaseWindow = null;
-            uiEditGameWorldDatabaseWindow.Show(uiEditGameWorldMenuWindow);
+            uiEditGameWorldDatabaseWindow.Show();
         }
 
         private void onDatabaseWindowOkButtonClicked()
@@ -109,15 +111,32 @@ namespace Client.Scene
         {
             save();
 
-            MessageBox.Show("data saved.", "alert", MessageBoxButtons.OK);
+            new UIDialog(gameSystem, "message", "data saved.").ShowDialog(formMain);
         }
 
         private void onExitButtonClicked()
         {
-            if (MessageBox.Show("exit?", "alert", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (uiConfirmDialog != null) return;
+
+            var dialog = uiConfirmDialog = new UIConfirmDialog(gameSystem, "confirm", "exit?");
+
+            dialog.okButtonClicked = () =>
             {
+                dialog.Close();
+
+                uiConfirmDialog = null;
+
                 gameSystem.sceneToTitle();
-            }
+            };
+
+            dialog.cancelButtonClicked = () =>
+            {
+                dialog.Close();
+
+                uiConfirmDialog = null;
+            };
+
+            dialog.ShowDialog(formMain);
         }
 
         private void save()
@@ -317,13 +336,13 @@ namespace Client.Scene
 
                             var width = tr.x - tl.x;
                             var height = bl.y - tl.y;
+                            var t = (byte)scene.drawContentId;
 
                             tm.eachRectangle(tl, new Map.Size(height, width), o =>
                             {
-                                outerMap.data.setTerrain(o, (byte)scene.drawContentId);
+                                outerMap.data.setTerrain(o, t);
 
                                 gameStatus.tileMap.resetTileFlag(o);
-
                             });
 
                             break;
@@ -409,7 +428,7 @@ namespace Client.Scene
                     var terrainId = (byte)scene.drawContentId;
 
                     var list = markedPoints.ToList();
-                    
+
                     list.ForEach(o => outerMap.data.setTerrain(o, terrainId));
 
                     list.ForEach(scene.outerTileMapStatus.zoomableTileMapSprites.outerTileMap.resetTileFlag);

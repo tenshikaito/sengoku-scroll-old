@@ -114,7 +114,6 @@ namespace Client.UI
             private int? currentId;
 
             private TextBox tbName;
-            private TextBox tbCode;
             private CheckBox cbIsGrass;
             private CheckBox cbIsHill;
             private CheckBox cbIsMountain;
@@ -133,7 +132,6 @@ namespace Client.UI
 
                 lv.addColumn(w.id)
                     .addColumn(w.name)
-                    .addColumn(w.code)
                     .addColumn(w.terrain.is_grass)
                     .addColumn(w.terrain.is_hill)
                     .addColumn(w.terrain.is_mountain)
@@ -175,9 +173,6 @@ namespace Client.UI
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.code + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbCode = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
                 new Label().init(w.terrain.is_grass + ":").setAutoSize().setRightCenter().addTo(p3);
                 cbIsGrass = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
 
@@ -216,7 +211,6 @@ namespace Client.UI
                 {
                     id = (byte)max,
                     name = w.terrain.name,
-                    code = string.Empty
                 };
 
                 data[oo.id] = oo;
@@ -247,7 +241,6 @@ namespace Client.UI
                 lvi.Text = o.id.ToString();
 
                 return lvi.addColumn(o.name)
-                    .addColumn(o.code)
                     .addColumn(o.isGrass.getSymbol(w))
                     .addColumn(o.isHill.getSymbol(w))
                     .addColumn(o.isMountain.getSymbol(w))
@@ -264,7 +257,6 @@ namespace Client.UI
                     var oo = data[(int)currentId];
 
                     oo.name = tbName.Text;
-                    oo.code = tbCode.Text;
                     oo.isGrass = cbIsGrass.Checked;
                     oo.isHill = cbIsHill.Checked;
                     oo.isMountain = cbIsMountain.Checked;
@@ -292,7 +284,6 @@ namespace Client.UI
                 var o = data[id];
 
                 tbName.Text = o.name;
-                tbCode.Text = o.code;
                 cbIsGrass.Checked = o.isGrass;
                 cbIsHill.Checked = o.isHill;
                 cbIsMountain.Checked = o.isMountain;
@@ -311,7 +302,6 @@ namespace Client.UI
             private Dictionary<int, Region> data;
             private int? currentId;
 
-            private TextBox tbCode;
             private TextBox tbName;
             private ComboBox cbClimate;
 
@@ -325,7 +315,6 @@ namespace Client.UI
 
                 lv.addColumn(w.id)
                     .addColumn(w.name)
-                    .addColumn(w.code)
                     .addColumn(w.region.climate);
 
                 lv.Click += (s, e) =>
@@ -361,9 +350,6 @@ namespace Client.UI
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.code + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbCode = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
                 new Label().init(w.region.climate + ":").setAutoSize().setRightCenter().addTo(p3);
                 cbClimate = new ComboBox()
                     .initDropDownList(Library.Model.Region.list.Select(o => new KeyValuePair<Climate, string>(o, w.region[o.ToString()])).ToList(), Climate.normal)
@@ -389,7 +375,6 @@ namespace Client.UI
                 {
                     id = (byte)max,
                     name = w.region.name,
-                    code = string.Empty
                 };
 
                 data[oo.id] = oo;
@@ -420,7 +405,6 @@ namespace Client.UI
                 lvi.Text = o.id.ToString();
 
                 return lvi.addColumn(o.name)
-                    .addColumn(o.code)
                     .addColumn(w.region[o.climate.ToString()]);
             }
 
@@ -431,7 +415,6 @@ namespace Client.UI
                     var oo = data[(int)currentId];
 
                     oo.name = tbName.Text;
-                    oo.code = tbCode.Text;
                     oo.climate = (Climate)cbClimate.SelectedValue;
 
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
@@ -453,7 +436,6 @@ namespace Client.UI
                 var o = data[id];
 
                 tbName.Text = o.name;
-                tbCode.Text = o.code;
                 cbClimate.SelectedValue = o.climate;
             }
         }
@@ -467,7 +449,6 @@ namespace Client.UI
             private int? currentId;
 
             private TextBox tbName;
-            private TextBox tbCode;
 
             public TabPageCulture(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Culture> data) : base(bw)
             {
@@ -478,8 +459,7 @@ namespace Client.UI
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
                 lv.addColumn(w.id)
-                    .addColumn(w.name)
-                    .addColumn(w.code);
+                    .addColumn(w.name);
 
                 lv.Click += (s, e) =>
                 {
@@ -515,9 +495,6 @@ namespace Client.UI
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.code + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbCode = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
                 new Label().init("").addTo(p3);
 
                 initData(lv);
@@ -537,7 +514,6 @@ namespace Client.UI
                 {
                     id = (byte)max,
                     name =w.culture.name,
-                    code = string.Empty
                 };
 
                 data[oo.id] = oo;
@@ -567,8 +543,7 @@ namespace Client.UI
             {
                 lvi.Text = o.id.ToString();
 
-                return lvi.addColumn(o.name)
-                    .addColumn(o.code);
+                return lvi.addColumn(o.name);
             }
 
             private void refresh(ListView lv)
@@ -578,7 +553,6 @@ namespace Client.UI
                     var oo = data[(byte)currentId];
 
                     oo.name = tbName.Text;
-                    oo.code = tbCode.Text;
 
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
 
@@ -599,7 +573,6 @@ namespace Client.UI
                 var t = data[id];
 
                 tbName.Text = t.name;
-                tbCode.Text = t.code;
             }
         }
     }
@@ -612,7 +585,6 @@ namespace Client.UI
             private int? currentId;
 
             private TextBox tbName;
-            private TextBox tbCode;
             private CheckBox cbIsPolytheism;
 
             public TabPageReligion(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Religion> data) : base(bw)
@@ -625,7 +597,6 @@ namespace Client.UI
 
                 lv.addColumn(w.id)
                     .addColumn(w.name)
-                    .addColumn(w.code)
                     .addColumn(w.religion.is_polytheism);
 
                 lv.Click += (s, e) =>
@@ -662,9 +633,6 @@ namespace Client.UI
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.code + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbCode = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
                 new Label().init(w.religion.is_polytheism + ":").setAutoSize().setRightCenter().addTo(p3);
                 cbIsPolytheism = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
 
@@ -687,7 +655,6 @@ namespace Client.UI
                 {
                     id = (byte)max,
                     name = w.religion.name,
-                    code = string.Empty
                 };
 
                 data[oo.id] = oo;
@@ -717,8 +684,7 @@ namespace Client.UI
             {
                 lvi.Text = o.id.ToString();
 
-                return lvi.addColumn(o.name)
-                    .addColumn(o.code);
+                return lvi.addColumn(o.name);
             }
 
             private void refresh(ListView lv)
@@ -728,7 +694,6 @@ namespace Client.UI
                     var oo = data[(byte)currentId];
 
                     oo.name = tbName.Text;
-                    oo.code = tbCode.Text;
                     oo.isPolytheism = cbIsPolytheism.Checked;
 
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
@@ -750,7 +715,6 @@ namespace Client.UI
                 var o = data[id];
 
                 tbName.Text = o.name;
-                tbCode.Text = o.code;
                 cbIsPolytheism.Checked = o.isPolytheism;
             }
         }
@@ -764,7 +728,6 @@ namespace Client.UI
             private int? currentId;
 
             private TextBox tbName;
-            private TextBox tbCode;
 
             public TabPageRoad(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Road> data) : base(bw)
             {
@@ -775,8 +738,7 @@ namespace Client.UI
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
                 lv.addColumn(w.id)
-                    .addColumn(w.name)
-                    .addColumn(w.code);
+                    .addColumn(w.name);
 
                 lv.Click += (s, e) =>
                 {
@@ -812,9 +774,6 @@ namespace Client.UI
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.code + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbCode = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
                 new Label().init("").addTo(p3);
 
                 initData(lv);
@@ -834,7 +793,6 @@ namespace Client.UI
                 {
                     id = (byte)max,
                     name = w.road.name,
-                    code = string.Empty
                 };
 
                 data[oo.id] = oo;
@@ -864,8 +822,7 @@ namespace Client.UI
             {
                 lvi.Text = o.id.ToString();
 
-                return lvi.addColumn(o.name)
-                    .addColumn(o.code);
+                return lvi.addColumn(o.name);
             }
 
             private void refresh(ListView lv)
@@ -875,7 +832,6 @@ namespace Client.UI
                     var oo = data[(byte)currentId];
 
                     oo.name = tbName.Text;
-                    oo.code = tbCode.Text;
 
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
 
@@ -896,7 +852,6 @@ namespace Client.UI
                 var o = data[id];
 
                 tbName.Text = o.name;
-                tbCode.Text = o.code;
             }
         }
     }
@@ -909,7 +864,6 @@ namespace Client.UI
             private int? currentId;
 
             private TextBox tbName;
-            private TextBox tbCode;
             private TextBox tbIntroduction;
 
             public TabPageStronghold(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Stronghold.Type> data) : base(bw)
@@ -957,9 +911,6 @@ namespace Client.UI
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.code + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbCode = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
                 new Label().init(w.introduction + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbIntroduction = new TextBox().refreshListViewOnClick(lv, refresh).setMultiLine().addTo(p3);
 
@@ -982,7 +933,6 @@ namespace Client.UI
                 {
                     id = (byte)max,
                     name = w.stronghold_type.name,
-                    code = string.Empty,
                     introduction = string.Empty
                 };
 
@@ -1013,8 +963,7 @@ namespace Client.UI
             {
                 lvi.Text = o.id.ToString();
 
-                return lvi.addColumn(o.name)
-                    .addColumn(o.code);
+                return lvi.addColumn(o.name);
             }
 
             private void refresh(ListView lv)
@@ -1024,7 +973,6 @@ namespace Client.UI
                     var oo = data[(byte)currentId];
 
                     oo.name = tbName.Text;
-                    oo.code = tbCode.Text;
                     oo.introduction = tbIntroduction.Text;
 
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
@@ -1048,8 +996,147 @@ namespace Client.UI
                 var o = data[id];
 
                 tbName.Text = o.name;
-                tbCode.Text = o.code;
                 tbIntroduction.Text = o.introduction;
+            }
+        }
+    }
+
+    public partial class UIEditGameWorldDatabaseWindow
+    {
+        private class TabPageOuterMapTileImageInfo : TabPageBase
+        {
+            private Dictionary<int, OuterTileMapImageInfo> data;
+            private int? currentId;
+
+            private TextBox tbName;
+            private TextBox tbTileWidth;
+            private TextBox tbTileHeight;
+
+            public TabPageOuterMapTileImageInfo(UIEditGameWorldDatabaseWindow bw, Dictionary<int, OuterTileMapImageInfo> data) : base(bw)
+            {
+                this.data = data;
+
+                this.init(w.stronghold_type.name).setAutoSizeP();
+
+                var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
+
+                lv.addColumn(w.id)
+                    .addColumn(w.name)
+                    .addColumn(w.tile_map_image_info.tile_size);
+
+                lv.Click += (s, e) =>
+                {
+                    if (lv.FocusedItem == null) return;
+
+                    onListViewClicked(lv, (byte)lv.FocusedItem.Tag);
+                };
+
+                var p2 = new TableLayoutPanel()
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 1,
+                    RowCount = 2
+                }.addTo(sc);
+
+                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
+
+                var gb = new GroupBox()
+                {
+                    Dock = DockStyle.Fill,
+                    Text = w.scene_edit_game_world.property
+                }.addTo(p2);
+
+                var p3 = new TableLayoutPanel()
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 2,
+                    RowCount = 2,
+                    AutoScroll = true
+                }.addTo(gb);
+
+                new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init("").addTo(p3);
+
+                initData(lv);
+
+                lv.autoResizeColumns();
+            }
+
+            private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
+
+            private void onAddButtonClicked(ListView lv)
+            {
+                var max = data.Any() ? data.Max(o => o.Key) : 0;
+
+                if (++max > byte.MaxValue) return;
+
+                var oo = new OuterTileMapImageInfo()
+                {
+                    id = (byte)max,
+                    name = w.tile_map_image_info.name,
+                };
+
+                data[oo.id] = oo;
+
+                var lvi = new ListViewItem()
+                {
+                    Tag = oo.id
+                };
+
+                lv.Items.Add(setRow(lvi, oo));
+
+                lv.autoResizeColumns();
+            }
+
+            private void onDeleteButtonClicked(ListView lv, int id)
+            {
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (byte)o.Tag == id));
+
+                data.Remove(id);
+
+                if (currentId == id) currentId = null;
+
+                lv.autoResizeColumns();
+            }
+
+            private ListViewItem setRow(ListViewItem lvi, OuterTileMapImageInfo o)
+            {
+                lvi.Text = o.id.ToString();
+
+                return lvi.addColumn(o.name);
+            }
+
+            private void refresh(ListView lv)
+            {
+                if (currentId != null)
+                {
+                    var oo = data[(byte)currentId];
+
+                    oo.name = tbName.Text;
+
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
+
+                    if (lvi != null)
+                    {
+                        lvi.SubItems.Clear();
+
+                        setRow(lvi, oo);
+
+                        lv.autoResizeColumns();
+                    }
+                }
+            }
+
+            private void onListViewClicked(ListView lv, int id)
+            {
+                refresh(lv);
+
+                currentId = id;
+                var o = data[id];
+
+                tbName.Text = o.name;
             }
         }
     }

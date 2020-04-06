@@ -23,5 +23,12 @@ namespace Client.UI
 
             this.setAutoSizeF().setCenter();
         }
+
+        protected T addMessage<T>(string text) where T : UIWindow
+        {
+            new Label() { Margin = new Padding(20) }.init(text).setAutoSize().setMiddleCenter().addTo(panel);
+
+            return (T)this;
+        }
     }
 }

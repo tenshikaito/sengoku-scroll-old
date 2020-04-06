@@ -9,7 +9,6 @@ namespace Library.Model
     public class Terrain : BaseObject
     {
         public byte id;
-        public string code;
         public string name;
         public bool isGrass;
         public bool isHill;

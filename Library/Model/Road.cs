@@ -8,7 +8,6 @@ namespace Library.Model
     {
         public int id;
         public string name;
-        public string code;
         public Supplies buildCost;
         public Supplies keepCost;
     }

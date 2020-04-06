@@ -15,6 +15,8 @@ namespace Client.UI
 
         public UICreateGameWorldDialog(GameSystem gs, Action<string, string, string> okButtonClicked) : base(gs)
         {
+            this.setCommandWindow(w.add);
+
             var p = new TableLayoutPanel()
             {
                 ColumnCount = 2

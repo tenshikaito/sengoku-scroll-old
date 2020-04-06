@@ -65,18 +65,18 @@ namespace Client
             //gameSystem.initGame();
             //gameSystem.sceneToOuterMap();
 
-            //var gw = new GameWorld("test")
-            //{
-            //    gameWorldMasterData = new GameWorldMasterData()
-            //    {
-            //        terrain = new Dictionary<int, Terrain>(),
-            //        region = new Dictionary<int, Region>(),
-            //        culture = new Dictionary<int, Culture>(),
-            //        religion = new Dictionary<int, Religion>(),
-            //        road = new Dictionary<int, Road>(),
-            //        strongholdType = new Dictionary<int, Stronghold.Type>()
-            //    }//gw.gameData.toJson().fromJson<GameData>();
-            //};
+            var gw = new GameWorld("test")
+            {
+                gameWorldMasterData = new GameWorldMasterData()
+                {
+                    terrain = new Dictionary<int, Terrain>(),
+                    region = new Dictionary<int, Region>(),
+                    culture = new Dictionary<int, Culture>(),
+                    religion = new Dictionary<int, Religion>(),
+                    road = new Dictionary<int, Road>(),
+                    strongholdType = new Dictionary<int, Stronghold.Type>()
+                }
+            };
 
             //new UI.UIEditGameWorldDatabaseWindow(gameSystem, gw).Show();
 
@@ -90,7 +90,7 @@ namespace Client
             Text = option.title;
             Icon = new Icon("Icon.ico");
 
-            dispatcher = new Dispatcher(mainActions);
+            dispatcher = new Dispatcher();
 
             this.setCenter();
         }
@@ -226,18 +226,9 @@ namespace Client
             });
         }
 
-        private List<Action> mainActions = new List<Action>();
-
         private void update()
         {
             dispatcher.update();
-
-            if (mainActions.Any())
-            {
-                mainActions.ForEach(o => o());
-
-                mainActions.Clear();
-            }
 
             gameRoot.onUpdate();
         }
@@ -265,15 +256,25 @@ namespace Client
         public class Dispatcher
         {
             private Queue<Action> actions = new Queue<Action>();
-            private List<Action> mainActions;
-
-            public Dispatcher(List<Action> mainActions) => this.mainActions = mainActions;
+            private List<Action> list = new List<Action>();
 
             public void update()
             {
                 lock (actions)
                 {
-                    while (actions.Any()) mainActions.Add(actions.Dequeue());
+                    if (actions.Any())
+                    {
+                        list.AddRange(actions);
+
+                        actions.Clear();
+                    }
+                }
+
+                if (list.Any())
+                {
+                    list.ForEach(o => o());
+
+                    list.Clear();
                 }
             }
 

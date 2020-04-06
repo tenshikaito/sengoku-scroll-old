@@ -46,7 +46,7 @@ namespace Client.Helper
             return f;
         }
 
-        public static Form setCommandWindow(this Form f, string title)
+        public static T setCommandWindow<T>(this T f, string title) where T : Form
         {
             f.Text = title;
             f.FormBorderStyle = FormBorderStyle.FixedToolWindow;
@@ -69,7 +69,7 @@ namespace Client.Helper
             var a = new EventHandler((s, e) => focus(lv));
 
             c.Click += a;
-        
+
             return c;
         }
 
@@ -236,7 +236,7 @@ namespace Client.Helper
             cb.DataSource = data;
             cb.ValueMember = valueField;
             cb.DisplayMember = textField;
-            if(value != null) cb.SelectedValue = value;
+            if (value != null) cb.SelectedValue = value;
 
             return cb;
         }
