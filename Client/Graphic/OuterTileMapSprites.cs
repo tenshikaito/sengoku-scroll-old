@@ -107,10 +107,14 @@ namespace Client.Graphic
 
             public void resetTileFlag(MapPoint p)
             {
-                tileMap.eachRangedRectangle(p, new Map.Size(1), o => terrainBorder.Remove(tileMap.getIndex(o)));
+                removeTileFlag(p);
 
-                tileMap.eachRangedRectangle(p, new Map.Size(1), o => checkTerrainBorder(o));
+                recoveryTileFlag(p);
             }
+
+            public void removeTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => terrainBorder.Remove(tileMap.getIndex(o)));
+
+            public void recoveryTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => checkTerrainBorder(o));
 
             public byte calculateTileMargin(MapPoint p)
             {
@@ -195,6 +199,10 @@ namespace Client.Graphic
         }
 
         public void resetTileFlag(MapPoint p) => mapSpritesInfo.resetTileFlag(p);
+
+        public void removeTileFlag(MapPoint p) => mapSpritesInfo.removeTileFlag(p);
+
+        public void recoveryTileFlag(MapPoint p) => mapSpritesInfo.recoveryTileFlag(p);
 
         private void drawCurrentCharacter(GameGraphic g, int x, int y)
         {

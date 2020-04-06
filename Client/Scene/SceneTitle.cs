@@ -82,7 +82,7 @@ namespace Client.Scene
 
                     var gw = gwp.load(gameSystem.option.screenWidth, gameSystem.option.screenHeight);
 
-                    dispatcher.invoke(()=> gameSystem.sceneToEditGame(gw));
+                    dispatcher.invoke(() => gameSystem.sceneToEditGame(gw));
                 });
             }
         }

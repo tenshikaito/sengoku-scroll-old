@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Client.Graphic
 {
-    public  abstract partial class TileMapSpritesBase : GameObject
+    public abstract partial class TileMapSpritesBase : GameObject
     {
         public int width;
         public int height;
@@ -63,6 +63,10 @@ namespace Client.Graphic
             tileHeightCount = camera.height / tileHeight + 2;
         }
 
+        public MapPoint getTileLocation(MouseEventArgs e) => getTileLocation(e.X, e.Y);
+
+        public MapPoint getTileLocation(Point p) => getTileLocation(p.X, p.Y);
+
         public MapPoint getTileLocation(int sx = 0, int sy = 0)
         {
             sx += camera.x;
@@ -73,8 +77,8 @@ namespace Client.Graphic
         public override void update()
         {
             var now = DateTime.Now;
-            
-            if(now - lastUpdateSpriteTime >= updateSpriteInterval)
+
+            if (now - lastUpdateSpriteTime >= updateSpriteInterval)
             {
                 lastUpdateSpriteTime = now;
 
@@ -116,10 +120,7 @@ namespace Client.Graphic
 
         protected abstract void draw(GameGraphic g, int fx, int fy, MapPoint p, int sx, int sy);
 
-        public override void mouseMoved(MouseEventArgs e)
-        {
-            cursorPosition = getTileLocation(e.X, e.Y);
-        }
+        public override void mouseMoved(MouseEventArgs e) => cursorPosition = getTileLocation(e);
     }
 
     //public abstract partial class TileMapSpritesBase<T>

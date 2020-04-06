@@ -2,6 +2,7 @@
 using Client.Helper;
 using Client.UI;
 using Library;
+using Library.Model;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -154,6 +155,7 @@ namespace Client.Scene
             private PointerStatus pointerStatus;
             private DrawTileStatus drawTileStatus;
             private DrawTileRectangleStatus drawTileRectangleStatus;
+            private DrawTileFillStatus drawTileFillStatus;
 
             private Status currentStatus;
 
@@ -170,6 +172,7 @@ namespace Client.Scene
                 pointerStatus = new PointerStatus(this);
                 drawTileStatus = new DrawTileStatus(this);
                 drawTileRectangleStatus = new DrawTileRectangleStatus(this);
+                drawTileFillStatus = new DrawTileFillStatus(this);
             }
 
             public override void start()
@@ -187,7 +190,7 @@ namespace Client.Scene
                 var camera = scene.camera;
                 var center = camera.center;
                 var sCenter = camera.translateWorldToScreen(center);
-                var tileVertex = tileMap.getTileLocation(sCenter.X, sCenter.Y);
+                var tileVertex = tileMap.getTileLocation(sCenter);
                 bool flag;
 
                 if (e.Delta >= 0) flag = zoomableTileMapSprites.next();
@@ -209,6 +212,7 @@ namespace Client.Scene
                     case DrawMode.pointer: addStatus(pointerStatus); break;
                     case DrawMode.brush: addStatus(drawTileStatus); break;
                     case DrawMode.rectangle: addStatus(drawTileRectangleStatus); break;
+                    case DrawMode.fill: addStatus(drawTileFillStatus); break;
                 }
             }
 
@@ -253,7 +257,7 @@ namespace Client.Scene
 
                 private void draw(MouseEventArgs e)
                 {
-                    var p = gameStatus.tileMap.getTileLocation(e.X, e.Y);
+                    var p = gameStatus.tileMap.getTileLocation(e);
 
                     switch (scene.drawContent)
                     {
@@ -298,9 +302,9 @@ namespace Client.Scene
                             var trp = new Point(rectangle.X + rectangle.Width, rectangle.Y);
                             var blp = new Point(rectangle.X, rectangle.Y + rectangle.Height);
 
-                            var tl = gameStatus.tileMap.getTileLocation(tlp.X, tlp.Y);
-                            var tr = gameStatus.tileMap.getTileLocation(trp.X, trp.Y);
-                            var bl = gameStatus.tileMap.getTileLocation(blp.X, blp.Y);
+                            var tl = gameStatus.tileMap.getTileLocation(tlp);
+                            var tr = gameStatus.tileMap.getTileLocation(trp);
+                            var bl = gameStatus.tileMap.getTileLocation(blp);
 
                             var tm = gameWorld.gameOuterMapData.data;
 
@@ -339,6 +343,87 @@ namespace Client.Scene
                     if (startPoint == null) return;
 
                     gameSystem.gameGraphic.drawRactangle(Color.White, rectangle);
+                }
+            }
+
+            public class DrawTileFillStatus : Status
+            {
+                private Stack<MapPoint> points = new Stack<MapPoint>();
+                private HashSet<MapPoint> foundPoints = new HashSet<MapPoint>();
+                private HashSet<MapPoint> markedPoints = new HashSet<MapPoint>();
+                private byte selectedTerrainId;
+
+                public DrawTileFillStatus(OuterTileMapStatus s) : base(s)
+                {
+                }
+
+                public override void mouseReleased(MouseEventArgs e)
+                {
+                    var p = scene.outerTileMapStatus.tileMap.getTileLocation(e);
+
+                    var t = outerMap.data[p];
+
+                    if (t == null) return;
+
+                    selectedTerrainId = t.Value.terrain;
+
+                    markedPoints.Clear();
+                    foundPoints.Clear();
+                    points.Clear();
+
+                    points.Push(p);
+
+                    while (true)
+                    {
+                        if (!points.Any()) break;
+
+                        p = points.Peek();
+
+                        if (outerMap.data.isOutOfBounds(p) || foundPoints.Contains(p))
+                        {
+                            points.Pop();
+
+                            continue;
+                        }
+
+                        foundPoints.Add(p);
+
+                        if (outerMap.data[p].Value.terrain == selectedTerrainId)
+                        {
+                            markedPoints.Add(p);
+
+                            if (check(p.x + 1, p.y)) continue;
+                            if (check(p.x - 1, p.y)) continue;
+                            if (check(p.x, p.y + 1)) continue;
+                            if (check(p.x, p.y - 1)) continue;
+                        }
+                        else
+                        {
+                            points.Pop();
+                        }
+                    }
+
+                    var terrainId = (byte)scene.drawContentId;
+
+                    var list = markedPoints.ToList();
+                    
+                    list.ForEach(o =>
+                    {
+                        scene.outerTileMapStatus.zoomableTileMapSprites.outerTileMap.removeTileFlag(o);
+
+                        outerMap.data.setTerrain(o, terrainId);
+                    });
+
+                    list.ForEach(scene.outerTileMapStatus.zoomableTileMapSprites.outerTileMap.recoveryTileFlag);
+                }
+
+                private bool check(int x, int y)
+                {
+                    var p = new MapPoint(x, y);
+
+                    points.Push(p);
+
+                    return false;
                 }
             }
         }

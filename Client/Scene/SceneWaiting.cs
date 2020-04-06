@@ -25,6 +25,7 @@ namespace Client.Scene
             spriteText.text = text;
             spriteText.font = g.getDefaultFont();
             spriteText.fontSize = spriteText.font.Size;
+            spriteText.color = Color.White;
 
             var size = gs.gameGraphic.measureDefaultText(spriteText);
 
