@@ -21,7 +21,7 @@ namespace Client.Graphic
         public override int tileHeight => tileMapImageInfo.tileSize.Height;
 
         public InnerTileMapSprites(GameSystem gs, GameWorld gw, InnerTileMapImageInfo mii, bool isEditor = false)
-            : base(gs, gw, mii.terrainImageFileName, mii.tileObjectImageFileName, isEditor)
+            : base(gs, gw, isEditor)
         {
             tileMapImageInfo = mii;
 
@@ -82,13 +82,13 @@ namespace Client.Graphic
 
         public void drawStronghold(GameGraphic g, int x, int y, int strongholdId)
         {
-            g.drawImage(tileObjects, new Point(x, y), new Rectangle()
-            {
-                X = 48,
-                Y = 144,
-                Width = tileWidth,
-                Height = tileHeight
-            });
+            //g.drawImage(tileObjects, new Point(x, y), new Rectangle()
+            //{
+            //    X = 48,
+            //    Y = 144,
+            //    Width = tileWidth,
+            //    Height = tileHeight
+            //});
         }
 
         public override void draw()

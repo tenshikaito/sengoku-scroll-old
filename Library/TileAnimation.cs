@@ -10,7 +10,7 @@ namespace Library
     public class TileAnimation
     {
         public int id;
+        public string fileName;
         public List<Point> frames;
-        public float intervalSecond;
     }
 }

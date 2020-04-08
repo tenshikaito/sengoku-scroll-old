@@ -411,6 +411,8 @@ namespace Client
 
         public string apply => this[nameof(apply)];
 
+        public string detail => this[nameof(detail)];
+
         public string type => this[nameof(type)];
 
         public string edit_game_world => this[nameof(edit_game_world)];
@@ -560,13 +562,23 @@ namespace Client
 
         public class TileMapImageInfo : Part
         {
-            public string name => this[nameof(name)];
+            public string name => this[prefix];
 
             public string tile_size => this[nameof(tile_size)];
 
             public string tile_width => this[nameof(tile_width)];
 
             public string tile_height => this[nameof(tile_height)];
+
+            public string file_name => this[nameof(file_name)];
+
+            public string terrain_image_file_name => this[nameof(terrain_image_file_name)];
+
+            public string terrain_object_file_name => this[nameof(terrain_object_file_name)];
+
+            public string frame => this[nameof(frame)];
+
+            public string position => this[nameof(position)];
 
             public TileMapImageInfo(Wording w, string prefix) : base(w, prefix)
             {

@@ -37,10 +37,7 @@ namespace Client.UI
                 ColumnCount = 2,
                 RowCount = 1,
                 Dock = DockStyle.Fill
-            }.setAutoSizeP().addTo(panel);
-
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            }.addColumnStyle(50).addColumnStyle(50).setAutoSizeP().addTo(panel);
 
             btnOk.addTo(tlp);
             btnOk.Text = okButtonText ?? w.ok;

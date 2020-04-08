@@ -15,5 +15,7 @@ namespace Client.Helper
         }
 
         public static string getSymbol(this bool value, Wording w) => value ? w.symbol_selected : w.symbol_unselected;
+
+        public static Image getImage(this GameWorld gw, string fileName) => gw.cache.getImage(gw.getGameWorldProcessor().getFilePath(fileName));
     }
 }

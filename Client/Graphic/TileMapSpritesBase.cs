@@ -21,9 +21,6 @@ namespace Client.Graphic
         public abstract int tileWidth { get; }
         public abstract int tileHeight { get; }
 
-        public Image terrainImage;
-        public Image tileObjects;
-
         public MapPoint cursorPosition;
 
         protected GameSystem gameSystem;
@@ -42,17 +39,12 @@ namespace Client.Graphic
 
         protected GameGraphic gameGraphic => gameSystem.gameGraphic;
 
-        public TileMapSpritesBase(GameSystem gs, GameWorld gw, string terrainImageFileName, string tileObjectImageFileName, bool isEditor)
+        public TileMapSpritesBase(GameSystem gs, GameWorld gw, bool isEditor)
         {
             gameSystem = gs;
             gameWorld = gw;
 
             this.isEditor = isEditor;
-
-            var gwp = gw.getGameWorldProcessor();
-
-            terrainImage = gw.cache.getImage(gwp.getFilePath(terrainImageFileName));
-            tileObjects = gw.cache.getImage(gwp.getFilePath(tileObjectImageFileName));
         }
 
         public void resize()
@@ -124,25 +116,28 @@ namespace Client.Graphic
 
         protected class TileSpriteAnimation
         {
-            private List<Point> tileAnimation;
+            private TileAnimation tileAnimation;
             private int index;
 
-            public Point currentPoint => tileAnimation[index];
+            public string fileName => tileAnimation.fileName;
 
-            public TileSpriteAnimation(List<Point> ta)
+            public Point currentPoint => tileAnimation.frames[index];
+
+            public TileSpriteAnimation(TileAnimation ta)
             {
                 tileAnimation = ta;
             }
 
-            public void update() => index = ++index % tileAnimation.Count;
+            public void update() => index = ++index % tileAnimation.frames.Count;
         }
 
-        public class MapSpritesInfo
+        public abstract class MapSpritesInfo
         {
             private Dictionary<int, byte> terrainBorder = new Dictionary<int, byte>();
 
-            private GameWorld gameWorld;
-            private TileMap tileMap => gameWorld.gameOuterMapData.data;
+            protected GameWorld gameWorld;
+            protected abstract TileMap tileMap { get; }
+            protected abstract Dictionary<int ,Terrain> terrain { get; }
 
             public MapSpritesInfo(GameWorld gw) => gameWorld = gw;
 
@@ -167,6 +162,8 @@ namespace Client.Graphic
 
             public void removeTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => terrainBorder.Remove(tileMap.getIndex(o)));
 
+            public void removeTileFlag() => terrainBorder.Clear();
+
             public void recoveryTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => checkTerrainBorder(o));
 
             public byte calculateTileMargin(MapPoint p)
@@ -174,9 +171,10 @@ namespace Client.Graphic
                 if (tileMap.isOutOfBounds(p)) return 0;
 
                 var t = (Tile)tileMap[p];
-                int y = p.y,
-                    x = p.x;
-                var tt = gameWorld.gameWorldMasterData.terrain[t.terrain];
+                int y = p.y, x = p.x;
+
+                if (!terrain.TryGetValue(t.terrain, out var tt)) return 0;
+
                 byte flag = 0;
 
                 calculateTileMargin(ref flag, x - 1, y - 1, tt, AutoTileCalculator.topLeft);
@@ -191,7 +189,19 @@ namespace Client.Graphic
                 return flag;
             }
 
-            private void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction)
+            protected abstract void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction);
+        }
+
+        public class OuterMapSpritesInfo : MapSpritesInfo
+        {
+            protected override TileMap tileMap => gameWorld.gameOuterMapData.data;
+            protected override Dictionary<int, Terrain> terrain => gameWorld.gameWorldMasterData.terrain;
+
+            public OuterMapSpritesInfo(GameWorld gw) : base(gw)
+            {
+            }
+
+            protected override void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction)
             {
                 var p = new MapPoint(x, y);
 
@@ -200,9 +210,10 @@ namespace Client.Graphic
                 var tt = tileMap[p];
                 var ttt = (Tile)tt;
 
-                var tttt = gameWorld.gameWorldMasterData.terrain[ttt.terrain];
-
-                if (t.isWater != tttt.isWater) flag |= direction;
+                if (terrain.TryGetValue(ttt.terrain, out var tttt))
+                {
+                    if (t.isWater != tttt.isWater) flag |= direction;
+                }
             }
         }
     }

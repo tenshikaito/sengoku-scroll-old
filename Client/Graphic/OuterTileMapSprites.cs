@@ -1,4 +1,5 @@
-﻿using Library;
+﻿using Client.Helper;
+using Library;
 using Library.Model;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace Client.Graphic
     public class OuterTileMapSprites : TileMapSpritesBase
     {
         private OuterTileMapImageInfo tileMapImageInfo;
-        private MapSpritesInfo mapSpritesInfo;
+        private OuterMapSpritesInfo mapSpritesInfo;
 
         public override int tileWidth => tileMapImageInfo.tileSize.Width;
 
@@ -23,14 +24,17 @@ namespace Client.Graphic
         protected override Map map => gameMapData.data;
         private TileMap tileMap => gameMapData.data;
 
-        public OuterTileMapSprites(GameSystem gs, GameWorld gw, OuterTileMapImageInfo mii, MapSpritesInfo msi, bool isEditor = false)
-            : base(gs, gw, mii.terrainImageFileName, mii.tileObjectImageFileName, isEditor)
+        public OuterTileMapSprites(GameSystem gs, GameWorld gw, OuterTileMapImageInfo mii, OuterMapSpritesInfo msi, bool isEditor = false)
+            : base(gs, gw, isEditor)
         {
             tileMapImageInfo = mii;
             mapSpritesInfo = msi;
 
             terrainSprite = mii.terrainAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
             strongholdSprite = mii.strongholdAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
+
+            mii.terrainAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
+            //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
 
             tileSprite = new AutoTileSprite(this);
 
@@ -84,7 +88,7 @@ namespace Client.Graphic
 
             var type = mapSpritesInfo.checkTerrainBorder(p);
 
-            ts.refresh(terrainImage, point, type);
+            ts.refresh(gameWorld.getImage(s.fileName), point, type);
 
             g.drawSprite(ts);
 
@@ -115,6 +119,8 @@ namespace Client.Graphic
 
         public void removeTileFlag(MapPoint p) => mapSpritesInfo.removeTileFlag(p);
 
+        public void removeTileFlag() => mapSpritesInfo.removeTileFlag();
+
         public void recoveryTileFlag(MapPoint p) => mapSpritesInfo.recoveryTileFlag(p);
 
         private void drawCurrentCharacter(GameGraphic g, int x, int y)
@@ -136,7 +142,7 @@ namespace Client.Graphic
 
             var p = s.currentPoint;
 
-            g.drawImage(tileObjects, x, y, new Rectangle()
+            g.drawImage(gameWorld.getImage(s.fileName), x, y, new Rectangle()
             {
                 X = p.X,
                 Y = p.Y,

@@ -15,16 +15,12 @@ namespace Library
 
         public Size tileSize;
 
-        public string terrainImageFileName;
-
-        public string tileObjectImageFileName;
-
-        public Dictionary<int, List<Point>> terrainAnimation;
+        public Dictionary<int, TileAnimation> terrainAnimation;
     }
 
     public class OuterTileMapImageInfo : TileMapImageInfo
     {
-        public Dictionary<int, List<Point>> strongholdAnimation;
+        public Dictionary<int, TileAnimation> strongholdAnimation;
     }
 
     public class InnerTileMapImageInfo : TileMapImageInfo

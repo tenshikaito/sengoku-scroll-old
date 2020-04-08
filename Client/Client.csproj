@@ -39,7 +39,7 @@
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
@@ -103,7 +103,7 @@
     <Compile Include="Scene\SceneEditGameWorld.cs" />
     <Compile Include="Scene\SceneTitle.cs" />
     <Compile Include="Scene\SceneWaiting.cs" />
-    <Compile Include="StateManager.cs" />
+    <Compile Include="IGameStatus.cs" />
     <Compile Include="TreeObject.cs" />
     <Compile Include="UI\UISaveableConfirmDialog.cs">
       <SubType>Form</SubType>
@@ -162,6 +162,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\GameWorld\detail_terrain_plain.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\GameWorld\detail_terrain_water.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\GameWorld\view_terrain_plain.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\GameWorld\view_terrain_water.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

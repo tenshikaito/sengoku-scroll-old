@@ -23,6 +23,11 @@ namespace Client
         void mouseReleased(MouseEventArgs e);
 
         void mouseWheelScrolled(MouseEventArgs e);
-    }
 
+        void keyPressed(KeyPressEventArgs e);
+
+        void onKeyPressing(KeyEventArgs e);
+
+        void keyReleased(KeyEventArgs e);
+    }
 }

@@ -26,10 +26,7 @@ namespace Client.UI
                 RowCount = 1,
                 Dock = DockStyle.Fill,
                 MinimumSize = new Size(640, 480)
-            }.addTo(panel);
-
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 80));
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20));
+            }.addColumnStyle(80).addColumnStyle(20).addTo(panel);
 
             listView = new ListView().init().addColumn(w.name).addTo(tlp);
 

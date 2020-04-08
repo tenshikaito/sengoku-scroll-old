@@ -217,6 +217,20 @@ namespace Client.Helper
             return lv;
         }
 
+        public static TableLayoutPanel addRowStyle(this TableLayoutPanel tlp, float height, SizeType st = SizeType.Percent)
+        {
+            tlp.RowStyles.Add(new RowStyle(st, height));
+
+            return tlp;
+        }
+
+        public static TableLayoutPanel addColumnStyle(this TableLayoutPanel tlp, float width,SizeType st= SizeType.Percent)
+        {
+            tlp.ColumnStyles.Add(new ColumnStyle(st, width));
+
+            return tlp;
+        }
+
         public static ListViewItem addColumn(this ListViewItem lvi, string text)
         {
             lvi.SubItems.Add(text);

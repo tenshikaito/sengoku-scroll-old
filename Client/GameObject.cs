@@ -160,6 +160,36 @@ namespace Client
             children.ForEach(o => o.onMouseWheelScrolled(e));
         }
 
+        public void onKeyPressed(KeyPressEventArgs e)
+        {
+            if (!isEnable) return;
+
+            keyPressed(e);
+
+            status?.onKeyPressed(e);
+            children.ForEach(o => o.onKeyPressed(e));
+        }
+
+        public void onKeyPressing(KeyEventArgs e)
+        {
+            if (!isEnable) return;
+
+            keyPressing(e);
+
+            status?.onKeyPressing(e);
+            children.ForEach(o => o.onKeyPressing(e));
+        }
+
+        public void onKeyReleased(KeyEventArgs e)
+        {
+            if (!isEnable) return;
+
+            keyReleased(e);
+
+            status?.onKeyReleased(e);
+            children.ForEach(o => o.onKeyReleased(e));
+        }
+
         public virtual void mouseMoved(MouseEventArgs e)
         {
         }
@@ -189,6 +219,18 @@ namespace Client
         }
 
         public virtual void mouseWheelScrolled(MouseEventArgs e)
+        {
+        }
+
+        public virtual void keyPressed(KeyPressEventArgs e)
+        {
+        }
+
+        public virtual void keyPressing(KeyEventArgs e)
+        {
+        }
+
+        public virtual void keyReleased(KeyEventArgs e)
         {
         }
     }

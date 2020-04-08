@@ -103,28 +103,41 @@ namespace Client
                         id = 1,
                         name="default view map",
                         tileSize = new Size(24, 24),
-                        terrainImageFileName = "view_terrain.png",
-                        tileObjectImageFileName = "view_object.png",
-                        terrainAnimation = new Dictionary<int, List<Point>>()
+                        terrainAnimation = new Dictionary<int, TileAnimation>()
                         {
-                            { 0, new List<Point>()
-                                {
-                                    new Point(96, 0)
-                                }
-                            },
-                            { 1, new List<Point>()
+                            { 0, new TileAnimation()
+                            {
+                                id=0,
+                                fileName="view_terrain_plain.png",
+                                frames=new List<Point>()
                                 {
                                     new Point(0, 0)
                                 }
                             }
-                        },
-                        strongholdAnimation = new Dictionary<int, List<Point>>()
-                        {
-                            { 1, new List<Point>()
-                                {
-                                    new Point(24, 96)
-                                }
                             },
+                            { 1, new TileAnimation()
+                            {
+                                id=1,
+                                fileName="view_terrain_water.png",
+                                frames= new List<Point>()
+                                {
+                                    new Point(0, 0)
+                                }
+                            }
+                            }
+                        },
+                        strongholdAnimation = new Dictionary<int, TileAnimation>()
+                        {
+                            { 1, new TileAnimation()
+                            {
+                                id=1,
+                                fileName="view_terrain.png",
+                                frames= new List<Point>()
+                                {
+                                    new Point(0, 0)
+                                }
+                            }
+                        }
                         }
                     }
                     },
@@ -133,29 +146,42 @@ namespace Client
                         id = 2,
                         name="default detail map",
                         tileSize = new Size(48, 48),
-                        terrainImageFileName = "detail_terrain.png",
-                        tileObjectImageFileName = "detail_object.png",
-                        terrainAnimation = new Dictionary<int, List<Point>>()
+                        terrainAnimation = new Dictionary<int, TileAnimation>()
                         {
-                            { 0, new List<Point>()
+                            { 0, new TileAnimation()
+                            {
+                                id=0,
+                                fileName="detail_terrain_plain.png",
+                                frames= new List<Point>()
                                 {
-                                   new Point(192, 0),
+                                    new Point(0, 0)
                                 }
+                            }
                             },
-                            { 1,new List<Point>()
+                            { 1, new TileAnimation()
+                            {
+                                id=1,
+                                fileName="detail_terrain_water.png",
+                                frames= new List<Point>()
                                 {
                                    new Point(0, 0),
                                    new Point(0, 144),
                                    new Point(0, 288),
                                 }
                             }
+                            }
                         },
-                        strongholdAnimation = new Dictionary<int, List<Point>>()
+                        strongholdAnimation = new Dictionary<int, TileAnimation>()
                         {
-                            { 1, new List<Point>()
+                            { 1, new TileAnimation()
+                            {
+                                id=1,
+                                fileName="detail_object.png",
+                                frames= new List<Point>()
                                 {
-                                    new Point(48, 144)
+                                   new Point(0, 0),
                                 }
+                            }
                             }
                         }
                     }

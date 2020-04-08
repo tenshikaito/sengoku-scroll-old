@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace Client.Graphic
 {
-    public class ZoomableTileMapSprites<T> : GameObject
-        where T : TileMapSpritesBase
+    public class ZoomableTileMapSprites<T> : GameObject where T : TileMapSpritesBase
     {
         private List<T> tileMapSpritesList;
         private int tileMapIndex = 0;

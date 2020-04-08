@@ -2,6 +2,7 @@
 using Client.Helper;
 using Client.UI;
 using Library;
+using Library.Helper;
 using Library.Model;
 using System;
 using System.Collections.Generic;
@@ -182,7 +183,7 @@ namespace Client.Scene
 
             public OuterTileMapStatus(SceneEditGameWorld s) : base(s)
             {
-                var msi = new OuterTileMapSprites.MapSpritesInfo(s.gameWorld);
+                var msi = new TileMapSpritesBase.OuterMapSpritesInfo(s.gameWorld);
 
                 zoomableTileMapSprites = new ZoomableTileMapSprites<OuterTileMapSprites>(
                     s.gameWorld.gameWorldMasterData.outerTileMapImageInfo.Values.Select(
@@ -277,6 +278,8 @@ namespace Client.Scene
                 private void draw(MouseEventArgs e)
                 {
                     var p = gameStatus.tileMap.getTileLocation(e);
+
+                    if (outerMap.data.isOutOfBounds(p)) return;
 
                     switch (scene.drawContent)
                     {

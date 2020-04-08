@@ -74,7 +74,8 @@ namespace Client
                     culture = new Dictionary<int, Culture>(),
                     religion = new Dictionary<int, Religion>(),
                     road = new Dictionary<int, Road>(),
-                    strongholdType = new Dictionary<int, Stronghold.Type>()
+                    strongholdType = new Dictionary<int, Stronghold.Type>(),
+                    outerTileMapImageInfo = new Dictionary<int, OuterTileMapImageInfo>()
                 }
             };
 
@@ -163,16 +164,29 @@ namespace Client
             gameRoot.onMouseWheelScrolled(e);
         }
 
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            gameRoot.onKeyPressed(e);
+        }
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            //scene.keyPressed(e);
+            gameRoot.onKeyPressing(e);
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            gameRoot.onKeyReleased(e);
         }
 
         private int count;
         private DateTime lastUpdateTime = DateTime.Now;
         private GameGraphic gameGraphic;
         private TimeSpan oneSecondTimeSpan = TimeSpan.FromSeconds(1);
+        private TimeSpan updateTimeSpan = TimeSpan.FromSeconds(1d / 60);
         private TimeSpan drawTimeSpan = TimeSpan.FromSeconds(1d / 60);
+        private TimeSpan updateTimeCost = TimeSpan.Zero;
+        private TimeSpan drawTimeCost = TimeSpan.Zero;
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -183,10 +197,7 @@ namespace Client
         {
         }
 
-        private void refreshDrawTimeSpan()
-        {
-            drawTimeSpan = TimeSpan.FromSeconds(1d / option.fps);
-        }
+        private void refreshDrawTimeSpan() => drawTimeSpan = TimeSpan.FromSeconds(1d / option.fps);
 
         public void run()
         {
@@ -195,7 +206,6 @@ namespace Client
                 var now = DateTime.Now;
                 var lastUpdateTime = now;
                 var lastDrawTime = now;
-                var ups = TimeSpan.FromSeconds(1d / 60);
                 var updateAction = new Action(update);
 
                 while (true)
@@ -204,13 +214,13 @@ namespace Client
                     {
                         now = DateTime.Now;
 
-                        if (now - lastUpdateTime >= ups)
+                        if (now - lastUpdateTime >= (updateTimeSpan - updateTimeCost))
                         {
                             BeginInvoke(updateAction);
                             lastUpdateTime = now;
                         }
 
-                        if (now - lastDrawTime >= drawTimeSpan)
+                        if (now - lastDrawTime >= (drawTimeSpan - drawTimeCost))
                         {
                             Invalidate();
                             lastDrawTime = now;
@@ -228,13 +238,19 @@ namespace Client
 
         private void update()
         {
+            var now = DateTime.Now;
+
             dispatcher.update();
 
             gameRoot.onUpdate();
+
+            updateTimeCost = DateTime.Now - now;
         }
 
         private void draw()
         {
+            var now = DateTime.Now;
+
             gameGraphic.fillRactangle(Color.Black, ClientRectangle);
 
             gameRoot.onDraw();
@@ -243,14 +259,14 @@ namespace Client
 
             ++count;
 
-            var now = DateTime.Now;
-
             if (now - lastUpdateTime >= oneSecondTimeSpan)
             {
                 Text = $"{option.title} FPS:{count}";
                 count = 0;
                 lastUpdateTime = now;
             }
+
+            drawTimeCost = DateTime.Now - now;
         }
 
         public class Dispatcher
@@ -285,7 +301,6 @@ namespace Client
                     actions.Enqueue(a);
                 }
             }
-
         }
     }
 

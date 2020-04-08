@@ -14,8 +14,6 @@ namespace Client.UI
 {
     public partial class UIEditGameWorldMenuWindow : UIWindow
     {
-        private List<CheckBox> terrainList = new List<CheckBox>();
-
         private ListView lvTerrain;
 
         public UIEditGameWorldMenuWindow(

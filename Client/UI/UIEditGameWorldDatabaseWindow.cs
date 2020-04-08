@@ -37,6 +37,8 @@ namespace Client.UI
 
             new TabPageStronghold(this, gameWorldMasterData.strongholdType).addTo(tc);
 
+            new TabPageOuterMapTileImageInfo(this, gameWorldMasterData.outerTileMapImageInfo).addTo(tc);
+
             addSaveableConfirmButtons();
         }
 
@@ -58,10 +60,7 @@ namespace Client.UI
                     RowCount = 2,
                     ColumnCount = 1,
                     Dock = DockStyle.Fill
-                }.addTo(this);
-
-                sc.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
-                sc.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+                }.addRowStyle(50).addRowStyle(50).addTo(this);
 
                 var gb = new GroupBox()
                 {
@@ -74,10 +73,7 @@ namespace Client.UI
                     RowCount = 1,
                     ColumnCount = 2,
                     Dock = DockStyle.Fill,
-                }.addTo(gb);
-
-                pl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 80));
-                pl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20));
+                }.addColumnStyle(80).addColumnStyle(20).addTo(gb);
 
                 var lv = new ListView()
                 {
@@ -152,10 +148,7 @@ namespace Client.UI
                     Dock = DockStyle.Fill,
                     ColumnCount = 1,
                     RowCount = 2
-                }.addTo(sc);
-
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
+                }.addRowStyle(80).addRowStyle(20).addTo(sc);
 
                 var gb = new GroupBox()
                 {
@@ -329,10 +322,7 @@ namespace Client.UI
                     Dock = DockStyle.Fill,
                     ColumnCount = 1,
                     RowCount = 2
-                }.addTo(sc);
-
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
+                }.addRowStyle(80).addRowStyle(20).addTo(sc);
 
                 var gb = new GroupBox()
                 {
@@ -473,10 +463,7 @@ namespace Client.UI
                     Dock = DockStyle.Fill,
                     ColumnCount = 1,
                     RowCount = 2
-                }.addTo(sc);
-
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
+                }.addRowStyle(80).addRowStyle(20).addTo(sc);
 
                 var gb = new GroupBox()
                 {
@@ -513,7 +500,7 @@ namespace Client.UI
                 var oo = new Culture()
                 {
                     id = (byte)max,
-                    name =w.culture.name,
+                    name = w.culture.name,
                 };
 
                 data[oo.id] = oo;
@@ -611,10 +598,7 @@ namespace Client.UI
                     Dock = DockStyle.Fill,
                     ColumnCount = 1,
                     RowCount = 2
-                }.addTo(sc);
-
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
+                }.addRowStyle(80).addRowStyle(20).addTo(sc);
 
                 var gb = new GroupBox()
                 {
@@ -752,10 +736,7 @@ namespace Client.UI
                     Dock = DockStyle.Fill,
                     ColumnCount = 1,
                     RowCount = 2
-                }.addTo(sc);
-
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
+                }.addRowStyle(80).addRowStyle(20).addTo(sc);
 
                 var gb = new GroupBox()
                 {
@@ -890,9 +871,7 @@ namespace Client.UI
                     Dock = DockStyle.Fill,
                     ColumnCount = 1,
                     RowCount = 2
-                }.addTo(sc);
-
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
+                }.addRowStyle(80).addTo(sc);
 
                 var gb = new GroupBox()
                 {
@@ -1003,7 +982,7 @@ namespace Client.UI
 
     public partial class UIEditGameWorldDatabaseWindow
     {
-        private class TabPageOuterMapTileImageInfo : TabPageBase
+        private partial class TabPageOuterMapTileImageInfo : TabPageBase
         {
             private Dictionary<int, OuterTileMapImageInfo> data;
             private int? currentId;
@@ -1011,18 +990,22 @@ namespace Client.UI
             private TextBox tbName;
             private TextBox tbTileWidth;
             private TextBox tbTileHeight;
+            private TextBox tbTerrainImageFileName;
+            private TextBox tbTileObjectImageFileName;
 
             public TabPageOuterMapTileImageInfo(UIEditGameWorldDatabaseWindow bw, Dictionary<int, OuterTileMapImageInfo> data) : base(bw)
             {
                 this.data = data;
 
-                this.init(w.stronghold_type.name).setAutoSizeP();
+                this.init(w.tile_map_image_info.name).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
                 lv.addColumn(w.id)
                     .addColumn(w.name)
-                    .addColumn(w.tile_map_image_info.tile_size);
+                    .addColumn(w.tile_map_image_info.tile_size)
+                    .addColumn(w.tile_map_image_info.terrain_image_file_name)
+                    .addColumn(w.tile_map_image_info.terrain_object_file_name);
 
                 lv.Click += (s, e) =>
                 {
@@ -1034,11 +1017,9 @@ namespace Client.UI
                 var p2 = new TableLayoutPanel()
                 {
                     Dock = DockStyle.Fill,
-                    ColumnCount = 1,
-                    RowCount = 2
-                }.addTo(sc);
-
-                p2.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
+                    ColumnCount = 2,
+                    RowCount = 1,
+                }.addColumnStyle(40).addColumnStyle(60).addTo(sc);
 
                 var gb = new GroupBox()
                 {
@@ -1057,7 +1038,32 @@ namespace Client.UI
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
+                new Label().init(w.tile_map_image_info.tile_width + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbTileWidth = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.tile_map_image_info.tile_height + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbTileHeight = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.tile_map_image_info.terrain_image_file_name + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbTerrainImageFileName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.tile_map_image_info.terrain_object_file_name + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbTileObjectImageFileName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
                 new Label().init("").addTo(p3);
+
+                gb = new GroupBox()
+                {
+                    Dock = DockStyle.Fill,
+                    Text = w.detail
+                }.addTo(p2);
+
+                var tc = new TabControl() { Dock = DockStyle.Fill }.init().setAutoSize().addTo(gb);
+
+
+                new TabPageOuterMapTileImageInfoTerrain(bw).addTo(tc);
+
+
 
                 initData(lv);
 
@@ -1137,6 +1143,91 @@ namespace Client.UI
                 var o = data[id];
 
                 tbName.Text = o.name;
+            }
+        }
+    }
+    public partial class UIEditGameWorldDatabaseWindow
+    {
+        private partial class TabPageOuterMapTileImageInfo : TabPageBase
+        {
+            private class TabPageOuterMapTileImageInfoTerrain : TabPageBase
+            {
+                private ListView lvTerrain;
+                private ListView lvFrame;
+
+                public TabPageOuterMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw) : base(bw)
+                {
+                    this.init(w.terrain.name).setAutoSizeP();
+
+                    var sc = new TableLayoutPanel()
+                    {
+                        RowCount = 1,
+                        ColumnCount = 3,
+                        Dock = DockStyle.Fill
+                    }.addColumnStyle(20).addColumnStyle(20).addColumnStyle(60).addTo(this);
+
+                    var gb = new GroupBox()
+                    {
+                        Dock = DockStyle.Fill,
+                        Text = w.type
+                    }.addTo(sc);
+
+                    lvTerrain = new ListView().init().addTo(gb);
+
+                    gb = new GroupBox()
+                    {
+                        Dock = DockStyle.Fill,
+                        Text = w.tile_map_image_info.frame
+                    }.addTo(sc);
+
+                    var mtlp = new TableLayoutPanel()
+                    {
+                        RowCount = 2,
+                        ColumnCount = 2,
+                        Dock = DockStyle.Fill
+                    }.addRowStyle(80).addRowStyle(20).addColumnStyle(50).addColumnStyle(50).addTo(gb);
+
+                    lvFrame = new ListView().init().addTo(mtlp);
+
+                    mtlp.SetColumnSpan(lvFrame, 2);
+
+                    new Button().init("+", () =>
+                    {
+
+                    }).addTo(mtlp);
+
+                    new Button().init("-", () =>
+                    {
+
+                    }).addTo(mtlp);
+
+                    gb = new GroupBox()
+                    {
+                        Dock = DockStyle.Fill,
+                        Text = w.scene_edit_game_world.property
+                    }.addTo(sc);
+
+                    var rtlp = new TableLayoutPanel()
+                    {
+                        RowCount = 3,
+                        ColumnCount = 2,
+                        Dock = DockStyle.Fill
+                    }.addTo(gb);
+
+                    new Label().init(w.tile_map_image_info.file_name).setAutoSize().setRightCenter().addTo(rtlp);
+                    new TextBox().addTo(rtlp);
+
+                    new Label().init(w.tile_map_image_info.position).setAutoSize().setRightCenter().addTo(rtlp);
+                    new TextBox() { ReadOnly = true }.addTo(rtlp);
+
+                    var pImage = new Panel()
+                    {
+                        Dock = DockStyle.Fill,
+                        BackColor = System.Drawing.Color.Black
+                    }.addTo(rtlp);
+
+                    rtlp.SetColumnSpan(pImage, 2);
+                }
             }
         }
     }
