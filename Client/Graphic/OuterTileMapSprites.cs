@@ -33,7 +33,7 @@ namespace Client.Graphic
             terrainSprite = mii.terrainAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
             strongholdSprite = mii.strongholdAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
 
-            mii.terrainAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
+            mii.terrainAnimation.Values.ToList().ForEach(o => o.frames.ForEach(oo=> gameWorld.getImage(oo.fileName)));
             //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
 
             tileSprite = new AutoTileSprite(this);
@@ -41,11 +41,13 @@ namespace Client.Graphic
             resize();
         }
 
-        protected override void updateTileSprite()
+        public override void update()
         {
-            foreach (var o in terrainSprite.Values) o.update();
+            var now = DateTime.Now;
 
-            foreach (var o in strongholdSprite.Values) o.update();
+            foreach (var o in terrainSprite.Values) o.update(now);
+
+            foreach (var o in strongholdSprite.Values) o.update(now);
         }
 
         protected override void draw(GameGraphic g, int fx, int fy, MapPoint p, int sx, int sy)

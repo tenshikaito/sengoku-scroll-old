@@ -10,7 +10,13 @@ namespace Library
     public class TileAnimation
     {
         public int id;
-        public string fileName;
-        public List<Point> frames;
+        public float interval;
+        public List<Frame> frames;
+
+        public class Frame
+        {
+            public string fileName;
+            public Point vertex;
+        }
     }
 }

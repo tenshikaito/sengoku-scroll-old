@@ -572,13 +572,15 @@ namespace Client
 
             public string file_name => this[nameof(file_name)];
 
-            public string terrain_image_file_name => this[nameof(terrain_image_file_name)];
-
-            public string terrain_object_file_name => this[nameof(terrain_object_file_name)];
-
             public string frame => this[nameof(frame)];
 
             public string position => this[nameof(position)];
+
+            public string interval => this[nameof(interval)];
+
+            public string edit_success => this[nameof(edit_success)];
+
+            public string edit_failure => this[nameof(edit_failure)];
 
             public TileMapImageInfo(Wording w, string prefix) : base(w, prefix)
             {

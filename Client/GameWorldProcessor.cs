@@ -103,41 +103,39 @@ namespace Client
                         id = 1,
                         name="default view map",
                         tileSize = new Size(24, 24),
-                        terrainAnimation = new Dictionary<int, TileAnimation>()
+                        terrainAnimation = new Dictionary<byte, TileAnimation>()
                         {
                             { 0, new TileAnimation()
                             {
-                                id=0,
-                                fileName="view_terrain_plain.png",
-                                frames=new List<Point>()
+                                id = 0,
+                                interval = 0.5f,
+                                frames = new List<TileAnimation.Frame>()
                                 {
-                                    new Point(0, 0)
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "view_terrain_plain.png",
+                                        vertex = new Point(0, 0)
+                                    }
                                 }
                             }
                             },
                             { 1, new TileAnimation()
                             {
-                                id=1,
-                                fileName="view_terrain_water.png",
-                                frames= new List<Point>()
+                                id = 0,
+                                interval = 0.5f,
+                                frames = new List<TileAnimation.Frame>()
                                 {
-                                    new Point(0, 0)
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "view_terrain_water.png",
+                                        vertex = new Point(0, 0)
+                                    }
                                 }
                             }
                             }
                         },
                         strongholdAnimation = new Dictionary<int, TileAnimation>()
                         {
-                            { 1, new TileAnimation()
-                            {
-                                id=1,
-                                fileName="view_terrain.png",
-                                frames= new List<Point>()
-                                {
-                                    new Point(0, 0)
-                                }
-                            }
-                        }
                         }
                     }
                     },
@@ -146,43 +144,49 @@ namespace Client
                         id = 2,
                         name="default detail map",
                         tileSize = new Size(48, 48),
-                        terrainAnimation = new Dictionary<int, TileAnimation>()
+                        terrainAnimation = new Dictionary<byte, TileAnimation>()
                         {
                             { 0, new TileAnimation()
                             {
-                                id=0,
-                                fileName="detail_terrain_plain.png",
-                                frames= new List<Point>()
+                                id = 0,
+                                interval = 0.5f,
+                                frames= new List<TileAnimation.Frame>()
                                 {
-                                    new Point(0, 0)
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "detail_terrain_plain.png",
+                                        vertex = new Point(0, 0)
+                                    }
                                 }
                             }
                             },
                             { 1, new TileAnimation()
                             {
-                                id=1,
-                                fileName="detail_terrain_water.png",
-                                frames= new List<Point>()
+                                id = 1,
+                                interval = 0.5f,
+                                frames= new List<TileAnimation.Frame>()
                                 {
-                                   new Point(0, 0),
-                                   new Point(0, 144),
-                                   new Point(0, 288),
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "detail_terrain_water.png",
+                                        vertex = new Point(0, 0)
+                                    },
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName="detail_terrain_water.png",
+                                        vertex = new Point(0, 144),
+                                    },
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName="detail_terrain_water.png",
+                                        vertex = new Point(0, 288),
+                                    },
                                 }
                             }
                             }
                         },
                         strongholdAnimation = new Dictionary<int, TileAnimation>()
                         {
-                            { 1, new TileAnimation()
-                            {
-                                id=1,
-                                fileName="detail_object.png",
-                                frames= new List<Point>()
-                                {
-                                   new Point(0, 0),
-                                }
-                            }
-                            }
                         }
                     }
                     }

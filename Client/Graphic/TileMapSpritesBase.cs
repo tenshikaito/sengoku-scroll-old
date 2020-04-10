@@ -28,9 +28,6 @@ namespace Client.Graphic
 
         protected bool isEditor;
 
-        protected TimeSpan updateSpriteInterval = TimeSpan.FromSeconds(0.5);
-        protected DateTime lastUpdateSpriteTime = DateTime.Now;
-
         protected GameOption gameOption => gameWorld.gameOption;
         protected GameWorldOuterMapData gameMapData => gameWorld.gameOuterMapData;
         protected abstract Map map { get; }
@@ -64,23 +61,6 @@ namespace Client.Graphic
             sx += camera.x;
             sy += camera.y;
             return new MapPoint(sx >= 0 ? sx / tileWidth : sx / tileWidth - 1, sy >= 0 ? sy / tileHeight : sy / tileHeight - 1);
-        }
-
-        public override void update()
-        {
-            var now = DateTime.Now;
-
-            if (now - lastUpdateSpriteTime >= updateSpriteInterval)
-            {
-                lastUpdateSpriteTime = now;
-
-                updateTileSprite();
-            }
-        }
-
-        protected virtual void updateTileSprite()
-        {
-
         }
 
         public override void draw()
@@ -119,16 +99,29 @@ namespace Client.Graphic
             private TileAnimation tileAnimation;
             private int index;
 
-            public string fileName => tileAnimation.fileName;
+            private TimeSpan updateSpriteInterval;
+            private DateTime lastUpdateSpriteTime = DateTime.Now;
 
-            public Point currentPoint => tileAnimation.frames[index];
+            public string fileName => tileAnimation.frames[index].fileName;
+
+            public Point currentPoint => tileAnimation.frames[index].vertex;
 
             public TileSpriteAnimation(TileAnimation ta)
             {
                 tileAnimation = ta;
+
+                updateSpriteInterval = TimeSpan.FromSeconds(ta.interval);
             }
 
-            public void update() => index = ++index % tileAnimation.frames.Count;
+            public void update(DateTime now)
+            {
+                if (now - lastUpdateSpriteTime >= updateSpriteInterval)
+                {
+                    lastUpdateSpriteTime = now;
+
+                    index = ++index % tileAnimation.frames.Count;
+                }
+            }
         }
 
         public abstract class MapSpritesInfo

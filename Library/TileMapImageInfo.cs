@@ -15,7 +15,7 @@ namespace Library
 
         public Size tileSize;
 
-        public Dictionary<int, TileAnimation> terrainAnimation;
+        public Dictionary<byte, TileAnimation> terrainAnimation;
     }
 
     public class OuterTileMapImageInfo : TileMapImageInfo

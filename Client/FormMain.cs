@@ -79,7 +79,7 @@ namespace Client
                 }
             };
 
-            //new UI.UIEditGameWorldDatabaseWindow(gameSystem, gw).Show();
+            new UI.UIEditGameWorldDatabaseWindow(gameSystem, gw).Show();
 
             refreshBuffer();
         }

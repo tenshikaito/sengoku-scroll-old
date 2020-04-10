@@ -37,7 +37,7 @@ namespace Client.UI
 
             new TabPageStronghold(this, gameWorldMasterData.strongholdType).addTo(tc);
 
-            new TabPageOuterMapTileImageInfo(this, gameWorldMasterData.outerTileMapImageInfo).addTo(tc);
+            new TabPageOuterMapTileImageInfo(this, gameWorldMasterData.outerTileMapImageInfo, gameWorldMasterData).addTo(tc);
 
             addSaveableConfirmButtons();
         }
@@ -990,10 +990,12 @@ namespace Client.UI
             private TextBox tbName;
             private TextBox tbTileWidth;
             private TextBox tbTileHeight;
-            private TextBox tbTerrainImageFileName;
-            private TextBox tbTileObjectImageFileName;
 
-            public TabPageOuterMapTileImageInfo(UIEditGameWorldDatabaseWindow bw, Dictionary<int, OuterTileMapImageInfo> data) : base(bw)
+            private TabPageOuterMapTileImageInfoTerrain tpTerrain;
+
+            public TabPageOuterMapTileImageInfo(
+                UIEditGameWorldDatabaseWindow bw, Dictionary<int, OuterTileMapImageInfo> data, GameWorldMasterData gameData)
+                : base(bw)
             {
                 this.data = data;
 
@@ -1003,15 +1005,13 @@ namespace Client.UI
 
                 lv.addColumn(w.id)
                     .addColumn(w.name)
-                    .addColumn(w.tile_map_image_info.tile_size)
-                    .addColumn(w.tile_map_image_info.terrain_image_file_name)
-                    .addColumn(w.tile_map_image_info.terrain_object_file_name);
+                    .addColumn(w.tile_map_image_info.tile_size);
 
                 lv.Click += (s, e) =>
                 {
                     if (lv.FocusedItem == null) return;
 
-                    onListViewClicked(lv, (byte)lv.FocusedItem.Tag);
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
                 };
 
                 var p2 = new TableLayoutPanel()
@@ -1019,7 +1019,7 @@ namespace Client.UI
                     Dock = DockStyle.Fill,
                     ColumnCount = 2,
                     RowCount = 1,
-                }.addColumnStyle(40).addColumnStyle(60).addTo(sc);
+                }.addColumnStyle(33).addColumnStyle(66).addTo(sc);
 
                 var gb = new GroupBox()
                 {
@@ -1044,12 +1044,6 @@ namespace Client.UI
                 new Label().init(w.tile_map_image_info.tile_height + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbTileHeight = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.tile_map_image_info.terrain_image_file_name + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbTerrainImageFileName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init(w.tile_map_image_info.terrain_object_file_name + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbTileObjectImageFileName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
                 new Label().init("").addTo(p3);
 
                 gb = new GroupBox()
@@ -1060,10 +1054,7 @@ namespace Client.UI
 
                 var tc = new TabControl() { Dock = DockStyle.Fill }.init().setAutoSize().addTo(gb);
 
-
-                new TabPageOuterMapTileImageInfoTerrain(bw).addTo(tc);
-
-
+                tpTerrain = new TabPageOuterMapTileImageInfoTerrain(bw, lv).addTo(tc);
 
                 initData(lv);
 
@@ -1076,12 +1067,14 @@ namespace Client.UI
             {
                 var max = data.Any() ? data.Max(o => o.Key) : 0;
 
-                if (++max > byte.MaxValue) return;
+                if (++max > int.MaxValue) return;
 
                 var oo = new OuterTileMapImageInfo()
                 {
-                    id = (byte)max,
+                    id = max,
                     name = w.tile_map_image_info.name,
+                    terrainAnimation = new Dictionary<byte, TileAnimation>(),
+                    strongholdAnimation = new Dictionary<int, TileAnimation>()
                 };
 
                 data[oo.id] = oo;
@@ -1098,7 +1091,7 @@ namespace Client.UI
 
             private void onDeleteButtonClicked(ListView lv, int id)
             {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (byte)o.Tag == id));
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
 
                 data.Remove(id);
 
@@ -1111,18 +1104,23 @@ namespace Client.UI
             {
                 lvi.Text = o.id.ToString();
 
-                return lvi.addColumn(o.name);
+                lvi.addColumn(o.name);
+                lvi.addColumn($"({o.tileSize.Width},{o.tileSize.Height})");
+
+                return lvi;
             }
 
             private void refresh(ListView lv)
             {
                 if (currentId != null)
                 {
-                    var oo = data[(byte)currentId];
+                    var oo = data[(int)currentId];
 
                     oo.name = tbName.Text;
+                    if (int.TryParse(tbTileWidth.Text, out var width)) oo.tileSize.Width = width;
+                    if (int.TryParse(tbTileHeight.Text, out var height)) oo.tileSize.Height = height;
 
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
                     {
@@ -1143,6 +1141,13 @@ namespace Client.UI
                 var o = data[id];
 
                 tbName.Text = o.name;
+                tbTileWidth.Text = o.tileSize.Width.ToString();
+                tbTileHeight.Text = o.tileSize.Height.ToString();
+
+                tpTerrain.setData(o);
+
+                //tpTerrain.setData(o);
+                //tpTerrain.refreshTerrain();
             }
         }
     }
@@ -1152,83 +1157,274 @@ namespace Client.UI
         {
             private class TabPageOuterMapTileImageInfoTerrain : TabPageBase
             {
-                private ListView lvTerrain;
-                private ListView lvFrame;
+                private OuterTileMapImageInfo data;
 
-                public TabPageOuterMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw) : base(bw)
+                private Label lbStatus;
+                private TextBox tbContent;
+                private TextBox tbTemplate;
+
+                public TabPageOuterMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, ListView lv) : base(bw)
                 {
                     this.init(w.terrain.name).setAutoSizeP();
 
-                    var sc = new TableLayoutPanel()
-                    {
-                        RowCount = 1,
-                        ColumnCount = 3,
-                        Dock = DockStyle.Fill
-                    }.addColumnStyle(20).addColumnStyle(20).addColumnStyle(60).addTo(this);
-
-                    var gb = new GroupBox()
-                    {
-                        Dock = DockStyle.Fill,
-                        Text = w.type
-                    }.addTo(sc);
-
-                    lvTerrain = new ListView().init().addTo(gb);
-
-                    gb = new GroupBox()
-                    {
-                        Dock = DockStyle.Fill,
-                        Text = w.tile_map_image_info.frame
-                    }.addTo(sc);
-
-                    var mtlp = new TableLayoutPanel()
+                    var tlp = new TableLayoutPanel()
                     {
                         RowCount = 2,
                         ColumnCount = 2,
                         Dock = DockStyle.Fill
-                    }.addRowStyle(80).addRowStyle(20).addColumnStyle(50).addColumnStyle(50).addTo(gb);
+                    }.addColumnStyle(50).addColumnStyle(50).addTo(this);
 
-                    lvFrame = new ListView().init().addTo(mtlp);
+                    lbStatus = new Label().init(string.Empty).setAutoSize().setLeftCenter().addTo(tlp);
 
-                    mtlp.SetColumnSpan(lvFrame, 2);
+                    tlp.SetColumnSpan(lbStatus, 2);
 
-                    new Button().init("+", () =>
-                    {
-
-                    }).addTo(mtlp);
-
-                    new Button().init("-", () =>
-                    {
-
-                    }).addTo(mtlp);
-
-                    gb = new GroupBox()
+                    tbContent = new TextBox()
                     {
                         Dock = DockStyle.Fill,
-                        Text = w.scene_edit_game_world.property
-                    }.addTo(sc);
+                        Multiline = true,
+                        AcceptsReturn = true,
+                        ScrollBars = ScrollBars.Both
+                    }.refreshListViewOnClick(lv, refresh).addTo(tlp);
 
-                    var rtlp = new TableLayoutPanel()
-                    {
-                        RowCount = 3,
-                        ColumnCount = 2,
-                        Dock = DockStyle.Fill
-                    }.addTo(gb);
-
-                    new Label().init(w.tile_map_image_info.file_name).setAutoSize().setRightCenter().addTo(rtlp);
-                    new TextBox().addTo(rtlp);
-
-                    new Label().init(w.tile_map_image_info.position).setAutoSize().setRightCenter().addTo(rtlp);
-                    new TextBox() { ReadOnly = true }.addTo(rtlp);
-
-                    var pImage = new Panel()
+                    new TextBox()
                     {
                         Dock = DockStyle.Fill,
-                        BackColor = System.Drawing.Color.Black
-                    }.addTo(rtlp);
+                        ReadOnly = true,
+                        Multiline = true,
+                        ScrollBars = ScrollBars.Horizontal,
+                        Text = new Dictionary<int, TileAnimation>()
+                        {
+                            { 0, new TileAnimation()
+                            {
+                                id = 0,
+                                interval = 0.5f,
+                                frames = new List<TileAnimation.Frame>()
+                                {
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "path/file_name.png",
+                                        vertex = new System.Drawing.Point()
+                                        {
+                                            X = 0,
+                                            Y = 0
+                                        }
+                                    }
+                                }
+                            }
+                            }
+                        }.toJson(true)
+                    }.addTo(tlp);
+                }
 
-                    rtlp.SetColumnSpan(pImage, 2);
+                public void setData(OuterTileMapImageInfo data)
+                {
+                    this.data = data;
+
+                    tbContent.Text = data.terrainAnimation.toJson(true);
+                }
+
+                private void refresh(ListView lv)
+                {
+                    if (data == null) return;
+
+                    if (lv.FocusedItem == null) return;
+
+                    try
+                    {
+                        var json = tbContent.Text.fromJson<Dictionary<byte, TileAnimation>>();
+
+                        foreach (var o in json.Values)
+                        {
+                            if (o.frames == null) o.frames = new List<TileAnimation.Frame>();
+                        }
+
+                        data.terrainAnimation = json;
+
+                        lbStatus.Text = w.tile_map_image_info.edit_success;
+                    }
+                    catch (Exception e)
+                    {
+                        lbStatus.Text = $"{w.tile_map_image_info.edit_failure}{e.Message.Substring(e.Message.IndexOf(':'))}";
+                    }
                 }
             }
         }
     }
+
+    #region 图形化编辑界面模板、状态基本完成、因为结构麻烦而废弃
+    //public partial class UIEditGameWorldDatabaseWindow
+    //{
+    //    private partial class TabPageOuterMapTileImageInfo : TabPageBase
+    //    {
+    //        private class TabPageOuterMapTileImageInfoTerrain : TabPageBase
+    //        {
+    //            private OuterTileMapImageInfo data;
+    //            private Dictionary<int, Terrain> terrain;
+
+    //            private TextBox tbInterval;
+    //            private ListView lvTerrain;
+    //            private ListView lvFrame;
+
+    //            public TabPageOuterMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Terrain> terrain) : base(bw)
+    //            {
+    //                this.terrain = terrain;
+
+    //                this.init(w.terrain.name).setAutoSizeP();
+
+    //                var sc = new TableLayoutPanel()
+    //                {
+    //                    RowCount = 1,
+    //                    ColumnCount = 3,
+    //                    Dock = DockStyle.Fill
+    //                }.addColumnStyle(25).addColumnStyle(75).addTo(this);
+
+    //                var gb = new GroupBox()
+    //                {
+    //                    Dock = DockStyle.Fill,
+    //                    Text = w.type
+    //                }.addTo(sc);
+
+    //                lvTerrain = new ListView().init().addColumn(w.name).addTo(gb);
+
+    //                gb = new GroupBox()
+    //                {
+    //                    Dock = DockStyle.Fill,
+    //                    Text = w.tile_map_image_info.frame
+    //                }.addTo(sc);
+
+    //                var mtlp = new TableLayoutPanel()
+    //                {
+    //                    RowCount = 2,
+    //                    ColumnCount = 2,
+    //                    Dock = DockStyle.Fill
+    //                }.addRowStyle(80).addRowStyle(20).addColumnStyle(50).addColumnStyle(50).addTo(gb);
+
+    //                lvFrame = new ListView().init().addColumn(w.name).addTo(mtlp);
+
+    //                mtlp.SetColumnSpan(lvFrame, 2);
+
+    //                new Button().init("+", () =>
+    //                {
+    //                    if (data == null) return;
+
+    //                    if (lvTerrain.FocusedItem == null) return;
+
+    //                    var id = (byte)lvTerrain.FocusedItem.Tag;
+
+    //                    var frame = new TileAnimation.Frame();
+
+    //                    data.terrainAnimation[id].frames.Add(frame);
+
+    //                    lvFrame.Items.Add(new ListViewItem()
+    //                    {
+    //                        Tag = frame
+    //                    });
+    //                }).addTo(mtlp);
+
+    //                new Button().init("-", () =>
+    //                {
+    //                    if (lvTerrain.FocusedItem == null) return;
+
+    //                    if (lvFrame.FocusedItem == null) return;
+
+    //                    var id = (byte)lvTerrain.FocusedItem.Tag;
+
+    //                    var frame = lvFrame.FocusedItem.Tag as TileAnimation.Frame;
+
+    //                    data.terrainAnimation[id].frames.Remove(frame);
+
+    //                    lvFrame.Items.Remove(lvFrame.FocusedItem);
+    //                }).addTo(mtlp);
+
+    //                gb = new GroupBox()
+    //                {
+    //                    Dock = DockStyle.Fill,
+    //                    Text = w.scene_edit_game_world.property
+    //                }.addTo(sc);
+
+    //                var rtlp = new TableLayoutPanel()
+    //                {
+    //                    RowCount = 3,
+    //                    ColumnCount = 2,
+    //                    Dock = DockStyle.Fill
+    //                }.addTo(gb);
+
+    //                new Label().init(w.tile_map_image_info.interval + ":").setAutoSize().setRightCenter().addTo(rtlp);
+    //                tbInterval = new TextBox()/*.refreshListViewOnClick(lvTerrain, refresh)*/.addTo(rtlp);
+
+    //                new Label().init(w.tile_map_image_info.file_name).setAutoSize().setRightCenter().addTo(rtlp);
+    //                var tbFileName = new TextBox().addTo(rtlp);
+
+    //                new Label().init(w.tile_map_image_info.position).setAutoSize().setRightCenter().addTo(rtlp);
+    //                var tbVertex = new TextBox().addTo(rtlp);
+
+    //                lvTerrain.SelectedIndexChanged += (s, e) =>
+    //                {
+    //                    lvFrame.Items.Clear();
+    //                    tbInterval.Text = string.Empty;
+    //                    tbFileName.Text = string.Empty;
+    //                    tbVertex.Text = string.Empty;
+
+    //                    if (lvTerrain.FocusedItem == null) return;
+
+    //                    var id = (byte)lvTerrain.FocusedItem.Tag;
+
+    //                    if (!data.terrainAnimation.TryGetValue(id, out var value)) return;
+
+    //                    tbInterval.Text = value.interval.ToString();
+
+    //                    refreshFrame();
+    //                };
+
+    //                lvFrame.SelectedIndexChanged += (s, e) =>
+    //                {
+    //                    if (lvFrame.FocusedItem == null) return;
+
+    //                    var data = lvFrame.FocusedItem.Tag as TileAnimation.Frame;
+
+    //                    tbFileName.Text = data.fileName;
+    //                    tbVertex.Text = $"{data.vertex.X},{data.vertex.Y}";
+
+    //                    // select image
+    //                };
+
+    //                lvTerrain.autoResizeColumns(-5);
+    //                lvFrame.autoResizeColumns(-5);
+    //            }
+
+    //            public void refreshTerrain()
+    //            {
+    //                lvTerrain.Items.Clear();
+
+    //                lvTerrain.Items.AddRange(terrain.Values.ToList().Select(o => new ListViewItem()
+    //                {
+    //                    Tag = o.id,
+    //                    Text = o.name
+    //                }).ToArray());
+
+    //                lvTerrain.autoResizeColumns(-5);
+    //            }
+
+    //            public void refreshFrame()
+    //            {
+    //                lvFrame.Items.Clear();
+
+    //                if (lvTerrain.FocusedItem == null) return;
+
+    //                var terrainId = (byte)lvTerrain.FocusedItem.Tag;
+
+    //                lvFrame.Items.AddRange(data.terrainAnimation[terrainId].frames.ToList().Select(o => new ListViewItem()
+    //                {
+    //                    Tag = o,
+    //                    Text = $"{o.vertex.X},{o.vertex.Y}"
+    //                }).ToArray());
+
+    //                lvFrame.autoResizeColumns(-5);
+    //            }
+
+    //            public void setData(OuterTileMapImageInfo data) => this.data = data;
+    //        }
+    //    }
+    //}
+    #endregion
 }

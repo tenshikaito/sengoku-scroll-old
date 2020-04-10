@@ -66,9 +66,7 @@ namespace Client.Helper
 
         public static T refreshListViewOnClick<T>(this T c, ListView lv, Action<ListView> focus) where T : Control
         {
-            var a = new EventHandler((s, e) => focus(lv));
-
-            c.Click += a;
+            c.Click += new EventHandler((s, e) => focus(lv));
 
             return c;
         }
