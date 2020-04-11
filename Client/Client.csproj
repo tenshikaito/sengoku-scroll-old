@@ -105,6 +105,9 @@
     <Compile Include="Scene\SceneWaiting.cs" />
     <Compile Include="IGameStatus.cs" />
     <Compile Include="TreeObject.cs" />
+    <Compile Include="UI\UIEditGameWorldInnerTileMapDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="UI\UISaveableConfirmDialog.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -13,5 +13,7 @@ namespace Library.Helper
         public static T fromJson<T>(this string s) => JsonConvert.DeserializeObject<T>(s);
 
         public static List<T> getEnumList<T>() where T : struct => ((T[])Enum.GetValues(typeof(T))).Cast<T>().ToList();
+
+        public static int getMaxId<T>(this Dictionary<int, T> map, int returnIdIfNull) => map.Any() ? map.Keys.Max() : returnIdIfNull;
     }
 }

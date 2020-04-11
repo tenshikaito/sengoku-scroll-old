@@ -30,7 +30,7 @@ namespace Client.Graphic
 
         protected GameOption gameOption => gameWorld.gameOption;
         protected GameWorldOuterMapData gameMapData => gameWorld.gameOuterMapData;
-        protected abstract Map map { get; }
+        protected abstract TileMap map { get; }
 
         protected Camera camera => gameWorld.camera;
 
@@ -153,61 +153,13 @@ namespace Client.Graphic
                 recoveryTileFlag(p);
             }
 
-            public void removeTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => terrainBorder.Remove(tileMap.getIndex(o)));
+            public void removeTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new TileMap.Size(1), o => terrainBorder.Remove(tileMap.getIndex(o)));
 
             public void removeTileFlag() => terrainBorder.Clear();
 
-            public void recoveryTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new Map.Size(1), o => checkTerrainBorder(o));
+            public void recoveryTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new TileMap.Size(1), o => checkTerrainBorder(o));
 
-            public byte calculateTileMargin(MapPoint p)
-            {
-                if (tileMap.isOutOfBounds(p)) return 0;
-
-                var t = (Tile)tileMap[p];
-                int y = p.y, x = p.x;
-
-                if (!terrain.TryGetValue(t.terrain, out var tt)) return 0;
-
-                byte flag = 0;
-
-                calculateTileMargin(ref flag, x - 1, y - 1, tt, AutoTileCalculator.topLeft);
-                calculateTileMargin(ref flag, x, y - 1, tt, AutoTileCalculator.top);
-                calculateTileMargin(ref flag, x + 1, y - 1, tt, AutoTileCalculator.topRight);
-                calculateTileMargin(ref flag, x - 1, y, tt, AutoTileCalculator.left);
-                calculateTileMargin(ref flag, x + 1, y, tt, AutoTileCalculator.right);
-                calculateTileMargin(ref flag, x - 1, y + 1, tt, AutoTileCalculator.bottomLeft);
-                calculateTileMargin(ref flag, x, y + 1, tt, AutoTileCalculator.bottom);
-                calculateTileMargin(ref flag, x + 1, y + 1, tt, AutoTileCalculator.bottomRight);
-
-                return flag;
-            }
-
-            protected abstract void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction);
-        }
-
-        public class OuterMapSpritesInfo : MapSpritesInfo
-        {
-            protected override TileMap tileMap => gameWorld.gameOuterMapData.data;
-            protected override Dictionary<int, Terrain> terrain => gameWorld.gameWorldMasterData.terrain;
-
-            public OuterMapSpritesInfo(GameWorld gw) : base(gw)
-            {
-            }
-
-            protected override void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction)
-            {
-                var p = new MapPoint(x, y);
-
-                if (tileMap.isOutOfBounds(p)) return;
-
-                var tt = tileMap[p];
-                var ttt = (Tile)tt;
-
-                if (terrain.TryGetValue(ttt.terrain, out var tttt))
-                {
-                    if (t.isWater != tttt.isWater) flag |= direction;
-                }
-            }
+            public abstract byte calculateTileMargin(MapPoint p);
         }
     }
 

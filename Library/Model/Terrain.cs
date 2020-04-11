@@ -10,6 +10,7 @@ namespace Library.Model
     {
         public byte id;
         public string name;
+        public int apCost;
         public bool isGrass;
         public bool isHill;
         public bool isMountain;

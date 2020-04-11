@@ -22,6 +22,7 @@ namespace Client.UI
             Action brush,
             Action rectangle,
             Action fill,
+            Action innerTileMap,
             Action database,
             Action save,
             Action exit,
@@ -70,6 +71,8 @@ namespace Client.UI
 
             p = new FlowLayoutPanel().init(FlowDirection.LeftToRight).setAutoSizeP().addTo(panel);
 
+            new Button().init(w.inner_tile_map, innerTileMap).setAutoSize().addTo(p);
+
             new Button().init(w.scene_edit_game_world.database, database).setAutoSize().addTo(p);
 
             new Button().init(w.scene_edit_game_world.save, save).setAutoSize().addTo(p);
@@ -78,7 +81,7 @@ namespace Client.UI
 
             var tc = new TabControl().init().addTo(panel);
 
-            var tp = new TabPage().init(w.terrain.name).addTo(tc);
+            var tp = new TabPage().init(w.terrain.text).addTo(tc);
 
             lvTerrain = new ListView().init().addTo(tp);
 

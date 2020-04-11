@@ -17,12 +17,16 @@ namespace Client.Graphic
         private OuterTileMapImageInfo tileMapImageInfo;
         private OuterMapSpritesInfo mapSpritesInfo;
 
+        private AutoTileSprite tileSprite;
+
+        private Dictionary<int, TileSpriteAnimation> terrainSprite = new Dictionary<int, TileSpriteAnimation>();
+
         public override int tileWidth => tileMapImageInfo.tileSize.Width;
 
         public override int tileHeight => tileMapImageInfo.tileSize.Height;
 
-        protected override Map map => gameMapData.data;
-        private TileMap tileMap => gameMapData.data;
+        protected override TileMap map => gameMapData.data;
+        private OuterTileMap tileMap => gameMapData.data;
 
         public OuterTileMapSprites(GameSystem gs, GameWorld gw, OuterTileMapImageInfo mii, OuterMapSpritesInfo msi, bool isEditor = false)
             : base(gs, gw, isEditor)
@@ -33,7 +37,7 @@ namespace Client.Graphic
             terrainSprite = mii.terrainAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
             strongholdSprite = mii.strongholdAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
 
-            mii.terrainAnimation.Values.ToList().ForEach(o => o.frames.ForEach(oo=> gameWorld.getImage(oo.fileName)));
+            mii.terrainAnimation.Values.ToList().ForEach(o => o.frames.ForEach(oo => gameWorld.getImage(oo.fileName)));
             //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
 
             tileSprite = new AutoTileSprite(this);
@@ -54,7 +58,7 @@ namespace Client.Graphic
         {
             if (map.isOutOfBounds(p)) return;
 
-            var tile = (Tile)tileMap[p];
+            var tile = (OuterMapTile)tileMap[p];
 
             drawTerrain(g, p, sx, sy, tile);
 
@@ -72,11 +76,7 @@ namespace Client.Graphic
             if (p == cursorPosition) drawCursor(g, sx, sy);
         }
 
-        private AutoTileSprite tileSprite;
-
-        private Dictionary<int, TileSpriteAnimation> terrainSprite = new Dictionary<int, TileSpriteAnimation>();
-
-        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, Tile t)
+        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, OuterMapTile t)
         {
             if (!terrainSprite.TryGetValue(t.terrain, out var s)) return;
 
@@ -190,6 +190,56 @@ namespace Client.Graphic
                 Width = tileWidth - size,
                 Height = tileHeight - size
             }, size);
+        }
+
+        public class OuterMapSpritesInfo : MapSpritesInfo
+        {
+            protected override TileMap tileMap => gameWorld.gameOuterMapData.data;
+            protected override Dictionary<int, Terrain> terrain => gameWorld.gameWorldMasterData.terrain;
+
+            private OuterTileMap outerTileMap => gameWorld.gameOuterMapData.data;
+
+            public OuterMapSpritesInfo(GameWorld gw) : base(gw)
+            {
+            }
+
+            public override byte calculateTileMargin(MapPoint p)
+            {
+                if (tileMap.isOutOfBounds(p)) return 0;
+
+                var t = (OuterMapTile)outerTileMap[p];
+                int y = p.y, x = p.x;
+
+                if (!terrain.TryGetValue(t.terrain, out var tt)) return 0;
+
+                byte flag = 0;
+
+                calculateTileMargin(ref flag, x - 1, y - 1, tt, AutoTileCalculator.topLeft);
+                calculateTileMargin(ref flag, x, y - 1, tt, AutoTileCalculator.top);
+                calculateTileMargin(ref flag, x + 1, y - 1, tt, AutoTileCalculator.topRight);
+                calculateTileMargin(ref flag, x - 1, y, tt, AutoTileCalculator.left);
+                calculateTileMargin(ref flag, x + 1, y, tt, AutoTileCalculator.right);
+                calculateTileMargin(ref flag, x - 1, y + 1, tt, AutoTileCalculator.bottomLeft);
+                calculateTileMargin(ref flag, x, y + 1, tt, AutoTileCalculator.bottom);
+                calculateTileMargin(ref flag, x + 1, y + 1, tt, AutoTileCalculator.bottomRight);
+
+                return flag;
+            }
+
+            protected void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction)
+            {
+                var p = new MapPoint(x, y);
+
+                if (tileMap.isOutOfBounds(p)) return;
+
+                var tt = outerTileMap[p];
+                var ttt = (OuterMapTile)tt;
+
+                if (terrain.TryGetValue(ttt.terrain, out var tttt))
+                {
+                    if (t.isWater != tttt.isWater) flag |= direction;
+                }
+            }
         }
     }
 }

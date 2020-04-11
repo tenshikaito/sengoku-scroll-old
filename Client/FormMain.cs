@@ -75,6 +75,7 @@ namespace Client
                     religion = new Dictionary<int, Religion>(),
                     road = new Dictionary<int, Road>(),
                     strongholdType = new Dictionary<int, Stronghold.Type>(),
+                    innerTileMapInfo = new Dictionary<int, InnerTileMapInfo>(),
                     outerTileMapImageInfo = new Dictionary<int, OuterTileMapImageInfo>()
                 }
             };

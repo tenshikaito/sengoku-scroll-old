@@ -12,7 +12,7 @@ namespace Client.Graphic
         private List<T> tileMapSpritesList;
         private int tileMapIndex = 0;
 
-        public T outerTileMap => tileMapSpritesList[tileMapIndex];
+        public T tileMapSprites => tileMapSpritesList[tileMapIndex];
 
         public ZoomableTileMapSprites(List<T> list)
         {

@@ -116,7 +116,7 @@ namespace Client
 
         public void sceneToWaiting()
         {
-            sceneManager.switchStatus(new SceneWaiting(this, "now loading..."));
+            sceneManager.switchStatus(new SceneWaiting(this, wording.loading));
         }
 
         public void sceneToOuterMap()
