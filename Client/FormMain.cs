@@ -65,21 +65,23 @@ namespace Client
             //gameSystem.initGame();
             //gameSystem.sceneToOuterMap();
 
-            var gw = new GameWorld("test")
-            {
-                gameWorldMasterData = new GameWorldMasterData()
-                {
-                    terrain = new Dictionary<int, Terrain>(),
-                    region = new Dictionary<int, Region>(),
-                    culture = new Dictionary<int, Culture>(),
-                    religion = new Dictionary<int, Religion>(),
-                    road = new Dictionary<int, Road>(),
-                    strongholdType = new Dictionary<int, Stronghold.Type>(),
-                    outerTileMapImageInfo = new Dictionary<int, OuterTileMapImageInfo>()
-                }
-            };
+            //var gw = new GameWorld("test")
+            //{
+            //    gameWorldMasterData = new GameWorldMasterData()
+            //    {
+            //        terrain = new Dictionary<int, Terrain>(),
+            //        region = new Dictionary<int, Region>(),
+            //        culture = new Dictionary<int, Culture>(),
+            //        religion = new Dictionary<int, Religion>(),
+            //        road = new Dictionary<int, Road>(),
+            //        strongholdType = new Dictionary<int, Stronghold.Type>(),
+            //        outerTileMapImageInfo = new Dictionary<int, OuterTileMapImageInfo>(),
+            //        innerTileMapImageInfo = new Dictionary<int, InnerTileMapImageInfo>(),
+            //        innerTileMapInfo = new Dictionary<int, InnerTileMapInfo>()
+            //    }
+            //};
 
-            new UI.UIEditGameWorldDatabaseWindow(gameSystem, gw).Show();
+            //new UI.UIEditGameWorldDatabaseWindow(gameSystem, gw).Show();
 
             refreshBuffer();
         }

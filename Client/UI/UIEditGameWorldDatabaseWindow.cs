@@ -15,6 +15,8 @@ namespace Client.UI
     {
         public GameWorldMasterData gameWorldMasterData;
 
+        private TabControl tabControl;
+
         public UIEditGameWorldDatabaseWindow(GameSystem gs, GameWorld gw) : base(gs)
         {
             gameWorldMasterData = gw.gameWorldMasterData;
@@ -23,7 +25,7 @@ namespace Client.UI
 
             this.init(w.scene_edit_game_world.database).setCenter();
 
-            var tc = new TabControl() { MinimumSize = new System.Drawing.Size(720, 480) }.init().setAutoSize().addTo(panel);
+            var tc = tabControl = new TabControl() { MinimumSize = new System.Drawing.Size(720, 480) }.init().setAutoSize().addTo(panel);
 
             new TabPageTerrain(this, gameWorldMasterData.terrain).addTo(tc);
 
@@ -35,7 +37,9 @@ namespace Client.UI
 
             new TabPageRoad(this, gameWorldMasterData.road).addTo(tc);
 
-            new TabPageStronghold(this, gameWorldMasterData.strongholdType).addTo(tc);
+            new TabPageStronghold(this, gameWorldMasterData.strongholdType, gameWorldMasterData).addTo(tc);
+
+            new TabPageInnerTileMapInfo(this, gameWorldMasterData.innerTileMapInfo, gameWorldMasterData.terrain).addTo(tc);
 
             new TabPageOuterMapTileImageInfo(this, gameWorldMasterData.outerTileMapImageInfo, gameWorldMasterData).addTo(tc);
 
@@ -122,7 +126,7 @@ namespace Client.UI
             {
                 this.data = data;
 
-                this.init(w.terrain.name).setAutoSizeP();
+                this.init(w.terrain.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -196,14 +200,14 @@ namespace Client.UI
 
             private void onAddButtonClicked(ListView lv)
             {
-                var max = data.Any() ? data.Max(o => o.Key) : -1;
+                var max = data.getMaxId(-1);
 
                 if (++max > byte.MaxValue) return;
 
                 var oo = new Terrain()
                 {
                     id = (byte)max,
-                    name = w.terrain.name,
+                    name = w.terrain.text,
                 };
 
                 data[oo.id] = oo;
@@ -302,7 +306,7 @@ namespace Client.UI
             {
                 this.data = data;
 
-                this.init(w.region.name).setAutoSizeP();
+                this.init(w.region.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -357,14 +361,14 @@ namespace Client.UI
 
             private void onAddButtonClicked(ListView lv)
             {
-                var max = data.Any() ? data.Max(o => o.Key) : -1;
+                var max = data.getMaxId(-1);
 
                 if (++max > byte.MaxValue) return;
 
                 var oo = new Region()
                 {
                     id = (byte)max,
-                    name = w.region.name,
+                    name = w.region.text,
                 };
 
                 data[oo.id] = oo;
@@ -444,7 +448,7 @@ namespace Client.UI
             {
                 this.data = data;
 
-                this.init(w.culture.name).setAutoSizeP();
+                this.init(w.culture.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -493,14 +497,14 @@ namespace Client.UI
 
             private void onAddButtonClicked(ListView lv)
             {
-                var max = data.Any() ? data.Max(o => o.Key) : -1;
+                var max = data.getMaxId(-1);
 
                 if (++max > byte.MaxValue) return;
 
                 var oo = new Culture()
                 {
                     id = (byte)max,
-                    name = w.culture.name,
+                    name = w.culture.text,
                 };
 
                 data[oo.id] = oo;
@@ -578,7 +582,7 @@ namespace Client.UI
             {
                 this.data = data;
 
-                this.init(w.religion.name).setAutoSizeP();
+                this.init(w.religion.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -631,14 +635,14 @@ namespace Client.UI
 
             private void onAddButtonClicked(ListView lv)
             {
-                var max = data.Any() ? data.Max(o => o.Key) : -1;
+                var max = data.getMaxId(-1);
 
                 if (++max > byte.MaxValue) return;
 
                 var oo = new Religion()
                 {
                     id = (byte)max,
-                    name = w.religion.name,
+                    name = w.religion.text,
                 };
 
                 data[oo.id] = oo;
@@ -717,7 +721,7 @@ namespace Client.UI
             {
                 this.data = data;
 
-                this.init(w.road.name).setAutoSizeP();
+                this.init(w.road.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -766,14 +770,14 @@ namespace Client.UI
 
             private void onAddButtonClicked(ListView lv)
             {
-                var max = data.Any() ? data.Max(o => o.Key) : 0;
+                var max = data.getMaxId(0);
 
                 if (++max > byte.MaxValue) return;
 
                 var oo = new Road()
                 {
                     id = (byte)max,
-                    name = w.road.name,
+                    name = w.road.text,
                 };
 
                 data[oo.id] = oo;
@@ -841,23 +845,28 @@ namespace Client.UI
     {
         private class TabPageStronghold : TabPageBase
         {
+            private GameWorldMasterData gameData;
             private Dictionary<int, Stronghold.Type> data;
             private int? currentId;
 
             private TextBox tbName;
+            private TextBox tbCulture;
             private TextBox tbIntroduction;
 
-            public TabPageStronghold(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Stronghold.Type> data) : base(bw)
+            public TabPageStronghold(
+                UIEditGameWorldDatabaseWindow bw, Dictionary<int, Stronghold.Type> data, GameWorldMasterData gameData)
+                : base(bw)
             {
+                this.gameData = gameData;
                 this.data = data;
 
-                this.init(w.stronghold_type.name).setAutoSizeP();
+                this.init(w.stronghold_type.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
                 lv.addColumn(w.id)
                     .addColumn(w.name)
-                    .addColumn(w.code);
+                    .addColumn(w.culture.text);
 
                 lv.Click += (s, e) =>
                 {
@@ -883,12 +892,15 @@ namespace Client.UI
                 {
                     Dock = DockStyle.Fill,
                     ColumnCount = 2,
-                    RowCount = 2,
+                    RowCount = 3,
                     AutoScroll = true
                 }.addTo(gb);
 
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.culture.text + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbCulture = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
                 new Label().init(w.introduction + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbIntroduction = new TextBox().refreshListViewOnClick(lv, refresh).setMultiLine().addTo(p3);
@@ -904,14 +916,14 @@ namespace Client.UI
 
             private void onAddButtonClicked(ListView lv)
             {
-                var max = data.Any() ? data.Max(o => o.Key) : 0;
+                var max = data.getMaxId(0);
 
                 if (++max > byte.MaxValue) return;
 
                 var oo = new Stronghold.Type()
                 {
                     id = (byte)max,
-                    name = w.stronghold_type.name,
+                    name = w.stronghold_type.text,
                     introduction = string.Empty
                 };
 
@@ -942,7 +954,7 @@ namespace Client.UI
             {
                 lvi.Text = o.id.ToString();
 
-                return lvi.addColumn(o.name);
+                return lvi.addColumn(o.name).addColumn(o.culture != null && gameData.culture.TryGetValue(o.culture.Value, out var c) ? $"{c.id}:{c.name}" : w.none);
             }
 
             private void refresh(ListView lv)
@@ -952,6 +964,7 @@ namespace Client.UI
                     var oo = data[(byte)currentId];
 
                     oo.name = tbName.Text;
+                    oo.culture = int.TryParse(tbCulture.Text, out var c) ? c : (int?)null;
                     oo.introduction = tbIntroduction.Text;
 
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
@@ -975,6 +988,7 @@ namespace Client.UI
                 var o = data[id];
 
                 tbName.Text = o.name;
+                tbCulture.Text = o.culture?.ToString() ?? string.Empty;
                 tbIntroduction.Text = o.introduction;
             }
         }
@@ -999,7 +1013,7 @@ namespace Client.UI
             {
                 this.data = data;
 
-                this.init(w.tile_map_image_info.name).setAutoSizeP();
+                this.init(w.tile_map_image_info.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -1065,14 +1079,14 @@ namespace Client.UI
 
             private void onAddButtonClicked(ListView lv)
             {
-                var max = data.Any() ? data.Max(o => o.Key) : 0;
+                var max = data.getMaxId(0);
 
                 if (++max > int.MaxValue) return;
 
                 var oo = new OuterTileMapImageInfo()
                 {
                     id = max,
-                    name = w.tile_map_image_info.name,
+                    name = w.tile_map_image_info.text,
                     terrainAnimation = new Dictionary<byte, TileAnimation>(),
                     strongholdAnimation = new Dictionary<int, TileAnimation>()
                 };
@@ -1151,6 +1165,7 @@ namespace Client.UI
             }
         }
     }
+
     public partial class UIEditGameWorldDatabaseWindow
     {
         private partial class TabPageOuterMapTileImageInfo : TabPageBase
@@ -1161,11 +1176,10 @@ namespace Client.UI
 
                 private Label lbStatus;
                 private TextBox tbContent;
-                private TextBox tbTemplate;
 
                 public TabPageOuterMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, ListView lv) : base(bw)
                 {
-                    this.init(w.terrain.name).setAutoSizeP();
+                    this.init(w.terrain.text).setAutoSizeP();
 
                     var tlp = new TableLayoutPanel()
                     {
@@ -1247,6 +1261,181 @@ namespace Client.UI
                         lbStatus.Text = $"{w.tile_map_image_info.edit_failure}{e.Message.Substring(e.Message.IndexOf(':'))}";
                     }
                 }
+            }
+        }
+    }
+
+    public partial class UIEditGameWorldDatabaseWindow
+    {
+        private partial class TabPageInnerTileMapInfo : TabPageBase
+        {
+            private Dictionary<int, InnerTileMapInfo> data;
+            private Dictionary<int, Terrain> terrain;
+            private int? currentId;
+
+            private TextBox tbName;
+            private TextBox tbMapWidth;
+            private TextBox tbMapHeight;
+            private ComboBox cbTerrain;
+
+            public TabPageInnerTileMapInfo(
+                UIEditGameWorldDatabaseWindow bw, Dictionary<int, InnerTileMapInfo> data, Dictionary<int, Terrain> terrain)
+                : base(bw)
+            {
+                this.data = data;
+                this.terrain = terrain;
+
+                this.init(w.inner_tile_map).setAutoSizeP();
+
+                bw.tabControl.SelectedIndexChanged += (s, e) =>
+                {
+                    if (bw.tabControl.SelectedTab == this) refresh();
+                };
+
+                var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
+
+                lv.addColumn(w.id)
+                    .addColumn(w.name)
+                    .addColumn(w.width)
+                    .addColumn(w.height)
+                    .addColumn(w.terrain.text);
+
+                lv.Click += (s, e) =>
+                {
+                    if (lv.FocusedItem == null) return;
+
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
+                };
+
+                var p2 = new TableLayoutPanel()
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 1,
+                    RowCount = 2
+                }.addRowStyle(80).addRowStyle(20).addTo(sc);
+
+                var gb = new GroupBox()
+                {
+                    Dock = DockStyle.Fill,
+                    Text = w.scene_edit_game_world.property
+                }.addTo(p2);
+
+                var p3 = new TableLayoutPanel()
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 2,
+                    RowCount = 2,
+                    AutoScroll = true
+                }.addTo(gb);
+
+                new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.width + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbMapWidth = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.height + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbMapHeight = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.terrain.text + ":").setAutoSize().setRightCenter().addTo(p3);
+                cbTerrain = new ComboBox().initDropDownList<int>().addTo(p3);
+
+                new Label().init("").addTo(p3);
+
+                initData(lv);
+
+                lv.autoResizeColumns();
+
+                refresh();
+            }
+
+            private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
+
+            private void refresh() => cbTerrain.setDropDownList(terrain.Select(o => new KeyValuePair<int, string>(o.Key, o.Value.name)).ToList());
+
+            private void onAddButtonClicked(ListView lv)
+            {
+                var max = data.getMaxId(0);
+
+                if (++max > int.MaxValue) return;
+
+                var oo = new InnerTileMapInfo()
+                {
+                    id = max,
+                    name = w.inner_tile_map,
+                    size = new TileMap.Size(100, 100),
+                };
+
+                data[oo.id] = oo;
+
+                var lvi = new ListViewItem()
+                {
+                    Tag = oo.id
+                };
+
+                lv.Items.Add(setRow(lvi, oo));
+
+                lv.autoResizeColumns();
+            }
+
+            private void onDeleteButtonClicked(ListView lv, int id)
+            {
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
+
+                data.Remove(id);
+
+                if (currentId == id) currentId = null;
+
+                lv.autoResizeColumns();
+            }
+
+            private ListViewItem setRow(ListViewItem lvi, InnerTileMapInfo o)
+            {
+                lvi.Text = o.id.ToString();
+
+                lvi.addColumn(o.name);
+                lvi.addColumn(o.size.column.ToString());
+                lvi.addColumn(o.size.row.ToString());
+                lvi.addColumn(terrain.TryGetValue(o.terrainId, out var t) ? t.name : w.symbol_unselected);
+
+                return lvi;
+            }
+
+            private void refresh(ListView lv)
+            {
+                if (currentId != null)
+                {
+                    var oo = data[(int)currentId];
+
+                    oo.name = tbName.Text;
+                    oo.size.column = int.TryParse(tbMapWidth.Text, out var width) ? width : 100;
+                    oo.size.row = int.TryParse(tbMapHeight.Text, out var height) ? height : 100;
+                    if (cbTerrain.SelectedValue != null) oo.terrainId = (int)cbTerrain.SelectedValue;
+
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
+
+                    if (lvi != null)
+                    {
+                        lvi.SubItems.Clear();
+
+                        setRow(lvi, oo);
+
+                        lv.autoResizeColumns();
+                    }
+                }
+            }
+
+            private void onListViewClicked(ListView lv, int id)
+            {
+                refresh(lv);
+
+                currentId = id;
+                var o = data[id];
+
+                tbName.Text = o.name;
+                tbMapWidth.Text = o.size.column.ToString();
+                tbMapHeight.Text = o.size.row.ToString();
+                cbTerrain.SelectedValue = o.terrainId;
             }
         }
     }

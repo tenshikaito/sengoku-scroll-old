@@ -222,7 +222,7 @@ namespace Client.Helper
             return tlp;
         }
 
-        public static TableLayoutPanel addColumnStyle(this TableLayoutPanel tlp, float width,SizeType st= SizeType.Percent)
+        public static TableLayoutPanel addColumnStyle(this TableLayoutPanel tlp, float width, SizeType st = SizeType.Percent)
         {
             tlp.ColumnStyles.Add(new ColumnStyle(st, width));
 
@@ -238,17 +238,24 @@ namespace Client.Helper
 
         public static ComboBox initDropDownList<TKey>(
             this ComboBox cb,
-            IList<KeyValuePair<TKey, string>> data,
-            TKey? value,
+            IList<KeyValuePair<TKey, string>> data = null,
+            TKey? value = default,
             string valueField = "Key",
             string textField = "Value") where TKey : struct
 
         {
             cb.DropDownStyle = ComboBoxStyle.DropDownList;
-            cb.DataSource = data;
             cb.ValueMember = valueField;
             cb.DisplayMember = textField;
+            if (data != null) cb.DataSource = data;
             if (value != null) cb.SelectedValue = value;
+
+            return cb;
+        }
+
+        public static ComboBox setDropDownList<TKey>(this ComboBox cb, IList<KeyValuePair<TKey, string>> data)
+        {
+            cb.DataSource = data;
 
             return cb;
         }

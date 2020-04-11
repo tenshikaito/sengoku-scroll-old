@@ -23,7 +23,7 @@ namespace Library
 
     public class GameWorldOuterMapData
     {
-        public TileMap data;
+        public OuterTileMap data;
 
         public Dictionary<int, int> territory;
         public Dictionary<int, int> road;
@@ -35,7 +35,7 @@ namespace Library
     public class GameWorldInnerMapData
     {
         public Stronghold currentStronghold;
-        public TileMap data;
+        public InnerTileMap data;
 
         public Dictionary<int, int> road;
         public Dictionary<int, TileFunctionType> tileFunctionType;

@@ -15,5 +15,6 @@ namespace Library.Model
         public Direction4 direction = Direction4.down;
         public bool isShip;
         public bool isChaos;
+        public Supplies supplies;
     }
 }

@@ -413,11 +413,21 @@ namespace Client
 
         public string detail => this[nameof(detail)];
 
+        public string none => this[nameof(none)];
+
         public string type => this[nameof(type)];
+
+        public string width => this[nameof(width)];
+
+        public string height => this[nameof(height)];
+
+        public string inner_tile_map => this[nameof(inner_tile_map)];
 
         public string edit_game_world => this[nameof(edit_game_world)];
 
         public string stronghold => this[nameof(stronghold)];
+
+        public string loading => this[nameof(loading)];
 
         public string symbol_selected => this[nameof(symbol_selected)];
 
@@ -490,7 +500,7 @@ namespace Client
     {
         public class Terrain : Part
         {
-            public string name => this[prefix];
+            public string text => this[prefix];
 
             public string is_grass => this[nameof(is_grass)];
 
@@ -513,7 +523,7 @@ namespace Client
 
         public class Region : Part
         {
-            public string name => this[prefix];
+            public string text => this[prefix];
 
             public string climate => this[nameof(climate)];
 
@@ -524,7 +534,7 @@ namespace Client
 
         public class Culture : Part
         {
-            public string name => this[prefix];
+            public string text => this[prefix];
 
             public Culture(Wording w, string prefix) : base(w, prefix)
             {
@@ -533,7 +543,7 @@ namespace Client
 
         public class Religion : Part
         {
-            public string name => this[prefix];
+            public string text => this[prefix];
 
             public string is_polytheism => this[nameof(is_polytheism)];
 
@@ -544,7 +554,7 @@ namespace Client
 
         public class Road : Part
         {
-            public string name => this[prefix];
+            public string text => this[prefix];
 
             public Road(Wording w, string prefix) : base(w, prefix)
             {
@@ -553,7 +563,7 @@ namespace Client
 
         public class StrongholdType : Part
         {
-            public string name => this[prefix];
+            public string text => this[prefix];
 
             public StrongholdType(Wording w, string prefix) : base(w, prefix)
             {
@@ -562,7 +572,7 @@ namespace Client
 
         public class TileMapImageInfo : Part
         {
-            public string name => this[prefix];
+            public string text => this[prefix];
 
             public string tile_size => this[nameof(tile_size)];
 

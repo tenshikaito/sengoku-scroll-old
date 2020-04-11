@@ -60,7 +60,7 @@ namespace Client
 
             var gm = new GameWorldOuterMapData()
             {
-                data = new TileMap(new TileMap.Size(width, height)) { tiles = new Tile[width * height] },
+                data = new OuterTileMap(new TileMap.Size(width, height)) { tiles = new OuterMapTile[width * height] },
 
                 territory = new Dictionary<int, int>(),
                 road = new Dictionary<int, int>(),
@@ -190,7 +190,9 @@ namespace Client
                         }
                     }
                     }
-                }
+                },
+                innerTileMapImageInfo = new Dictionary<int, InnerTileMapImageInfo>(),
+                innerTileMapInfo = new Dictionary<int, InnerTileMapInfo>()
             };
 
             File.WriteAllText(gameWorldFullPath + MasterDataName, gwmd.toJson(), encoding);
@@ -226,6 +228,9 @@ namespace Client
 
         public void save(GameWorld gw)
         {
+            File.WriteAllText(gameWorldFullPath + MapDataName, gw.gameOuterMapData.toJson(), encoding);
+
+            File.WriteAllText(gameWorldFullPath + MasterDataName, gw.gameWorldMasterData.toJson(), encoding);
         }
     }
 }

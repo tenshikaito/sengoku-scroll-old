@@ -58,9 +58,11 @@
     <Compile Include="Model\Direction4.cs" />
     <Compile Include="Model\FinancialReporting.cs" />
     <Compile Include="Model\Force.cs" />
+    <Compile Include="Model\InnerTileMapInfo.cs" />
     <Compile Include="Model\Province.cs" />
+    <Compile Include="InnerTileMap.cs" />
     <Compile Include="TileAnimation.cs" />
-    <Compile Include="Map.cs" />
+    <Compile Include="TileMap.cs" />
     <Compile Include="TileMapImageInfo.cs" />
     <Compile Include="Model\Holding.cs" />
     <Compile Include="Model\Item.cs" />
@@ -79,7 +81,7 @@
     <Compile Include="Model\Unit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Supplies.cs" />
-    <Compile Include="TileMap.cs" />
+    <Compile Include="OuterTileMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

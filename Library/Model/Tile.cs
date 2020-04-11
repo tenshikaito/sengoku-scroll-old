@@ -4,11 +4,18 @@ using System.Text;
 
 namespace Library.Model
 {
-    public struct Tile
+    public struct OuterMapTile
     {
         public byte terrain;
         /// <summary>地区</summary>
         public byte region;
+    }
+
+    public struct InnerMapTile
+    {
+        public byte terrain;
+        public byte height;
+        public TileFunctionType functionType;
     }
 
     public enum TileFunctionType : byte
