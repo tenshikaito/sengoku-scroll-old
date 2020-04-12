@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Text;
 
 namespace Client
@@ -13,7 +14,10 @@ namespace Client
         {
             if (!images.TryGetValue(filepath, out var img))
             {
-                return images[filepath] = Image.FromFile(filepath);
+                using(var s = File.OpenRead(filepath))
+                {
+                    return images[filepath] = Image.FromStream(s);
+                }
             }
 
             return img;

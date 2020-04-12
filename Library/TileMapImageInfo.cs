@@ -18,12 +18,12 @@ namespace Library
         public Dictionary<byte, TileAnimation> terrainAnimation;
     }
 
-    public class OuterTileMapImageInfo : TileMapImageInfo
+    public class MainTileMapImageInfo : TileMapImageInfo
     {
         public Dictionary<int, TileAnimation> strongholdAnimation;
     }
 
-    public class InnerTileMapImageInfo : TileMapImageInfo
+    public class DetailTileMapImageInfo : TileMapImageInfo
     {
 
     }

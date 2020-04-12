@@ -4,14 +4,14 @@ using System.Text;
 
 namespace Library.Model
 {
-    public struct OuterMapTile
+    public struct MainMapTile
     {
         public byte terrain;
         /// <summary>地区</summary>
         public byte region;
     }
 
-    public struct InnerMapTile
+    public struct DetailMapTile
     {
         public byte terrain;
         public byte height;

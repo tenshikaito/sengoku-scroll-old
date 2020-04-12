@@ -12,13 +12,17 @@ namespace Client
 
         public GameOption gameOption = new GameOption();
 
-        public GameWorldMasterData gameWorldMasterData = new GameWorldMasterData();
+        public MasterData masterData = new MasterData();
 
-        public GameWorldGameData gameWorldGameData = new GameWorldGameData();
+        public GameData gameData = new GameData();
 
-        public GameWorldOuterMapData gameOuterMapData;
+        public MainTileMap mainTileMap;
 
-        public GameWorldInnerMapData gameInnerMapData;
+        public MainTileMapData mainTileMapData;
+
+        public DetailTileMap detailTileMap;
+
+        public DetailTileMapData detailTileMapData;
 
         public Character currentCharacter;
 

@@ -63,7 +63,7 @@ namespace Client
             gameSystem.init();
             gameSystem.sceneToTitle();
             //gameSystem.initGame();
-            //gameSystem.sceneToOuterMap();
+            //gameSystem.sceneToMainMap();
 
             //var gw = new GameWorld("test")
             //{
@@ -75,9 +75,9 @@ namespace Client
             //        religion = new Dictionary<int, Religion>(),
             //        road = new Dictionary<int, Road>(),
             //        strongholdType = new Dictionary<int, Stronghold.Type>(),
-            //        outerTileMapImageInfo = new Dictionary<int, OuterTileMapImageInfo>(),
-            //        innerTileMapImageInfo = new Dictionary<int, InnerTileMapImageInfo>(),
-            //        innerTileMapInfo = new Dictionary<int, InnerTileMapInfo>()
+            //        MainTileMapImageInfo = new Dictionary<int, MainTileMapImageInfo>(),
+            //        detailTileMapImageInfo = new Dictionary<int, DetailTileMapImageInfo>(),
+            //        detailTileMapInfo = new Dictionary<int, DetailTileMapInfo>()
             //    }
             //};
 

@@ -10,24 +10,24 @@ using System.Text;
 
 namespace Client.Graphic
 {
-    public class InnerTileMapSprites : TileMapSpritesBase
+    public class DetailTileMapSprites : TileMapSpritesBase
     {
-        private InnerTileMapImageInfo tileMapImageInfo;
-        private InnerMapSpritesInfo mapSpritesInfo;
+        private DetailTileMapImageInfo tileMapImageInfo;
+        private DetailMapSpritesInfo mapSpritesInfo;
 
         private AutoTileSprite tileSprite;
 
         private Dictionary<int, TileSpriteAnimation> terrainSprite = new Dictionary<int, TileSpriteAnimation>();
 
-        protected override TileMap map => gameMapData.data;
+        protected override TileMap map => gameWorld.mainTileMap;
 
-        private InnerTileMap tileMap => mapSpritesInfo.innerTileMap;
+        private DetailTileMap tileMap => mapSpritesInfo.detailTileMap;
 
         public override int tileWidth => tileMapImageInfo.tileSize.Width;
 
         public override int tileHeight => tileMapImageInfo.tileSize.Height;
 
-        public InnerTileMapSprites(GameSystem gs, GameWorld gw, InnerTileMapImageInfo mii, InnerMapSpritesInfo msi, bool isEditor = false)
+        public DetailTileMapSprites(GameSystem gs, GameWorld gw, DetailTileMapImageInfo mii, DetailMapSpritesInfo msi, bool isEditor = false)
             : base(gs, gw, isEditor)
         {
             tileMapImageInfo = mii;
@@ -46,7 +46,7 @@ namespace Client.Graphic
         {
             if (tileMap.isOutOfBounds(p)) return;
 
-            var t = (InnerMapTile)tileMap[p];
+            var t = (DetailMapTile)tileMap[p];
 
             drawTerrain(g, p, sx, sy, t);
 
@@ -60,7 +60,7 @@ namespace Client.Graphic
             }
         }
 
-        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, InnerMapTile t)
+        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, DetailMapTile t)
         {
             if (!terrainSprite.TryGetValue(t.terrain, out var s)) return;
 
@@ -138,14 +138,14 @@ namespace Client.Graphic
             }, size);
         }
 
-        public class InnerMapSpritesInfo : MapSpritesInfo
+        public class DetailMapSpritesInfo : MapSpritesInfo
         {
-            public InnerTileMap innerTileMap;
+            public DetailTileMap detailTileMap;
 
-            protected override TileMap tileMap => innerTileMap;
-            protected override Dictionary<int, Terrain> terrain => gameWorld.gameWorldMasterData.terrain;
+            protected override TileMap tileMap => detailTileMap;
+            protected override Dictionary<int, Terrain> terrain => gameWorld.masterData.terrain;
 
-            public InnerMapSpritesInfo(GameWorld gw) : base(gw)
+            public DetailMapSpritesInfo(GameWorld gw) : base(gw)
             {
             }
 
@@ -153,7 +153,7 @@ namespace Client.Graphic
             {
                 if (tileMap.isOutOfBounds(p)) return 0;
 
-                var t = (InnerMapTile)innerTileMap[p];
+                var t = (DetailMapTile)detailTileMap[p];
                 int y = p.y, x = p.x;
 
                 if (!terrain.TryGetValue(t.terrain, out var tt)) return 0;
@@ -178,8 +178,8 @@ namespace Client.Graphic
 
                 if (tileMap.isOutOfBounds(p)) return;
 
-                var tt = innerTileMap[p];
-                var ttt = (InnerMapTile)tt;
+                var tt = detailTileMap[p];
+                var ttt = (DetailMapTile)tt;
 
                 if (terrain.TryGetValue(ttt.terrain, out var tttt))
                 {

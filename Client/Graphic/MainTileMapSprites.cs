@@ -8,14 +8,14 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using static Library.GameWorldOuterMapData;
+using static Library.MainTileMapData;
 
 namespace Client.Graphic
 {
-    public class OuterTileMapSprites : TileMapSpritesBase
+    public class MainTileMapSprites : TileMapSpritesBase
     {
-        private OuterTileMapImageInfo tileMapImageInfo;
-        private OuterMapSpritesInfo mapSpritesInfo;
+        private MainTileMapImageInfo tileMapImageInfo;
+        private MainMapSpritesInfo mapSpritesInfo;
 
         private AutoTileSprite tileSprite;
 
@@ -25,10 +25,10 @@ namespace Client.Graphic
 
         public override int tileHeight => tileMapImageInfo.tileSize.Height;
 
-        protected override TileMap map => gameMapData.data;
-        private OuterTileMap tileMap => gameMapData.data;
+        protected override TileMap map => gameWorld.mainTileMap;
+        private MainTileMap tileMap => gameWorld.mainTileMap;
 
-        public OuterTileMapSprites(GameSystem gs, GameWorld gw, OuterTileMapImageInfo mii, OuterMapSpritesInfo msi, bool isEditor = false)
+        public MainTileMapSprites(GameSystem gs, GameWorld gw, MainTileMapImageInfo mii, MainMapSpritesInfo msi, bool isEditor = false)
             : base(gs, gw, isEditor)
         {
             tileMapImageInfo = mii;
@@ -58,7 +58,7 @@ namespace Client.Graphic
         {
             if (map.isOutOfBounds(p)) return;
 
-            var tile = (OuterMapTile)tileMap[p];
+            var tile = (MainMapTile)tileMap[p];
 
             drawTerrain(g, p, sx, sy, tile);
 
@@ -69,14 +69,14 @@ namespace Client.Graphic
                 if (playerLocation.x == fx && playerLocation.y == fy) drawCurrentCharacter(g, sx, sy);
             }
 
-            var strongholdId = gameMapData.stronghold.getId(gameMapData, p);
+            var strongholdId = mainTileMapData.stronghold.getId(tileMap, p);
 
             if (strongholdId != null) drawStronghold(g, sx, sy, (int)strongholdId);
 
             if (p == cursorPosition) drawCursor(g, sx, sy);
         }
 
-        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, OuterMapTile t)
+        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, MainMapTile t)
         {
             if (!terrainSprite.TryGetValue(t.terrain, out var s)) return;
 
@@ -184,14 +184,14 @@ namespace Client.Graphic
             }, size);
         }
 
-        public class OuterMapSpritesInfo : MapSpritesInfo
+        public class MainMapSpritesInfo : MapSpritesInfo
         {
-            protected override TileMap tileMap => gameWorld.gameOuterMapData.data;
-            protected override Dictionary<int, Terrain> terrain => gameWorld.gameWorldMasterData.terrain;
+            protected override TileMap tileMap => gameWorld.mainTileMap;
+            protected override Dictionary<int, Terrain> terrain => gameWorld.masterData.terrain;
 
-            public OuterTileMap outerTileMap => gameWorld.gameOuterMapData.data;
+            public MainTileMap mainTileMap => gameWorld.mainTileMap;
 
-            public OuterMapSpritesInfo(GameWorld gw) : base(gw)
+            public MainMapSpritesInfo(GameWorld gw) : base(gw)
             {
             }
 
@@ -199,7 +199,7 @@ namespace Client.Graphic
             {
                 if (tileMap.isOutOfBounds(p)) return 0;
 
-                var t = (OuterMapTile)outerTileMap[p];
+                var t = (MainMapTile)mainTileMap[p];
                 int y = p.y, x = p.x;
 
                 if (!terrain.TryGetValue(t.terrain, out var tt)) return 0;
@@ -224,8 +224,8 @@ namespace Client.Graphic
 
                 if (tileMap.isOutOfBounds(p)) return;
 
-                var tt = outerTileMap[p];
-                var ttt = (OuterMapTile)tt;
+                var tt = mainTileMap[p];
+                var ttt = (MainMapTile)tt;
 
                 if (terrain.TryGetValue(ttt.terrain, out var tttt))
                 {

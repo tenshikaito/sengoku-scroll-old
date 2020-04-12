@@ -46,9 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseObject.cs" />
-    <Compile Include="GameWorldGameData.cs" />
-    <Compile Include="GameWorldMasterData.cs" />
+    <Compile Include="GameData.cs" />
+    <Compile Include="MasterData.cs" />
     <Compile Include="Helper\CommonHelper.cs" />
+    <Compile Include="Helper\GameHelper.cs" />
+    <Compile Include="IncreasedIdDictionary.cs" />
     <Compile Include="Model\Army.cs" />
     <Compile Include="Model\AskJobApply.cs" />
     <Compile Include="Model\Building.cs" />
@@ -58,9 +60,9 @@
     <Compile Include="Model\Direction4.cs" />
     <Compile Include="Model\FinancialReporting.cs" />
     <Compile Include="Model\Force.cs" />
-    <Compile Include="Model\InnerTileMapInfo.cs" />
+    <Compile Include="Model\DetailTileMapInfo.cs" />
     <Compile Include="Model\Province.cs" />
-    <Compile Include="InnerTileMap.cs" />
+    <Compile Include="DetailTileMap.cs" />
     <Compile Include="TileAnimation.cs" />
     <Compile Include="TileMap.cs" />
     <Compile Include="TileMapImageInfo.cs" />
@@ -81,7 +83,7 @@
     <Compile Include="Model\Unit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Supplies.cs" />
-    <Compile Include="OuterTileMap.cs" />
+    <Compile Include="MainTileMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

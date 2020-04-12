@@ -22,7 +22,7 @@ namespace Client.UI
             Action brush,
             Action rectangle,
             Action fill,
-            Action innerTileMap,
+            Action detailTileMap,
             Action database,
             Action save,
             Action exit,
@@ -74,7 +74,7 @@ namespace Client.UI
 
             p = new FlowLayoutPanel().init(FlowDirection.LeftToRight).setAutoSizeP().addTo(panel);
 
-            new Button().init(w.inner_tile_map, innerTileMap).setAutoSize().addTo(p);
+            new Button().init(w.detail_tile_map, detailTileMap).setAutoSize().addTo(p);
 
             new Button().init(w.scene_edit_game_world.database, database).setAutoSize().addTo(p);
 

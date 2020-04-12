@@ -28,8 +28,8 @@ namespace Client
         public GameObject sceneManager;
         //public SceneTitle sceneTitle;
         //public SceneEditGameWorld sceneEditGameWorld;
-        //public SceneOuterMap sceneOuterMap;
-        //public SceneInnerMap sceneInnerMap;
+        //public SceneMainMap sceneMainMap;
+        //public SceneDetailMap sceneDetailMap;
 
         public void init()
         {
@@ -70,7 +70,7 @@ namespace Client
             //    commander = 1
             //};
 
-            //var gm = new GameOuterMap()
+            //var gm = new GameMainMap()
             //{
             //    data = tm,
             //    stronghold = new Dictionary<int, int>()
@@ -105,8 +105,8 @@ namespace Client
             //    }
             //};
 
-            //sceneOuterMap = new SceneOuterMap(this, gw);
-            //sceneInnerMap = new SceneInnerMap(this, gw);
+            //sceneMainMap = new SceneMainMap(this, gw);
+            //sceneDetailMap = new SceneDetailMap(this, gw);
         }
 
         public void sceneToEditGame(GameWorld gw)
@@ -119,14 +119,14 @@ namespace Client
             sceneManager.switchStatus(new SceneWaiting(this, wording.loading));
         }
 
-        public void sceneToOuterMap()
+        public void sceneToMainMap()
         {
-            //sceneManager.switchStatus(sceneOuterMap);
+            //sceneManager.switchStatus(sceneMainMap);
         }
 
-        public void sceneToInnerMap(Stronghold s)
+        public void sceneToDetailMap(Stronghold s)
         {
-            //sceneInnerMap.setMap(new GameInnerMap()
+            //sceneDetailMap.setMap(new GameDetailMap()
             //{
             //    currentStronghold = s,
             //    data = new TileMap(new TileMap.Size(1000))
@@ -135,7 +135,7 @@ namespace Client
             //    }
             //});
 
-            //sceneManager.switchStatus(sceneInnerMap);
+            //sceneManager.switchStatus(sceneDetailMap);
         }
     }
 }

@@ -19,8 +19,8 @@ namespace Client.Scene
         private GameWorld gameWorld;
 
         private SceneWaiting waitingStatus;
-        private OuterTileMapStatus outerTileMapStatus;
-        private InnerTileMapStatus innerTileMapStatus;
+        private MainTileMapStatus mainTileMapStatus;
+        private DetailTileMapStatus detailTileMapStatus;
 
         private UIConfirmDialog uiConfirmDialog;
 
@@ -28,7 +28,7 @@ namespace Client.Scene
 
         private UIEditGameWorldDatabaseWindow uiEditGameWorldDatabaseWindow;
 
-        private UIEditGameWorldInnerTileMapDialog uiEditGameWorldInnerTileMapDialog;
+        private UIEditGameWorldDetailTileMapDialog uiEditGameWorldDetailTileMapDialog;
 
         private DrawContent drawContent = DrawContent.terrain;
         private int drawContentId = 0;
@@ -40,8 +40,8 @@ namespace Client.Scene
             gameWorld = gw;
 
             waitingStatus = new SceneWaiting(gs, gs.wording.loading);
-            outerTileMapStatus = new OuterTileMapStatus(this);
-            innerTileMapStatus = new InnerTileMapStatus(this);
+            mainTileMapStatus = new MainTileMapStatus(this);
+            detailTileMapStatus = new DetailTileMapStatus(this);
 
             uiEditGameWorldMenuWindow = new UIEditGameWorldMenuWindow(
                 gs,
@@ -49,13 +49,13 @@ namespace Client.Scene
                 onBrushButtonClicked,
                 onRectangleButtonClicked,
                 onFillButtonClicked,
-                onInnerTileMapButtonClicked,
+                onDetailTileMapButtonClicked,
                 onDatabaseButtonClicked,
                 onSaveButtonClicked,
                 onExitButtonClicked,
                 onTerrainSelected);
 
-            uiEditGameWorldMenuWindow.setTerrain(gameWorld.gameWorldMasterData.terrain.Values.ToList());
+            uiEditGameWorldMenuWindow.setTerrain(gameWorld.masterData.terrain.Values.ToList());
         }
 
         private enum DrawContent
@@ -72,7 +72,7 @@ namespace Client.Scene
 
         public override void start()
         {
-            switchStatus(outerTileMapStatus);
+            switchStatus(mainTileMapStatus);
         }
 
         public override void finish()
@@ -88,25 +88,25 @@ namespace Client.Scene
 
         private void onFillButtonClicked() => (status as Status).setDrawMode(DrawMode.fill);
 
-        private void onInnerTileMapButtonClicked()
+        private void onDetailTileMapButtonClicked()
         {
-            if (uiEditGameWorldInnerTileMapDialog == null)
+            if (uiEditGameWorldDetailTileMapDialog == null)
             {
-                uiEditGameWorldInnerTileMapDialog = new UIEditGameWorldInnerTileMapDialog(
-                    gameSystem, gameWorld.gameWorldMasterData.innerTileMapInfo, onInnerTileMapSelected)
+                uiEditGameWorldDetailTileMapDialog = new UIEditGameWorldDetailTileMapDialog(
+                    gameSystem, gameWorld.masterData.detailTileMapInfo, onDetailTileMapSelected)
                 {
                     okButtonClicked = () =>
                     {
-                        uiEditGameWorldInnerTileMapDialog.Close();
-                        uiEditGameWorldInnerTileMapDialog = null;
+                        uiEditGameWorldDetailTileMapDialog.Close();
+                        uiEditGameWorldDetailTileMapDialog = null;
                     }
                 };
 
-                uiEditGameWorldInnerTileMapDialog.Show(formMain);
+                uiEditGameWorldDetailTileMapDialog.Show(formMain);
             }
         }
 
-        private void onInnerTileMapSelected(int id)
+        private void onDetailTileMapSelected(int id)
         {
             switchStatus(waitingStatus);
 
@@ -114,15 +114,15 @@ namespace Client.Scene
             {
                 var gwp = gameWorld.getGameWorldProcessor();
 
-                var itm = gameWorld.gameWorldMasterData.innerTileMapInfo[id];
+                var itm = gameWorld.masterData.detailTileMapInfo[id];
 
-                var tm = gwp.loadInnerTileMap(id, itm.size.column, itm.size.row);
+                var tm = gwp.loadDetailTileMap(id, itm.size.column, itm.size.row);
 
-                innerTileMapStatus.setTileMap(tm);
+                detailTileMapStatus.setTileMap(tm);
 
-                innerTileMapStatus.resetFlag();
+                detailTileMapStatus.resetFlag();
 
-                dispatcher.invoke(() => switchStatus(innerTileMapStatus));
+                dispatcher.invoke(() => switchStatus(detailTileMapStatus));
             });
         }
 
@@ -138,7 +138,7 @@ namespace Client.Scene
             };
 
             uiEditGameWorldDatabaseWindow.FormClosing += (s, e) => uiEditGameWorldDatabaseWindow = null;
-            uiEditGameWorldDatabaseWindow.Show();
+            uiEditGameWorldDatabaseWindow.ShowDialog(formMain);
         }
 
         private void onDatabaseWindowOkButtonClicked()
@@ -150,7 +150,7 @@ namespace Client.Scene
 
         private void saveDatabase()
         {
-            gameWorld.gameWorldMasterData = uiEditGameWorldDatabaseWindow.gameWorldMasterData;
+            gameWorld.masterData = uiEditGameWorldDatabaseWindow.gameWorldMasterData;
         }
 
         private void onSaveButtonClicked()
@@ -220,10 +220,10 @@ namespace Client.Scene
             }
         }
 
-        public class OuterTileMapStatus : Status
+        public class MainTileMapStatus : Status
         {
-            private ZoomableTileMapSprites<OuterTileMapSprites> zoomableTileMapSprites;
-            private OuterTileMapSprites.OuterMapSpritesInfo outerMapSpritesInfo;
+            private ZoomableTileMapSprites<MainTileMapSprites> zoomableTileMapSprites;
+            private MainTileMapSprites.MainMapSpritesInfo mainMapSpritesInfo;
 
             private PointerStatus pointerStatus;
             private DrawTileStatus drawTileStatus;
@@ -232,15 +232,15 @@ namespace Client.Scene
 
             private Status currentStatus;
 
-            public OuterTileMapSprites tileMap => zoomableTileMapSprites.tileMapSprites;
+            public MainTileMapSprites tileMap => zoomableTileMapSprites.tileMapSprites;
 
-            public OuterTileMapStatus(SceneEditGameWorld s) : base(s)
+            public MainTileMapStatus(SceneEditGameWorld s) : base(s)
             {
-                var msi = outerMapSpritesInfo = new OuterTileMapSprites.OuterMapSpritesInfo(s.gameWorld);
+                var msi = mainMapSpritesInfo = new MainTileMapSprites.MainMapSpritesInfo(s.gameWorld);
 
-                zoomableTileMapSprites = new ZoomableTileMapSprites<OuterTileMapSprites>(
-                    s.gameWorld.gameWorldMasterData.outerTileMapImageInfo.Values.Select(
-                        o => new OuterTileMapSprites(s.gameSystem, s.gameWorld, o, msi, true)).ToList());
+                zoomableTileMapSprites = new ZoomableTileMapSprites<MainTileMapSprites>(
+                    s.gameWorld.masterData.mainTileMapImageInfo.Values.Select(
+                        o => new MainTileMapSprites(s.gameSystem, s.gameWorld, o, msi, true)).ToList());
 
                 pointerStatus = new PointerStatus(this);
                 drawTileStatus = new DrawTileStatus(this);
@@ -295,7 +295,7 @@ namespace Client.Scene
 
             public class Status : GameObject
             {
-                protected OuterTileMapStatus gameStatus;
+                protected MainTileMapStatus gameStatus;
 
                 protected SceneEditGameWorld scene => gameStatus.scene;
 
@@ -303,14 +303,14 @@ namespace Client.Scene
 
                 protected GameWorld gameWorld => scene.gameWorld;
 
-                protected OuterTileMap tileMap => gameStatus.outerMapSpritesInfo.outerTileMap;
+                protected MainTileMap tileMap => gameStatus.mainMapSpritesInfo.mainTileMap;
 
-                public Status(OuterTileMapStatus s) => gameStatus = s;
+                public Status(MainTileMapStatus s) => gameStatus = s;
             }
 
             public class PointerStatus : Status
             {
-                public PointerStatus(OuterTileMapStatus s) : base(s)
+                public PointerStatus(MainTileMapStatus s) : base(s)
                 {
                 }
 
@@ -322,7 +322,7 @@ namespace Client.Scene
 
             public class DrawTileStatus : Status
             {
-                public DrawTileStatus(OuterTileMapStatus s) : base(s)
+                public DrawTileStatus(MainTileMapStatus s) : base(s)
                 {
                 }
 
@@ -342,7 +342,7 @@ namespace Client.Scene
 
                             tileMap.setTerrain(p, (byte)scene.drawContentId);
 
-                            gameStatus.outerMapSpritesInfo.resetTileFlag(p);
+                            gameStatus.mainMapSpritesInfo.resetTileFlag(p);
 
                             break;
                     }
@@ -354,13 +354,13 @@ namespace Client.Scene
                 public Point? startPoint;
                 public Rectangle rectangle;
 
-                public DrawTileRectangleStatus(OuterTileMapStatus s) : base(s)
+                public DrawTileRectangleStatus(MainTileMapStatus s) : base(s)
                 {
                 }
 
                 public override void mousePressed(MouseEventArgs e)
                 {
-                    if (gameWorld.gameOuterMapData.data.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
+                    if (gameWorld.mainTileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
 
                     startPoint = e.Location;
                 }
@@ -383,7 +383,7 @@ namespace Client.Scene
                             var tr = gameStatus.tileMap.getTileLocation(trp);
                             var bl = gameStatus.tileMap.getTileLocation(blp);
 
-                            var tm = gameWorld.gameOuterMapData.data;
+                            var tm = gameWorld.mainTileMap;
 
                             tm.checkBound(ref tl);
                             tm.checkBound(ref tr);
@@ -400,7 +400,7 @@ namespace Client.Scene
                             {
                                 tileMap.setTerrain(o, t);
 
-                                gameStatus.outerMapSpritesInfo.resetTileFlag(o);
+                                gameStatus.mainMapSpritesInfo.resetTileFlag(o);
                             });
 
                             break;
@@ -433,13 +433,13 @@ namespace Client.Scene
                 private HashSet<MapPoint> markedPoints = new HashSet<MapPoint>();
                 private byte selectedTerrainId;
 
-                public DrawTileFillStatus(OuterTileMapStatus s) : base(s)
+                public DrawTileFillStatus(MainTileMapStatus s) : base(s)
                 {
                 }
 
                 public override void mouseReleased(MouseEventArgs e)
                 {
-                    var p = scene.outerTileMapStatus.tileMap.getTileLocation(e);
+                    var p = scene.mainTileMapStatus.tileMap.getTileLocation(e);
 
                     var t = tileMap[p];
 
@@ -489,7 +489,7 @@ namespace Client.Scene
 
                     list.ForEach(o => tileMap.setTerrain(o, terrainId));
 
-                    list.ForEach(gameStatus.outerMapSpritesInfo.resetTileFlag);
+                    list.ForEach(gameStatus.mainMapSpritesInfo.resetTileFlag);
                 }
 
                 private void add(int x, int y)
@@ -500,10 +500,10 @@ namespace Client.Scene
         }
 
 
-        public class InnerTileMapStatus : Status
+        public class DetailTileMapStatus : Status
         {
-            private ZoomableTileMapSprites<InnerTileMapSprites> zoomableTileMapSprites;
-            private InnerTileMapSprites.InnerMapSpritesInfo innerMapSpritesInfo;
+            private ZoomableTileMapSprites<DetailTileMapSprites> zoomableTileMapSprites;
+            private DetailTileMapSprites.DetailMapSpritesInfo detailMapSpritesInfo;
 
             private PointerStatus pointerStatus;
             private DrawTileStatus drawTileStatus;
@@ -512,15 +512,15 @@ namespace Client.Scene
 
             private Status currentStatus;
 
-            public InnerTileMapSprites tileMap => zoomableTileMapSprites.tileMapSprites;
+            public DetailTileMapSprites tileMap => zoomableTileMapSprites.tileMapSprites;
 
-            public InnerTileMapStatus(SceneEditGameWorld s) : base(s)
+            public DetailTileMapStatus(SceneEditGameWorld s) : base(s)
             {
-                innerMapSpritesInfo = new InnerTileMapSprites.InnerMapSpritesInfo(s.gameWorld);
+                detailMapSpritesInfo = new DetailTileMapSprites.DetailMapSpritesInfo(s.gameWorld);
 
-                zoomableTileMapSprites = new ZoomableTileMapSprites<InnerTileMapSprites>(
-                    s.gameWorld.gameWorldMasterData.innerTileMapImageInfo.Values.Select(
-                        o => new InnerTileMapSprites(s.gameSystem, s.gameWorld, o, innerMapSpritesInfo, true)).ToList());
+                zoomableTileMapSprites = new ZoomableTileMapSprites<DetailTileMapSprites>(
+                    s.gameWorld.masterData.detailTileMapImageInfo.Values.Select(
+                        o => new DetailTileMapSprites(s.gameSystem, s.gameWorld, o, detailMapSpritesInfo, true)).ToList());
 
                 pointerStatus = new PointerStatus(this);
                 drawTileStatus = new DrawTileStatus(this);
@@ -528,9 +528,9 @@ namespace Client.Scene
                 drawTileFillStatus = new DrawTileFillStatus(this);
             }
 
-            public void setTileMap(InnerTileMap tm) => innerMapSpritesInfo.innerTileMap = tm;
+            public void setTileMap(DetailTileMap tm) => detailMapSpritesInfo.detailTileMap = tm;
 
-            public void resetFlag() => innerMapSpritesInfo.removeTileFlag();
+            public void resetFlag() => detailMapSpritesInfo.removeTileFlag();
 
             public override void start()
             {
@@ -577,7 +577,7 @@ namespace Client.Scene
 
             public class Status : GameObject
             {
-                protected InnerTileMapStatus gameStatus;
+                protected DetailTileMapStatus gameStatus;
 
                 protected SceneEditGameWorld scene => gameStatus.scene;
 
@@ -585,14 +585,14 @@ namespace Client.Scene
 
                 protected GameWorld gameWorld => scene.gameWorld;
 
-                protected InnerTileMap tileMap => gameStatus.innerMapSpritesInfo.innerTileMap;
+                protected DetailTileMap tileMap => gameStatus.detailMapSpritesInfo.detailTileMap;
 
-                public Status(InnerTileMapStatus s) => gameStatus = s;
+                public Status(DetailTileMapStatus s) => gameStatus = s;
             }
 
             public class PointerStatus : Status
             {
-                public PointerStatus(InnerTileMapStatus s) : base(s)
+                public PointerStatus(DetailTileMapStatus s) : base(s)
                 {
                 }
 
@@ -604,7 +604,7 @@ namespace Client.Scene
 
             public class DrawTileStatus : Status
             {
-                public DrawTileStatus(InnerTileMapStatus s) : base(s)
+                public DrawTileStatus(DetailTileMapStatus s) : base(s)
                 {
                 }
 
@@ -624,7 +624,7 @@ namespace Client.Scene
 
                             tileMap.setTerrain(p, (byte)scene.drawContentId);
 
-                            gameStatus.innerMapSpritesInfo.resetTileFlag(p);
+                            gameStatus.detailMapSpritesInfo.resetTileFlag(p);
 
                             break;
                     }
@@ -636,13 +636,13 @@ namespace Client.Scene
                 public Point? startPoint;
                 public Rectangle rectangle;
 
-                public DrawTileRectangleStatus(InnerTileMapStatus s) : base(s)
+                public DrawTileRectangleStatus(DetailTileMapStatus s) : base(s)
                 {
                 }
 
                 public override void mousePressed(MouseEventArgs e)
                 {
-                    if (gameWorld.gameOuterMapData.data.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
+                    if (gameWorld.mainTileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
 
                     startPoint = e.Location;
                 }
@@ -665,7 +665,7 @@ namespace Client.Scene
                             var tr = gameStatus.tileMap.getTileLocation(trp);
                             var bl = gameStatus.tileMap.getTileLocation(blp);
 
-                            var tm = gameWorld.gameOuterMapData.data;
+                            var tm = gameWorld.mainTileMap;
 
                             tm.checkBound(ref tl);
                             tm.checkBound(ref tr);
@@ -682,7 +682,7 @@ namespace Client.Scene
                             {
                                 tileMap.setTerrain(o, t);
 
-                                gameStatus.innerMapSpritesInfo.resetTileFlag(o);
+                                gameStatus.detailMapSpritesInfo.resetTileFlag(o);
                             });
 
                             break;
@@ -715,13 +715,13 @@ namespace Client.Scene
                 private HashSet<MapPoint> markedPoints = new HashSet<MapPoint>();
                 private byte selectedTerrainId;
 
-                public DrawTileFillStatus(InnerTileMapStatus s) : base(s)
+                public DrawTileFillStatus(DetailTileMapStatus s) : base(s)
                 {
                 }
 
                 public override void mouseReleased(MouseEventArgs e)
                 {
-                    var p = scene.outerTileMapStatus.tileMap.getTileLocation(e);
+                    var p = scene.mainTileMapStatus.tileMap.getTileLocation(e);
 
                     var t = tileMap[p];
 
@@ -771,7 +771,7 @@ namespace Client.Scene
 
                     list.ForEach(o => tileMap.setTerrain(o, terrainId));
 
-                    list.ForEach(gameStatus.innerMapSpritesInfo.resetTileFlag);
+                    list.ForEach(gameStatus.detailMapSpritesInfo.resetTileFlag);
                 }
 
                 private void add(int x, int y)

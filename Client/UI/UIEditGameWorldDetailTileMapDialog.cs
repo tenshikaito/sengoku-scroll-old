@@ -12,13 +12,13 @@ using System.Windows.Forms;
 
 namespace Client.UI
 {
-    public class UIEditGameWorldInnerTileMapDialog : UIDialog
+    public class UIEditGameWorldDetailTileMapDialog : UIDialog
     {
         private ListView listView;
 
-        public UIEditGameWorldInnerTileMapDialog(GameSystem gs, Dictionary<int, InnerTileMapInfo> data, Action<int> selectedInnerTileMap) : base(gs)
+        public UIEditGameWorldDetailTileMapDialog(GameSystem gs, Dictionary<int, DetailTileMapInfo> data, Action<int> selectedDetailTileMap) : base(gs)
         {
-            this.setCommandWindow(w.inner_tile_map).setAutoSizeF();
+            this.setCommandWindow(w.detail_tile_map).setAutoSizeF();
 
             StartPosition = FormStartPosition.Manual;
             Location = new Point(gs.formMain.Location.X, Location.Y);
@@ -29,7 +29,7 @@ namespace Client.UI
             {
                 if (listView.FocusedItem == null) return;
 
-                selectedInnerTileMap((int)listView.FocusedItem.Tag);
+                selectedDetailTileMap((int)listView.FocusedItem.Tag);
             };
 
             addConfirmButton();
@@ -37,7 +37,7 @@ namespace Client.UI
             setData(data);
         }
 
-        private void setData(Dictionary<int, InnerTileMapInfo> data)
+        private void setData(Dictionary<int, DetailTileMapInfo> data)
         {
             listView.Items.Clear();
 

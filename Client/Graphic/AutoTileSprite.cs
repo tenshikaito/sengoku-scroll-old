@@ -11,7 +11,7 @@ namespace Client.Graphic
 {
     public class AutoTileSprite
     {
-        private int tileWidth, tileHeight, innerTileWidth, innerTileHeight;
+        private int tileWidth, tileHeight, detailTileWidth, detailTileHeight;
 
         public Sprite sprite1 = new Sprite();
         public Sprite sprite2 = new Sprite();
@@ -36,9 +36,9 @@ namespace Client.Graphic
             set
             {
                 sprite1.position = value;
-                sprite2.position = new Point(value.X + innerTileWidth, value.Y);
-                sprite3.position = new Point(value.X, value.Y + innerTileHeight);
-                sprite4.position = new Point(value.X + innerTileWidth, value.Y + innerTileHeight);
+                sprite2.position = new Point(value.X + detailTileWidth, value.Y);
+                sprite3.position = new Point(value.X, value.Y + detailTileHeight);
+                sprite4.position = new Point(value.X + detailTileWidth, value.Y + detailTileHeight);
             }
         }
 
@@ -58,8 +58,8 @@ namespace Client.Graphic
         {
             tileWidth = m.tileWidth;
             tileHeight = m.tileHeight;
-            innerTileWidth = tileWidth / 2;
-            innerTileHeight = tileHeight / 2;
+            detailTileWidth = tileWidth / 2;
+            detailTileHeight = tileHeight / 2;
         }
 
         public void refresh(Image bitmap, Point p, byte different)
@@ -72,10 +72,10 @@ namespace Client.Graphic
 
         private void fillSprite(Image bitmap, Point p, Sprite s, ICalculator c, byte different)
         {
-            var (x, y) = c.calculate(p.X, p.Y, tileWidth, tileHeight, innerTileWidth, innerTileHeight, different);
+            var (x, y) = c.calculate(p.X, p.Y, tileWidth, tileHeight, detailTileWidth, detailTileHeight, different);
 
             s.bitmap = bitmap;
-            s.sourceRectangle = new Rectangle(x, y, innerTileWidth, innerTileHeight);
+            s.sourceRectangle = new Rectangle(x, y, detailTileWidth, detailTileHeight);
         }
     }
 }

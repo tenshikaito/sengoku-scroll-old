@@ -7,7 +7,7 @@ using static Library.TileMap;
 
 namespace Library.Model
 {
-    public class InnerTileMapInfo
+    public class DetailTileMapInfo
     {
         public int id;
 

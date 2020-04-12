@@ -421,7 +421,7 @@ namespace Client
 
         public string height => this[nameof(height)];
 
-        public string inner_tile_map => this[nameof(inner_tile_map)];
+        public string detail_tile_map => this[nameof(detail_tile_map)];
 
         public string edit_game_world => this[nameof(edit_game_world)];
 
@@ -448,8 +448,8 @@ namespace Client
         public StrongholdType stronghold_type;
 
         public TileMapImageInfo tile_map_image_info;
-        public OuterTileMapImageInfo outer_tile_map_image_info;
-        public InnerTileMapImageInfo inner_tile_map_image_info;
+        public MainTileMapImageInfo main_tile_map_image_info;
+        public DetailTileMapImageInfo detail_tile_map_image_info;
 
         public SceneTitle scene_title;
 
@@ -468,8 +468,8 @@ namespace Client
             stronghold_type = new StrongholdType(this, nameof(stronghold_type));
 
             tile_map_image_info = new TileMapImageInfo(this, nameof(tile_map_image_info));
-            outer_tile_map_image_info = new OuterTileMapImageInfo(this, nameof(outer_tile_map_image_info));
-            inner_tile_map_image_info = new InnerTileMapImageInfo(this, nameof(inner_tile_map_image_info));
+            main_tile_map_image_info = new MainTileMapImageInfo(this, nameof(main_tile_map_image_info));
+            detail_tile_map_image_info = new DetailTileMapImageInfo(this, nameof(detail_tile_map_image_info));
 
             scene_title = new SceneTitle(this, nameof(scene_title));
             scene_edit_game_world = new SceneEditGameWorld(this, nameof(scene_title));
@@ -602,20 +602,20 @@ namespace Client
             }
         }
 
-        public class OuterTileMapImageInfo : Part
+        public class MainTileMapImageInfo : Part
         {
             public string text => this[prefix];
 
-            public OuterTileMapImageInfo(Wording w, string prefix) : base(w, prefix)
+            public MainTileMapImageInfo(Wording w, string prefix) : base(w, prefix)
             {
             }
         }
 
-        public class InnerTileMapImageInfo : Part
+        public class DetailTileMapImageInfo : Part
         {
             public string text => this[prefix];
 
-            public InnerTileMapImageInfo(Wording w, string prefix) : base(w, prefix)
+            public DetailTileMapImageInfo(Wording w, string prefix) : base(w, prefix)
             {
             }
         }

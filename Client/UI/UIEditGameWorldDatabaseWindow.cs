@@ -13,13 +13,13 @@ namespace Client.UI
 {
     public partial class UIEditGameWorldDatabaseWindow : UISaveableConfirmDialog
     {
-        public GameWorldMasterData gameWorldMasterData;
+        public MasterData gameWorldMasterData;
 
         private TabControl tabControl;
 
         public UIEditGameWorldDatabaseWindow(GameSystem gs, GameWorld gw) : base(gs)
         {
-            gameWorldMasterData = gw.gameWorldMasterData;
+            gameWorldMasterData = gw.masterData;
 
             MaximizeBox = false;
 
@@ -39,11 +39,11 @@ namespace Client.UI
 
             new TabPageStronghold(this, gameWorldMasterData.strongholdType, gameWorldMasterData).addTo(tc);
 
-            new TabPageInnerTileMapInfo(this, gameWorldMasterData.innerTileMapInfo, gameWorldMasterData.terrain).addTo(tc);
+            new TabPageDetailTileMapInfo(this, gameWorldMasterData.detailTileMapInfo, gameWorldMasterData.terrain).addTo(tc);
 
-            new TabPageOuterMapTileImageInfo(this, gameWorldMasterData.outerTileMapImageInfo, gameWorldMasterData).addTo(tc);
+            new TabPageMainMapTileImageInfo(this, gameWorldMasterData.mainTileMapImageInfo, gameWorldMasterData).addTo(tc);
 
-            new TabPageInnerMapTileImageInfo(this, gameWorldMasterData.innerTileMapImageInfo, gameWorldMasterData).addTo(tc);
+            new TabPageDetailMapTileImageInfo(this, gameWorldMasterData.detailTileMapImageInfo, gameWorldMasterData).addTo(tc);
 
             addSaveableConfirmButtons();
         }
@@ -847,7 +847,7 @@ namespace Client.UI
     {
         private class TabPageStronghold : TabPageBase
         {
-            private GameWorldMasterData gameData;
+            private MasterData gameData;
             private Dictionary<int, Stronghold.Type> data;
             private int? currentId;
 
@@ -856,7 +856,7 @@ namespace Client.UI
             private TextBox tbIntroduction;
 
             public TabPageStronghold(
-                UIEditGameWorldDatabaseWindow bw, Dictionary<int, Stronghold.Type> data, GameWorldMasterData gameData)
+                UIEditGameWorldDatabaseWindow bw, Dictionary<int, Stronghold.Type> data, MasterData gameData)
                 : base(bw)
             {
                 this.gameData = gameData;
@@ -998,24 +998,24 @@ namespace Client.UI
 
     public partial class UIEditGameWorldDatabaseWindow
     {
-        private partial class TabPageOuterMapTileImageInfo : TabPageBase
+        private partial class TabPageMainMapTileImageInfo : TabPageBase
         {
-            private Dictionary<int, OuterTileMapImageInfo> data;
+            private Dictionary<int, MainTileMapImageInfo> data;
             private int? currentId;
 
             private TextBox tbName;
             private TextBox tbTileWidth;
             private TextBox tbTileHeight;
 
-            private TabPageOuterMapTileImageInfoTerrain tpTerrain;
+            private TabPageMainMapTileImageInfoTerrain tpTerrain;
 
-            public TabPageOuterMapTileImageInfo(
-                UIEditGameWorldDatabaseWindow bw, Dictionary<int, OuterTileMapImageInfo> data, GameWorldMasterData gameData)
+            public TabPageMainMapTileImageInfo(
+                UIEditGameWorldDatabaseWindow bw, Dictionary<int, MainTileMapImageInfo> data, MasterData gameData)
                 : base(bw)
             {
                 this.data = data;
 
-                this.init(w.outer_tile_map_image_info.text).setAutoSizeP();
+                this.init(w.main_tile_map_image_info.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -1070,7 +1070,7 @@ namespace Client.UI
 
                 var tc = new TabControl() { Dock = DockStyle.Fill }.init().setAutoSize().addTo(gb);
 
-                tpTerrain = new TabPageOuterMapTileImageInfoTerrain(bw, lv).addTo(tc);
+                tpTerrain = new TabPageMainMapTileImageInfoTerrain(bw, lv).addTo(tc);
 
                 initData(lv);
 
@@ -1085,7 +1085,7 @@ namespace Client.UI
 
                 if (++max > int.MaxValue) return;
 
-                var oo = new OuterTileMapImageInfo()
+                var oo = new MainTileMapImageInfo()
                 {
                     id = max,
                     name = w.tile_map_image_info.text,
@@ -1116,7 +1116,7 @@ namespace Client.UI
                 lv.autoResizeColumns();
             }
 
-            private ListViewItem setRow(ListViewItem lvi, OuterTileMapImageInfo o)
+            private ListViewItem setRow(ListViewItem lvi, MainTileMapImageInfo o)
             {
                 lvi.Text = o.id.ToString();
 
@@ -1170,16 +1170,16 @@ namespace Client.UI
 
     public partial class UIEditGameWorldDatabaseWindow
     {
-        private partial class TabPageOuterMapTileImageInfo : TabPageBase
+        private partial class TabPageMainMapTileImageInfo : TabPageBase
         {
-            private class TabPageOuterMapTileImageInfoTerrain : TabPageBase
+            private class TabPageMainMapTileImageInfoTerrain : TabPageBase
             {
-                private OuterTileMapImageInfo data;
+                private MainTileMapImageInfo data;
 
                 private Label lbStatus;
                 private TextBox tbContent;
 
-                public TabPageOuterMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, ListView lv) : base(bw)
+                public TabPageMainMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, ListView lv) : base(bw)
                 {
                     this.init(w.terrain.text).setAutoSizeP();
 
@@ -1232,7 +1232,7 @@ namespace Client.UI
                     }.addTo(tlp);
                 }
 
-                public void setData(OuterTileMapImageInfo data)
+                public void setData(MainTileMapImageInfo data)
                 {
                     this.data = data;
 
@@ -1269,24 +1269,24 @@ namespace Client.UI
 
     public partial class UIEditGameWorldDatabaseWindow
     {
-        private partial class TabPageInnerMapTileImageInfo : TabPageBase
+        private partial class TabPageDetailMapTileImageInfo : TabPageBase
         {
-            private Dictionary<int, InnerTileMapImageInfo> data;
+            private Dictionary<int, DetailTileMapImageInfo> data;
             private int? currentId;
 
             private TextBox tbName;
             private TextBox tbTileWidth;
             private TextBox tbTileHeight;
 
-            private TabPageInnerMapTileImageInfoTerrain tpTerrain;
+            private TabPageDetailMapTileImageInfoTerrain tpTerrain;
 
-            public TabPageInnerMapTileImageInfo(
-                UIEditGameWorldDatabaseWindow bw, Dictionary<int, InnerTileMapImageInfo> data, GameWorldMasterData gameData)
+            public TabPageDetailMapTileImageInfo(
+                UIEditGameWorldDatabaseWindow bw, Dictionary<int, DetailTileMapImageInfo> data, MasterData gameData)
                 : base(bw)
             {
                 this.data = data;
 
-                this.init(w.inner_tile_map_image_info.text).setAutoSizeP();
+                this.init(w.detail_tile_map_image_info.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -1341,7 +1341,7 @@ namespace Client.UI
 
                 var tc = new TabControl() { Dock = DockStyle.Fill }.init().setAutoSize().addTo(gb);
 
-                tpTerrain = new TabPageInnerMapTileImageInfoTerrain(bw, lv).addTo(tc);
+                tpTerrain = new TabPageDetailMapTileImageInfoTerrain(bw, lv).addTo(tc);
 
                 initData(lv);
 
@@ -1356,7 +1356,7 @@ namespace Client.UI
 
                 if (++max > int.MaxValue) return;
 
-                var oo = new InnerTileMapImageInfo()
+                var oo = new DetailTileMapImageInfo()
                 {
                     id = max,
                     name = w.tile_map_image_info.text,
@@ -1386,7 +1386,7 @@ namespace Client.UI
                 lv.autoResizeColumns();
             }
 
-            private ListViewItem setRow(ListViewItem lvi, InnerTileMapImageInfo o)
+            private ListViewItem setRow(ListViewItem lvi, DetailTileMapImageInfo o)
             {
                 lvi.Text = o.id.ToString();
 
@@ -1440,16 +1440,16 @@ namespace Client.UI
 
     public partial class UIEditGameWorldDatabaseWindow
     {
-        private partial class TabPageInnerMapTileImageInfo : TabPageBase
+        private partial class TabPageDetailMapTileImageInfo : TabPageBase
         {
-            private class TabPageInnerMapTileImageInfoTerrain : TabPageBase
+            private class TabPageDetailMapTileImageInfoTerrain : TabPageBase
             {
-                private InnerTileMapImageInfo data;
+                private DetailTileMapImageInfo data;
 
                 private Label lbStatus;
                 private TextBox tbContent;
 
-                public TabPageInnerMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, ListView lv) : base(bw)
+                public TabPageDetailMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, ListView lv) : base(bw)
                 {
                     this.init(w.terrain.text).setAutoSizeP();
 
@@ -1502,7 +1502,7 @@ namespace Client.UI
                     }.addTo(tlp);
                 }
 
-                public void setData(InnerTileMapImageInfo data)
+                public void setData(DetailTileMapImageInfo data)
                 {
                     this.data = data;
 
@@ -1539,9 +1539,9 @@ namespace Client.UI
 
     public partial class UIEditGameWorldDatabaseWindow
     {
-        private partial class TabPageInnerTileMapInfo : TabPageBase
+        private partial class TabPageDetailTileMapInfo : TabPageBase
         {
-            private Dictionary<int, InnerTileMapInfo> data;
+            private Dictionary<int, DetailTileMapInfo> data;
             private Dictionary<int, Terrain> terrain;
             private int? currentId;
 
@@ -1550,14 +1550,14 @@ namespace Client.UI
             private TextBox tbMapHeight;
             private ComboBox cbTerrain;
 
-            public TabPageInnerTileMapInfo(
-                UIEditGameWorldDatabaseWindow bw, Dictionary<int, InnerTileMapInfo> data, Dictionary<int, Terrain> terrain)
+            public TabPageDetailTileMapInfo(
+                UIEditGameWorldDatabaseWindow bw, Dictionary<int, DetailTileMapInfo> data, Dictionary<int, Terrain> terrain)
                 : base(bw)
             {
                 this.data = data;
                 this.terrain = terrain;
 
-                this.init(w.inner_tile_map).setAutoSizeP();
+                this.init(w.detail_tile_map).setAutoSizeP();
 
                 bw.tabControl.SelectedIndexChanged += (s, e) =>
                 {
@@ -1631,10 +1631,10 @@ namespace Client.UI
 
                 if (++max > int.MaxValue) return;
 
-                var oo = new InnerTileMapInfo()
+                var oo = new DetailTileMapInfo()
                 {
                     id = max,
-                    name = w.inner_tile_map,
+                    name = w.detail_tile_map,
                     size = new TileMap.Size(100, 100),
                 };
 
@@ -1661,7 +1661,7 @@ namespace Client.UI
                 lv.autoResizeColumns();
             }
 
-            private ListViewItem setRow(ListViewItem lvi, InnerTileMapInfo o)
+            private ListViewItem setRow(ListViewItem lvi, DetailTileMapInfo o)
             {
                 lvi.Text = o.id.ToString();
 
@@ -1715,18 +1715,18 @@ namespace Client.UI
     #region 图形化编辑界面模板、状态基本完成、因为结构麻烦而废弃
     //public partial class UIEditGameWorldDatabaseWindow
     //{
-    //    private partial class TabPageOuterMapTileImageInfo : TabPageBase
+    //    private partial class TabPageMainMapTileImageInfo : TabPageBase
     //    {
-    //        private class TabPageOuterMapTileImageInfoTerrain : TabPageBase
+    //        private class TabPageMainMapTileImageInfoTerrain : TabPageBase
     //        {
-    //            private OuterTileMapImageInfo data;
+    //            private MainTileMapImageInfo data;
     //            private Dictionary<int, Terrain> terrain;
 
     //            private TextBox tbInterval;
     //            private ListView lvTerrain;
     //            private ListView lvFrame;
 
-    //            public TabPageOuterMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Terrain> terrain) : base(bw)
+    //            public TabPageMainMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Terrain> terrain) : base(bw)
     //            {
     //                this.terrain = terrain;
 
@@ -1883,7 +1883,7 @@ namespace Client.UI
     //                lvFrame.autoResizeColumns(-5);
     //            }
 
-    //            public void setData(OuterTileMapImageInfo data) => this.data = data;
+    //            public void setData(MainTileMapImageInfo data) => this.data = data;
     //        }
     //    }
     //}

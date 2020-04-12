@@ -86,8 +86,8 @@
     <Compile Include="GameWorldProcessor.cs" />
     <Compile Include="Graphic\AutoTileCalculator.cs" />
     <Compile Include="Graphic\AutoTileSprite.cs" />
-    <Compile Include="Graphic\InnerTileMapSprites.cs" />
-    <Compile Include="Graphic\OuterTileMapSprites.cs" />
+    <Compile Include="Graphic\DetailTileMapSprites.cs" />
+    <Compile Include="Graphic\MainTileMapSprites.cs" />
     <Compile Include="Graphic\Sprite.cs" />
     <Compile Include="Graphic\SpriteBase.cs" />
     <Compile Include="Graphic\SpriteText.cs" />

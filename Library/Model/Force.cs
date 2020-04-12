@@ -79,8 +79,8 @@ namespace Library.Model
         public enum Status : byte
         {
             dependent = 0,
-            innerIndependent = 1,
-            outerIndependent = 2
+            detailIndependent = 1,
+            mainIndependent = 2
         }
     }
 }

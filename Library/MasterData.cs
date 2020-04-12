@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Library
 {
-    public class GameWorldMasterData
+    public class MasterData
     {
         public Dictionary<int, Terrain> terrain;
         public Dictionary<int, Region> region;
@@ -15,9 +15,9 @@ namespace Library
         public Dictionary<int, Road> road;
         public Dictionary<int, Stronghold.Type> strongholdType;
 
-        public Dictionary<int, InnerTileMapInfo> innerTileMapInfo;
+        public Dictionary<int, DetailTileMapInfo> detailTileMapInfo;
 
-        public Dictionary<int, OuterTileMapImageInfo> outerTileMapImageInfo;
-        public Dictionary<int, InnerTileMapImageInfo> innerTileMapImageInfo;
+        public Dictionary<int, MainTileMapImageInfo> mainTileMapImageInfo;
+        public Dictionary<int, DetailTileMapImageInfo> detailTileMapImageInfo;
     }
 }
