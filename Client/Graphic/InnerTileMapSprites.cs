@@ -7,8 +7,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
-using static Library.GameWorldInnerMapData;
 
 namespace Client.Graphic
 {
@@ -23,7 +21,7 @@ namespace Client.Graphic
 
         protected override TileMap map => gameMapData.data;
 
-        private InnerTileMap tileMap { get; }
+        private InnerTileMap tileMap => mapSpritesInfo.innerTileMap;
 
         public override int tileWidth => tileMapImageInfo.tileSize.Width;
 
@@ -51,6 +49,8 @@ namespace Client.Graphic
             var t = (InnerMapTile)tileMap[p];
 
             drawTerrain(g, p, sx, sy, t);
+
+            if (p == cursorPosition) drawCursor(g, sx, sy);
 
             if (!isEditor)
             {
@@ -101,15 +101,9 @@ namespace Client.Graphic
             //}
         }
 
-        public void resetTileFlag(MapPoint p) => mapSpritesInfo.resetTileFlag(p);
-
-        public void removeTileFlag(MapPoint p) => mapSpritesInfo.removeTileFlag(p);
-
-        public void removeTileFlag() => mapSpritesInfo.removeTileFlag();
-
         public void recoveryTileFlag(MapPoint p) => mapSpritesInfo.recoveryTileFlag(p);
 
-        public void drawCurrentCharacter(GameGraphic g, int x, int y)
+        private void drawCurrentCharacter(GameGraphic g, int x, int y)
         {
             g.fillRactangle(Color.Red, new Rectangle()
             {
@@ -120,7 +114,7 @@ namespace Client.Graphic
             });
         }
 
-        public void drawStronghold(GameGraphic g, int x, int y, int strongholdId)
+        private void drawStronghold(GameGraphic g, int x, int y, int strongholdId)
         {
             //g.drawImage(tileObjects, new Point(x, y), new Rectangle()
             //{
@@ -129,6 +123,19 @@ namespace Client.Graphic
             //    Width = tileWidth,
             //    Height = tileHeight
             //});
+        }
+
+        private void drawCursor(GameGraphic g, int sx, int sy)
+        {
+            int size = 4;
+
+            g.drawRactangle(Color.White, new Rectangle()
+            {
+                X = sx,
+                Y = sy,
+                Width = tileWidth - size,
+                Height = tileHeight - size
+            }, size);
         }
 
         public class InnerMapSpritesInfo : MapSpritesInfo

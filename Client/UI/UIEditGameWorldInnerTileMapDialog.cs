@@ -4,6 +4,7 @@ using Library.Helper;
 using Library.Model;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +18,12 @@ namespace Client.UI
 
         public UIEditGameWorldInnerTileMapDialog(GameSystem gs, Dictionary<int, InnerTileMapInfo> data, Action<int> selectedInnerTileMap) : base(gs)
         {
-            this.setCommandWindow(w.inner_tile_map);
+            this.setCommandWindow(w.inner_tile_map).setAutoSizeF();
 
-            listView = new ListView().init().addColumn(w.name).addTo(panel);
+            StartPosition = FormStartPosition.Manual;
+            Location = new Point(gs.formMain.Location.X, Location.Y);
+
+            listView = new ListView() { MinimumSize = new Size(240, 560)}.init().addColumn(w.name).addTo(panel);
 
             listView.DoubleClick += (s, e) =>
             {
@@ -27,6 +31,8 @@ namespace Client.UI
 
                 selectedInnerTileMap((int)listView.FocusedItem.Tag);
             };
+
+            addConfirmButton();
 
             setData(data);
         }

@@ -30,6 +30,9 @@ namespace Client.UI
         {
             this.setCommandWindow(w.scene_title.edit_game).setAutoSizeF().setCenter();
 
+            StartPosition = FormStartPosition.Manual;
+            Location = gs.formMain.Location;
+
             var list = new List<CheckBox>();
             var p = new FlowLayoutPanel().init(FlowDirection.LeftToRight).setAutoSizeP().addTo(panel);
 

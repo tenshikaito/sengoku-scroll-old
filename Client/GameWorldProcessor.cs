@@ -16,7 +16,8 @@ namespace Client
     {
         private const string DirName = "Map";
 
-        private const string MapDataName = "/map.dat";
+        private const string OuterMapDataName = "/outer_map.dat";
+        private const string InnerMapDataName = "/inner_map_{0}.dat";
         private const string MasterDataName = "/data.dat";
 
         public static readonly Encoding encoding = Encoding.UTF8;
@@ -68,7 +69,7 @@ namespace Client
                 unit = new Dictionary<int, int>(),
             };
 
-            File.WriteAllText(gameWorldFullPath + MapDataName, gm.toJson(), encoding);
+            File.WriteAllText(gameWorldFullPath + OuterMapDataName, compressTileMap(gm.toJson()), encoding);
 
             var gwmd = new GameWorldMasterData()
             {
@@ -191,7 +192,94 @@ namespace Client
                     }
                     }
                 },
-                innerTileMapImageInfo = new Dictionary<int, InnerTileMapImageInfo>(),
+                innerTileMapImageInfo = new Dictionary<int, InnerTileMapImageInfo>() {
+                    { 1, new InnerTileMapImageInfo()
+                    {
+                        id = 1,
+                        name="default view map",
+                        tileSize = new Size(24, 24),
+                        terrainAnimation = new Dictionary<byte, TileAnimation>()
+                        {
+                            { 0, new TileAnimation()
+                            {
+                                id = 0,
+                                interval = 0.5f,
+                                frames = new List<TileAnimation.Frame>()
+                                {
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "view_terrain_plain.png",
+                                        vertex = new Point(0, 0)
+                                    }
+                                }
+                            }
+                            },
+                            { 1, new TileAnimation()
+                            {
+                                id = 0,
+                                interval = 0.5f,
+                                frames = new List<TileAnimation.Frame>()
+                                {
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "view_terrain_water.png",
+                                        vertex = new Point(0, 0)
+                                    }
+                                }
+                            }
+                            }
+                        }
+                    }
+                    },
+                    { 2, new InnerTileMapImageInfo()
+                    {
+                        id = 2,
+                        name="default detail map",
+                        tileSize = new Size(48, 48),
+                        terrainAnimation = new Dictionary<byte, TileAnimation>()
+                        {
+                            { 0, new TileAnimation()
+                            {
+                                id = 0,
+                                interval = 0.5f,
+                                frames= new List<TileAnimation.Frame>()
+                                {
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "detail_terrain_plain.png",
+                                        vertex = new Point(0, 0)
+                                    }
+                                }
+                            }
+                            },
+                            { 1, new TileAnimation()
+                            {
+                                id = 1,
+                                interval = 0.5f,
+                                frames= new List<TileAnimation.Frame>()
+                                {
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "detail_terrain_water.png",
+                                        vertex = new Point(0, 0)
+                                    },
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName="detail_terrain_water.png",
+                                        vertex = new Point(0, 144),
+                                    },
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName="detail_terrain_water.png",
+                                        vertex = new Point(0, 288),
+                                    },
+                                }
+                            }
+                            }
+                        },
+                    }
+                    }
+                    },
                 innerTileMapInfo = new Dictionary<int, InnerTileMapInfo>()
             };
 
@@ -220,7 +308,7 @@ namespace Client
                 camera = new Camera(screenWidth, screenHeight)
             };
 
-            gw.gameOuterMapData = File.ReadAllText(gameWorldFullPath + MapDataName, encoding).fromJson<GameWorldOuterMapData>();
+            gw.gameOuterMapData = File.ReadAllText(gameWorldFullPath + OuterMapDataName, encoding).fromJson<GameWorldOuterMapData>();
             gw.gameWorldMasterData = File.ReadAllText(gameWorldFullPath + MasterDataName, encoding).fromJson<GameWorldMasterData>();
 
             return gw;
@@ -228,9 +316,37 @@ namespace Client
 
         public void save(GameWorld gw)
         {
-            File.WriteAllText(gameWorldFullPath + MapDataName, gw.gameOuterMapData.toJson(), encoding);
+            File.WriteAllText(gameWorldFullPath + OuterMapDataName, gw.gameOuterMapData.toJson(), encoding);
 
             File.WriteAllText(gameWorldFullPath + MasterDataName, gw.gameWorldMasterData.toJson(), encoding);
         }
+
+        public InnerTileMap loadInnerTileMap(int id, int width, int height)
+        {
+            var path = gameWorldFullPath + string.Format(InnerMapDataName, id);
+
+            if (!File.Exists(path)) return new InnerTileMap(new TileMap.Size(height, width)) { tiles = new InnerMapTile[width * height] };
+
+            return uncompressTileMap( File.ReadAllText(path, encoding)).fromJson<InnerTileMap>();
+        }
+
+        public void saveInnerTileMap(int id, InnerTileMap tm)
+        {
+            var path = gameWorldFullPath + string.Format(InnerMapDataName, id);
+
+            File.WriteAllText(path, compressTileMap(tm.toJson()), encoding);
+        }
+
+        private string compressTileMap(string json)
+            => json.Replace($@"""{ nameof(OuterMapTile.terrain) }""", @"""t""")
+            .Replace($@"""{ nameof(OuterMapTile.region) }""", @"""r""")
+            .Replace($@"""{ nameof(InnerMapTile.height) }""", @"""h""")
+            .Replace($@"""{ nameof(InnerMapTile.functionType) }""", @"""f""");
+
+        private string uncompressTileMap(string json)
+            => json.Replace(@"""t""", $@"""{ nameof(OuterMapTile.terrain) }""")
+            .Replace(@"""r""", $@"""{ nameof(OuterMapTile.region) }""")
+            .Replace(@"""h""", $@"""{ nameof(InnerMapTile.height) }""")
+            .Replace(@"""f""", $@"""{ nameof(InnerMapTile.functionType) }""");
     }
 }

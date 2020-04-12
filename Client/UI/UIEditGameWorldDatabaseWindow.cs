@@ -43,6 +43,8 @@ namespace Client.UI
 
             new TabPageOuterMapTileImageInfo(this, gameWorldMasterData.outerTileMapImageInfo, gameWorldMasterData).addTo(tc);
 
+            new TabPageInnerMapTileImageInfo(this, gameWorldMasterData.innerTileMapImageInfo, gameWorldMasterData).addTo(tc);
+
             addSaveableConfirmButtons();
         }
 
@@ -1013,7 +1015,7 @@ namespace Client.UI
             {
                 this.data = data;
 
-                this.init(w.tile_map_image_info.text).setAutoSizeP();
+                this.init(w.outer_tile_map_image_info.text).setAutoSizeP();
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -1231,6 +1233,276 @@ namespace Client.UI
                 }
 
                 public void setData(OuterTileMapImageInfo data)
+                {
+                    this.data = data;
+
+                    tbContent.Text = data.terrainAnimation.toJson(true);
+                }
+
+                private void refresh(ListView lv)
+                {
+                    if (data == null) return;
+
+                    if (lv.FocusedItem == null) return;
+
+                    try
+                    {
+                        var json = tbContent.Text.fromJson<Dictionary<byte, TileAnimation>>();
+
+                        foreach (var o in json.Values)
+                        {
+                            if (o.frames == null) o.frames = new List<TileAnimation.Frame>();
+                        }
+
+                        data.terrainAnimation = json;
+
+                        lbStatus.Text = w.tile_map_image_info.edit_success;
+                    }
+                    catch (Exception e)
+                    {
+                        lbStatus.Text = $"{w.tile_map_image_info.edit_failure}{e.Message.Substring(e.Message.IndexOf(':'))}";
+                    }
+                }
+            }
+        }
+    }
+
+    public partial class UIEditGameWorldDatabaseWindow
+    {
+        private partial class TabPageInnerMapTileImageInfo : TabPageBase
+        {
+            private Dictionary<int, InnerTileMapImageInfo> data;
+            private int? currentId;
+
+            private TextBox tbName;
+            private TextBox tbTileWidth;
+            private TextBox tbTileHeight;
+
+            private TabPageInnerMapTileImageInfoTerrain tpTerrain;
+
+            public TabPageInnerMapTileImageInfo(
+                UIEditGameWorldDatabaseWindow bw, Dictionary<int, InnerTileMapImageInfo> data, GameWorldMasterData gameData)
+                : base(bw)
+            {
+                this.data = data;
+
+                this.init(w.inner_tile_map_image_info.text).setAutoSizeP();
+
+                var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
+
+                lv.addColumn(w.id)
+                    .addColumn(w.name)
+                    .addColumn(w.tile_map_image_info.tile_size);
+
+                lv.Click += (s, e) =>
+                {
+                    if (lv.FocusedItem == null) return;
+
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
+                };
+
+                var p2 = new TableLayoutPanel()
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 2,
+                    RowCount = 1,
+                }.addColumnStyle(33).addColumnStyle(66).addTo(sc);
+
+                var gb = new GroupBox()
+                {
+                    Dock = DockStyle.Fill,
+                    Text = w.scene_edit_game_world.property
+                }.addTo(p2);
+
+                var p3 = new TableLayoutPanel()
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 2,
+                    RowCount = 2,
+                    AutoScroll = true
+                }.addTo(gb);
+
+                new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.tile_map_image_info.tile_width + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbTileWidth = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.tile_map_image_info.tile_height + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbTileHeight = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init("").addTo(p3);
+
+                gb = new GroupBox()
+                {
+                    Dock = DockStyle.Fill,
+                    Text = w.detail
+                }.addTo(p2);
+
+                var tc = new TabControl() { Dock = DockStyle.Fill }.init().setAutoSize().addTo(gb);
+
+                tpTerrain = new TabPageInnerMapTileImageInfoTerrain(bw, lv).addTo(tc);
+
+                initData(lv);
+
+                lv.autoResizeColumns();
+            }
+
+            private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
+
+            private void onAddButtonClicked(ListView lv)
+            {
+                var max = data.getMaxId(0);
+
+                if (++max > int.MaxValue) return;
+
+                var oo = new InnerTileMapImageInfo()
+                {
+                    id = max,
+                    name = w.tile_map_image_info.text,
+                    terrainAnimation = new Dictionary<byte, TileAnimation>(),
+                };
+
+                data[oo.id] = oo;
+
+                var lvi = new ListViewItem()
+                {
+                    Tag = oo.id
+                };
+
+                lv.Items.Add(setRow(lvi, oo));
+
+                lv.autoResizeColumns();
+            }
+
+            private void onDeleteButtonClicked(ListView lv, int id)
+            {
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
+
+                data.Remove(id);
+
+                if (currentId == id) currentId = null;
+
+                lv.autoResizeColumns();
+            }
+
+            private ListViewItem setRow(ListViewItem lvi, InnerTileMapImageInfo o)
+            {
+                lvi.Text = o.id.ToString();
+
+                lvi.addColumn(o.name);
+                lvi.addColumn($"({o.tileSize.Width},{o.tileSize.Height})");
+
+                return lvi;
+            }
+
+            private void refresh(ListView lv)
+            {
+                if (currentId != null)
+                {
+                    var oo = data[(int)currentId];
+
+                    oo.name = tbName.Text;
+                    if (int.TryParse(tbTileWidth.Text, out var width)) oo.tileSize.Width = width;
+                    if (int.TryParse(tbTileHeight.Text, out var height)) oo.tileSize.Height = height;
+
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
+
+                    if (lvi != null)
+                    {
+                        lvi.SubItems.Clear();
+
+                        setRow(lvi, oo);
+
+                        lv.autoResizeColumns();
+                    }
+                }
+            }
+
+            private void onListViewClicked(ListView lv, int id)
+            {
+                refresh(lv);
+
+                currentId = id;
+                var o = data[id];
+
+                tbName.Text = o.name;
+                tbTileWidth.Text = o.tileSize.Width.ToString();
+                tbTileHeight.Text = o.tileSize.Height.ToString();
+
+                tpTerrain.setData(o);
+
+                //tpTerrain.setData(o);
+                //tpTerrain.refreshTerrain();
+            }
+        }
+    }
+
+    public partial class UIEditGameWorldDatabaseWindow
+    {
+        private partial class TabPageInnerMapTileImageInfo : TabPageBase
+        {
+            private class TabPageInnerMapTileImageInfoTerrain : TabPageBase
+            {
+                private InnerTileMapImageInfo data;
+
+                private Label lbStatus;
+                private TextBox tbContent;
+
+                public TabPageInnerMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, ListView lv) : base(bw)
+                {
+                    this.init(w.terrain.text).setAutoSizeP();
+
+                    var tlp = new TableLayoutPanel()
+                    {
+                        RowCount = 2,
+                        ColumnCount = 2,
+                        Dock = DockStyle.Fill
+                    }.addColumnStyle(50).addColumnStyle(50).addTo(this);
+
+                    lbStatus = new Label().init(string.Empty).setAutoSize().setLeftCenter().addTo(tlp);
+
+                    tlp.SetColumnSpan(lbStatus, 2);
+
+                    tbContent = new TextBox()
+                    {
+                        Dock = DockStyle.Fill,
+                        Multiline = true,
+                        AcceptsReturn = true,
+                        ScrollBars = ScrollBars.Both
+                    }.refreshListViewOnClick(lv, refresh).addTo(tlp);
+
+                    new TextBox()
+                    {
+                        Dock = DockStyle.Fill,
+                        ReadOnly = true,
+                        Multiline = true,
+                        ScrollBars = ScrollBars.Horizontal,
+                        Text = new Dictionary<int, TileAnimation>()
+                        {
+                            { 0, new TileAnimation()
+                            {
+                                id = 0,
+                                interval = 0.5f,
+                                frames = new List<TileAnimation.Frame>()
+                                {
+                                    new TileAnimation.Frame()
+                                    {
+                                        fileName = "path/file_name.png",
+                                        vertex = new System.Drawing.Point()
+                                        {
+                                            X = 0,
+                                            Y = 0
+                                        }
+                                    }
+                                }
+                            }
+                            }
+                        }.toJson(true)
+                    }.addTo(tlp);
+                }
+
+                public void setData(InnerTileMapImageInfo data)
                 {
                     this.data = data;
 

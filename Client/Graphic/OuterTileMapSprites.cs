@@ -117,14 +117,6 @@ namespace Client.Graphic
             //}
         }
 
-        public void resetTileFlag(MapPoint p) => mapSpritesInfo.resetTileFlag(p);
-
-        public void removeTileFlag(MapPoint p) => mapSpritesInfo.removeTileFlag(p);
-
-        public void removeTileFlag() => mapSpritesInfo.removeTileFlag();
-
-        public void recoveryTileFlag(MapPoint p) => mapSpritesInfo.recoveryTileFlag(p);
-
         private void drawCurrentCharacter(GameGraphic g, int x, int y)
         {
             g.fillRactangle(Color.Red, new Rectangle()
@@ -197,7 +189,7 @@ namespace Client.Graphic
             protected override TileMap tileMap => gameWorld.gameOuterMapData.data;
             protected override Dictionary<int, Terrain> terrain => gameWorld.gameWorldMasterData.terrain;
 
-            private OuterTileMap outerTileMap => gameWorld.gameOuterMapData.data;
+            public OuterTileMap outerTileMap => gameWorld.gameOuterMapData.data;
 
             public OuterMapSpritesInfo(GameWorld gw) : base(gw)
             {

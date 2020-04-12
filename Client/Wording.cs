@@ -448,6 +448,8 @@ namespace Client
         public StrongholdType stronghold_type;
 
         public TileMapImageInfo tile_map_image_info;
+        public OuterTileMapImageInfo outer_tile_map_image_info;
+        public InnerTileMapImageInfo inner_tile_map_image_info;
 
         public SceneTitle scene_title;
 
@@ -464,7 +466,10 @@ namespace Client
             religion = new Religion(this, nameof(religion));
             road = new Road(this, nameof(road));
             stronghold_type = new StrongholdType(this, nameof(stronghold_type));
+
             tile_map_image_info = new TileMapImageInfo(this, nameof(tile_map_image_info));
+            outer_tile_map_image_info = new OuterTileMapImageInfo(this, nameof(outer_tile_map_image_info));
+            inner_tile_map_image_info = new InnerTileMapImageInfo(this, nameof(inner_tile_map_image_info));
 
             scene_title = new SceneTitle(this, nameof(scene_title));
             scene_edit_game_world = new SceneEditGameWorld(this, nameof(scene_title));
@@ -593,6 +598,24 @@ namespace Client
             public string edit_failure => this[nameof(edit_failure)];
 
             public TileMapImageInfo(Wording w, string prefix) : base(w, prefix)
+            {
+            }
+        }
+
+        public class OuterTileMapImageInfo : Part
+        {
+            public string text => this[prefix];
+
+            public OuterTileMapImageInfo(Wording w, string prefix) : base(w, prefix)
+            {
+            }
+        }
+
+        public class InnerTileMapImageInfo : Part
+        {
+            public string text => this[prefix];
+
+            public InnerTileMapImageInfo(Wording w, string prefix) : base(w, prefix)
             {
             }
         }

@@ -34,7 +34,7 @@ namespace Library
 
     public class GameWorldInnerMapData
     {
-        public Stronghold currentStronghold;
+        public int currentStrongholdId;
         public InnerTileMap data;
 
         public Dictionary<int, int> road;
