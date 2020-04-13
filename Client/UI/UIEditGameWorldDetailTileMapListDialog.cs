@@ -12,18 +12,18 @@ using System.Windows.Forms;
 
 namespace Client.UI
 {
-    public class UIEditGameWorldDetailTileMapDialog : UIDialog
+    public class UIEditGameWorldDetailTileMapListDialog : UIDialog
     {
         private ListView listView;
 
-        public UIEditGameWorldDetailTileMapDialog(GameSystem gs, Dictionary<int, DetailTileMapInfo> data, Action<int> selectedDetailTileMap) : base(gs)
+        public UIEditGameWorldDetailTileMapListDialog(GameSystem gs, Dictionary<int, DetailTileMapInfo> data, Action<int> selectedDetailTileMap) : base(gs)
         {
             this.setCommandWindow(w.detail_tile_map).setAutoSizeF();
 
             StartPosition = FormStartPosition.Manual;
             Location = new Point(gs.formMain.Location.X, Location.Y);
 
-            listView = new ListView() { MinimumSize = new Size(240, 560)}.init().addColumn(w.name).addTo(panel);
+            listView = new ListView() { MinimumSize = new Size(240, 560) }.init().addColumn(w.name).addTo(panel);
 
             listView.DoubleClick += (s, e) =>
             {

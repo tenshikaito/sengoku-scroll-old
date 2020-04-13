@@ -31,6 +31,13 @@ namespace Client.Graphic
         public MainTileMapSprites(GameSystem gs, GameWorld gw, MainTileMapImageInfo mii, MainMapSpritesInfo msi, bool isEditor = false)
             : base(gs, gw, isEditor)
         {
+            init(mii, msi);
+
+            resize();
+        }
+
+        public void init(MainTileMapImageInfo mii, MainMapSpritesInfo msi)
+        {
             tileMapImageInfo = mii;
             mapSpritesInfo = msi;
 
@@ -41,8 +48,6 @@ namespace Client.Graphic
             //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
 
             tileSprite = new AutoTileSprite(this);
-
-            resize();
         }
 
         public override void update()

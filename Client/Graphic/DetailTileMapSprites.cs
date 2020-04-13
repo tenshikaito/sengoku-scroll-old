@@ -30,6 +30,13 @@ namespace Client.Graphic
         public DetailTileMapSprites(GameSystem gs, GameWorld gw, DetailTileMapImageInfo mii, DetailMapSpritesInfo msi, bool isEditor = false)
             : base(gs, gw, isEditor)
         {
+            init(mii, msi);
+
+            resize();
+        }
+
+        public void init(DetailTileMapImageInfo mii, DetailMapSpritesInfo msi)
+        {
             tileMapImageInfo = mii;
             mapSpritesInfo = msi;
 
@@ -38,8 +45,6 @@ namespace Client.Graphic
             mii.terrainAnimation.Values.ToList().ForEach(o => o.frames.ForEach(oo => gameWorld.getImage(oo.fileName)));
 
             tileSprite = new AutoTileSprite(this);
-
-            resize();
         }
 
         protected override void draw(GameGraphic g, int fx, int fy, MapPoint p, int sx, int sy)

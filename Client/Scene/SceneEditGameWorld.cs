@@ -28,8 +28,6 @@ namespace Client.Scene
 
         private UIEditGameWorldDatabaseWindow uiEditGameWorldDatabaseWindow;
 
-        private UIEditGameWorldDetailTileMapDialog uiEditGameWorldDetailTileMapDialog;
-
         private DrawContent drawContent = DrawContent.terrain;
         private int drawContentId = 0;
 
@@ -45,17 +43,9 @@ namespace Client.Scene
 
             uiEditGameWorldMenuWindow = new UIEditGameWorldMenuWindow(
                 gs,
-                onPointerButtonClicked,
-                onBrushButtonClicked,
-                onRectangleButtonClicked,
-                onFillButtonClicked,
-                onDetailTileMapButtonClicked,
                 onDatabaseButtonClicked,
                 onSaveButtonClicked,
-                onExitButtonClicked,
-                onTerrainSelected);
-
-            uiEditGameWorldMenuWindow.setTerrain(gameWorld.masterData.terrain.Values.ToList());
+                onExitButtonClicked);
         }
 
         private enum DrawContent
@@ -72,58 +62,14 @@ namespace Client.Scene
 
         public override void start()
         {
+            uiEditGameWorldMenuWindow.Show(formMain);
+
             switchStatus(mainTileMapStatus);
         }
 
         public override void finish()
         {
             uiEditGameWorldMenuWindow.Close();
-        }
-
-        private void onPointerButtonClicked() => (status as Status).setDrawMode(DrawMode.pointer);
-
-        private void onBrushButtonClicked() => (status as Status).setDrawMode(DrawMode.brush);
-
-        private void onRectangleButtonClicked() => (status as Status).setDrawMode(DrawMode.rectangle);
-
-        private void onFillButtonClicked() => (status as Status).setDrawMode(DrawMode.fill);
-
-        private void onDetailTileMapButtonClicked()
-        {
-            if (uiEditGameWorldDetailTileMapDialog == null)
-            {
-                uiEditGameWorldDetailTileMapDialog = new UIEditGameWorldDetailTileMapDialog(
-                    gameSystem, gameWorld.masterData.detailTileMapInfo, onDetailTileMapSelected)
-                {
-                    okButtonClicked = () =>
-                    {
-                        uiEditGameWorldDetailTileMapDialog.Close();
-                        uiEditGameWorldDetailTileMapDialog = null;
-                    }
-                };
-
-                uiEditGameWorldDetailTileMapDialog.Show(formMain);
-            }
-        }
-
-        private void onDetailTileMapSelected(int id)
-        {
-            switchStatus(waitingStatus);
-
-            Task.Run(() =>
-            {
-                var gwp = gameWorld.getGameWorldProcessor();
-
-                var itm = gameWorld.masterData.detailTileMapInfo[id];
-
-                var tm = gwp.loadDetailTileMap(id, itm.size.column, itm.size.row);
-
-                detailTileMapStatus.setTileMap(tm);
-
-                detailTileMapStatus.resetFlag();
-
-                dispatcher.invoke(() => switchStatus(detailTileMapStatus));
-            });
         }
 
         private void onDatabaseButtonClicked()
@@ -197,6 +143,26 @@ namespace Client.Scene
             gameWorld.getGameWorldProcessor().save(gameWorld);
         }
 
+        private void onDetailTileMapSelected(int id)
+        {
+            switchStatus(waitingStatus);
+
+            Task.Run(() =>
+            {
+                var gwp = gameWorld.getGameWorldProcessor();
+
+                var itm = gameWorld.masterData.detailTileMapInfo[id];
+
+                var tm = gwp.loadDetailTileMap(id, itm.size.column, itm.size.row);
+
+                detailTileMapStatus.setTileMap(id, tm);
+
+                detailTileMapStatus.resetFlag();
+
+                dispatcher.invoke(() => switchStatus(detailTileMapStatus));
+            });
+        }
+
         public enum DrawMode
         {
             pointer,
@@ -218,12 +184,23 @@ namespace Client.Scene
             {
 
             }
+
+            protected void onPointerButtonClicked() => setDrawMode(DrawMode.pointer);
+
+            protected void onBrushButtonClicked() => setDrawMode(DrawMode.brush);
+
+            protected void onRectangleButtonClicked() => setDrawMode(DrawMode.rectangle);
+
+            protected void onFillButtonClicked() => setDrawMode(DrawMode.fill);
         }
 
         public class MainTileMapStatus : Status
         {
             private ZoomableTileMapSprites<MainTileMapSprites> zoomableTileMapSprites;
             private MainTileMapSprites.MainMapSpritesInfo mainMapSpritesInfo;
+
+            private UIEditGameWorldMainTileMapMenuWindow uiEditGameWorldMainTileMapMenuWindow;
+            private UIEditGameWorldDetailTileMapListDialog uiEditGameWorldDetailTileMapListDialog;
 
             private PointerStatus pointerStatus;
             private DrawTileStatus drawTileStatus;
@@ -242,6 +219,15 @@ namespace Client.Scene
                     s.gameWorld.masterData.mainTileMapImageInfo.Values.Select(
                         o => new MainTileMapSprites(s.gameSystem, s.gameWorld, o, msi, true)).ToList());
 
+                uiEditGameWorldMainTileMapMenuWindow = new UIEditGameWorldMainTileMapMenuWindow(
+                    scene.gameSystem,
+                    onPointerButtonClicked,
+                    onBrushButtonClicked,
+                    onRectangleButtonClicked,
+                    onFillButtonClicked,
+                    onDetailTileMapButtonClicked,
+                    scene.onTerrainSelected);
+
                 pointerStatus = new PointerStatus(this);
                 drawTileStatus = new DrawTileStatus(this);
                 drawTileRectangleStatus = new DrawTileRectangleStatus(this);
@@ -252,9 +238,19 @@ namespace Client.Scene
             {
                 children.Add(zoomableTileMapSprites);
 
-                scene.uiEditGameWorldMenuWindow.Show(scene.formMain);
+                uiEditGameWorldMainTileMapMenuWindow.Show(scene.formMain);
 
                 setDrawMode(DrawMode.pointer);
+
+                uiEditGameWorldMainTileMapMenuWindow.setTerrain(scene.gameWorld.masterData.terrain.Values.ToList());
+            }
+
+            public override void finish()
+            {
+                uiEditGameWorldMainTileMapMenuWindow.Hide();
+
+                uiEditGameWorldDetailTileMapListDialog?.Close();
+                uiEditGameWorldDetailTileMapListDialog = null;
             }
 
             public override void mouseWheelScrolled(MouseEventArgs e)
@@ -275,6 +271,24 @@ namespace Client.Scene
 
                     if (e.Delta >= 0) camera.center = new Point(cursorPos.x * tileMap.tileWidth, cursorPos.y * tileMap.tileHeight);
                     else camera.center = new Point(tileVertex.x * tileMap.tileWidth, tileVertex.y * tileMap.tileHeight);
+                }
+            }
+
+            private void onDetailTileMapButtonClicked()
+            {
+                if (uiEditGameWorldDetailTileMapListDialog == null)
+                {
+                    uiEditGameWorldDetailTileMapListDialog = new UIEditGameWorldDetailTileMapListDialog(
+                        scene.gameSystem, scene.gameWorld.masterData.detailTileMapInfo, scene.onDetailTileMapSelected)
+                    {
+                        okButtonClicked = () =>
+                        {
+                            uiEditGameWorldDetailTileMapListDialog.Close();
+                            uiEditGameWorldDetailTileMapListDialog = null;
+                        }
+                    };
+
+                    uiEditGameWorldDetailTileMapListDialog.Show(scene.formMain);
                 }
             }
 
@@ -505,12 +519,16 @@ namespace Client.Scene
             private ZoomableTileMapSprites<DetailTileMapSprites> zoomableTileMapSprites;
             private DetailTileMapSprites.DetailMapSpritesInfo detailMapSpritesInfo;
 
+            private UIEditGameWorldDetailTileMapMenuWindow uiEditGameWorldDetailTileMapMenuWindow;
+
             private PointerStatus pointerStatus;
             private DrawTileStatus drawTileStatus;
             private DrawTileRectangleStatus drawTileRectangleStatus;
             private DrawTileFillStatus drawTileFillStatus;
 
             private Status currentStatus;
+
+            private int currentTileMapId;
 
             public DetailTileMapSprites tileMap => zoomableTileMapSprites.tileMapSprites;
 
@@ -522,13 +540,27 @@ namespace Client.Scene
                     s.gameWorld.masterData.detailTileMapImageInfo.Values.Select(
                         o => new DetailTileMapSprites(s.gameSystem, s.gameWorld, o, detailMapSpritesInfo, true)).ToList());
 
+                uiEditGameWorldDetailTileMapMenuWindow = new UIEditGameWorldDetailTileMapMenuWindow(
+                    scene.gameSystem,
+                    onPointerButtonClicked,
+                    onBrushButtonClicked,
+                    onRectangleButtonClicked,
+                    onFillButtonClicked,
+                    onSaveButtonClicked,
+                    onExitButtonClicked,
+                    scene.onTerrainSelected);
+
                 pointerStatus = new PointerStatus(this);
                 drawTileStatus = new DrawTileStatus(this);
                 drawTileRectangleStatus = new DrawTileRectangleStatus(this);
                 drawTileFillStatus = new DrawTileFillStatus(this);
             }
 
-            public void setTileMap(DetailTileMap tm) => detailMapSpritesInfo.detailTileMap = tm;
+            public void setTileMap(int id, DetailTileMap tm)
+            {
+                currentTileMapId = id;
+                detailMapSpritesInfo.detailTileMap = tm;
+            }
 
             public void resetFlag() => detailMapSpritesInfo.removeTileFlag();
 
@@ -536,7 +568,16 @@ namespace Client.Scene
             {
                 children.Add(zoomableTileMapSprites);
 
+                uiEditGameWorldDetailTileMapMenuWindow.setTerrain(scene.gameWorld.masterData.terrain.Values.ToList());
+
+                uiEditGameWorldDetailTileMapMenuWindow.Show(scene.formMain);
+
                 setDrawMode(DrawMode.pointer);
+            }
+
+            public override void finish()
+            {
+                uiEditGameWorldDetailTileMapMenuWindow.Hide();
             }
 
             public override void mouseWheelScrolled(MouseEventArgs e)
@@ -574,6 +615,48 @@ namespace Client.Scene
             }
 
             private void addStatus(Status s) => addChild(currentStatus = s);
+
+            private void onSaveButtonClicked()
+            {
+                try
+                {
+                    var gwp = scene.gameWorld.getGameWorldProcessor();
+
+                    gwp.saveDetailTileMap(currentTileMapId, detailMapSpritesInfo.detailTileMap);
+
+                    new UIDialog(scene.gameSystem, "alert", "saved.", scene.formMain).Show(scene.formMain);
+                }
+                catch (Exception e)
+                {
+                    new UIDialog(scene.gameSystem, "alert", "error: " + e.Message, scene.formMain).Show(scene.formMain);
+                }
+
+            }
+
+            private void onExitButtonClicked()
+            {
+                if (scene.uiConfirmDialog != null) return;
+
+                var dialog = scene.uiConfirmDialog = new UIConfirmDialog(scene.gameSystem, "confirm", "exit?");
+
+                dialog.okButtonClicked = () =>
+                {
+                    dialog.Close();
+
+                    scene.uiConfirmDialog = null;
+
+                    scene.switchStatus(scene.mainTileMapStatus);
+                };
+
+                dialog.cancelButtonClicked = () =>
+                {
+                    dialog.Close();
+
+                    scene.uiConfirmDialog = null;
+                };
+
+                dialog.ShowDialog(scene.formMain);
+            }
 
             public class Status : GameObject
             {
