@@ -90,13 +90,48 @@ namespace Client
                     }
                     }
                 },
-                region = new Dictionary<int, Region>(),
-                culture = new Dictionary<int, Culture>(),
-                religion = new Dictionary<int, Religion>(),
+                region = new Dictionary<int, Region>()
+                {
+                    { 0, new Region()
+                    {
+                        id = 0,
+                        name = "近畿",
+                        climate = Climate.normal
+                    }
+                    }
+                },
+                culture = new Dictionary<int, Culture>()
+                {
+                    { 0, new Culture()
+                    {
+                        id = 0,
+                        name = "大和"
+                    }
+                    }
+                },
+                religion = new Dictionary<int, Religion>()
+                {
+                    { 0, new Religion()
+                    {
+                        id = 0,
+                        name = "神道教",
+                        isPolytheism = false
+                    }
+                    }
+                },
                 road = new Dictionary<int, Road>(),
 
-                strongholdType = new Dictionary<int, Stronghold.Type>(),
-
+                strongholdType = new Dictionary<int, Stronghold.Type>()
+                {
+                    { 1, new Stronghold.Type()
+                    {
+                        id = 1,
+                        name = "城",
+                        culture = null,
+                        introduction = "介绍"
+                    }
+                    }
+                },
                 mainTileMapImageInfo = new Dictionary<int, MainTileMapImageInfo>()
                 {
                     { 1, new MainTileMapImageInfo()
@@ -281,6 +316,16 @@ namespace Client
                     //}
                     },
                 detailTileMapInfo = new Dictionary<int, DetailTileMapInfo>()
+                {
+                    { 1, new DetailTileMapInfo()
+                    {
+                        id = 1,
+                        name = "plain",
+                        size = new TileMap.Size(100, 100),
+                        terrainId = 0
+                    }
+                    }
+                }
             };
 
             save(new GameWorld(gameWorldName)

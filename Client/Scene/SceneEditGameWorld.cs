@@ -70,6 +70,8 @@ namespace Client.Scene
 
         public override void finish()
         {
+            mainTileMapStatus.finish();
+
             uiEditGameWorldMenuWindow.Close();
         }
 
