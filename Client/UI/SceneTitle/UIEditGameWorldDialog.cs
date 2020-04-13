@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Client.UI
+namespace Client.UI.SceneTitle
 {
     public class UIEditGameWorldDialog : UIDialog
     {

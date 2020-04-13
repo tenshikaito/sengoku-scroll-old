@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Client.UI
+namespace Client.UI.SceneEditGameWorld
 {
     public class UIEditGameWorldDetailTileMapListDialog : UIDialog
     {

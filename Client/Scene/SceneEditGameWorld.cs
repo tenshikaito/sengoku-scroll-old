@@ -1,6 +1,7 @@
 ﻿using Client.Graphic;
 using Client.Helper;
 using Client.UI;
+using Client.UI.SceneEditGameWorld;
 using Library;
 using Library.Helper;
 using Library.Model;
@@ -568,6 +569,8 @@ namespace Client.Scene
             {
                 children.Add(zoomableTileMapSprites);
 
+                scene.uiEditGameWorldMenuWindow.Visible = false;
+
                 uiEditGameWorldDetailTileMapMenuWindow.setTerrain(scene.gameWorld.masterData.terrain.Values.ToList());
 
                 uiEditGameWorldDetailTileMapMenuWindow.Show(scene.formMain);
@@ -577,6 +580,8 @@ namespace Client.Scene
 
             public override void finish()
             {
+                scene.uiEditGameWorldMenuWindow.Visible = true;
+
                 uiEditGameWorldDetailTileMapMenuWindow.Hide();
             }
 

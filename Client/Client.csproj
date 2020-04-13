@@ -105,13 +105,13 @@
     <Compile Include="Scene\SceneWaiting.cs" />
     <Compile Include="IGameStatus.cs" />
     <Compile Include="TreeObject.cs" />
-    <Compile Include="UI\UIEditGameWorldDetailTileMapListDialog.cs">
+    <Compile Include="UI\SceneEditGameWorld\UIEditGameWorldDetailTileMapListDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\UIEditGameWorldDetailTileMapMenuWindow.cs">
+    <Compile Include="UI\SceneEditGameWorld\UIEditGameWorldDetailTileMapMenuWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\UIEditGameWorldMainTileMapMenuWindow.cs">
+    <Compile Include="UI\SceneEditGameWorld\UIEditGameWorldMainTileMapMenuWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\UISaveableConfirmDialog.cs">
@@ -120,22 +120,22 @@
     <Compile Include="UI\UIConfirmDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\UICreateGameWorldDialog.cs">
+    <Compile Include="UI\SceneTitle\UICreateGameWorldDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\UIDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\UIEditGameWorldDatabaseWindow.cs">
+    <Compile Include="UI\SceneEditGameWorld\UIEditGameWorldDatabaseWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\UIEditGameWorldMenuWindow.cs">
+    <Compile Include="UI\SceneEditGameWorld\UIEditGameWorldMenuWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\UIEditGameWorldDialog.cs">
+    <Compile Include="UI\SceneTitle\UIEditGameWorldDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\UIMainMenuWindow.cs">
+    <Compile Include="UI\SceneTitle\UIMainMenuWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\UIWindow.cs">

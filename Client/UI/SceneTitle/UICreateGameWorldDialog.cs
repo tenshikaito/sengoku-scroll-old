@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Client.UI
+namespace Client.UI.SceneTitle
 {
     public class UICreateGameWorldDialog : UIConfirmDialog
     {

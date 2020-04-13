@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Client.UI
+namespace Client.UI.SceneEditGameWorld
 {
     public partial class UIEditGameWorldMainTileMapMenuWindow : UIWindow
     {
@@ -25,10 +25,10 @@ namespace Client.UI
             Action detailTileMap,
             Action<byte> onTerrainSelected) : base(gs)
         {
-            this.setCommandWindow(w.scene_title.edit_game).setAutoSizeF().setCenter();
+            this.setCommandWindow(w.main_tile_map).setAutoSizeF().setCenter();
 
             StartPosition = FormStartPosition.Manual;
-            Location = gs.formMain.Location;
+            Location = new Point(gs.formMain.Location.X, gs.formMain.Location.Y + 240);
 
             var list = new List<CheckBox>();
             var p = new FlowLayoutPanel().init(FlowDirection.LeftToRight).setAutoSizeP().addTo(panel);

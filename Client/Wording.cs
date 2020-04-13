@@ -421,6 +421,8 @@ namespace Client
 
         public string height => this[nameof(height)];
 
+        public string main_tile_map => this[nameof(main_tile_map)];
+
         public string detail_tile_map => this[nameof(detail_tile_map)];
 
         public string edit_game_world => this[nameof(edit_game_world)];

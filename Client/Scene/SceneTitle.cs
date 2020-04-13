@@ -1,5 +1,6 @@
 ﻿using Client.Helper;
 using Client.UI;
+using Client.UI.SceneTitle;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

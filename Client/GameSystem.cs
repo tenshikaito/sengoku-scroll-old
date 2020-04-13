@@ -27,7 +27,7 @@ namespace Client
 
         public GameObject sceneManager;
         //public SceneTitle sceneTitle;
-        //public SceneEditGameWorld sceneEditGameWorld;
+        //public SceneEditGameWorld SceneEditGameWorld;
         //public SceneMainMap sceneMainMap;
         //public SceneDetailMap sceneDetailMap;
 

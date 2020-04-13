@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Client.UI
+namespace Client.UI.SceneEditGameWorld
 {
     public partial class UIEditGameWorldDetailTileMapMenuWindow : UIWindow
     {
@@ -26,7 +26,7 @@ namespace Client.UI
             Action exit,
             Action<byte> onTerrainSelected) : base(gs)
         {
-            this.setCommandWindow(w.scene_title.edit_game).setAutoSizeF().setCenter();
+            this.setCommandWindow(w.detail_tile_map).setAutoSizeF().setCenter();
 
             StartPosition = FormStartPosition.Manual;
             Location = gs.formMain.Location;
