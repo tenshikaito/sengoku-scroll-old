@@ -1,6 +1,7 @@
 ﻿using Client.Helper;
 using Client.Scene;
 using Library;
+using Library.Helper;
 using Library.Model;
 using System;
 using System.Collections.Generic;
@@ -18,12 +19,13 @@ namespace Client
 {
     public class FormMain : Form
     {
+        public Dispatcher dispatcher;
+        
         private GameSystem gameSystem;
-        private Option option;
 
         private GameObject gameRoot;
 
-        public Dispatcher dispatcher;
+        private Option option;
 
         public FormMain()
         {
@@ -37,8 +39,6 @@ namespace Client
         private void loadOption()
         {
             option = new Option();
-
-            refreshDrawTimeSpan();
         }
 
         private void initSystem()
@@ -54,8 +54,7 @@ namespace Client
             gameSystem = new GameSystem()
             {
                 formMain = this,
-                screenWidth = Width,
-                screenHeight = Height,
+                option = option,
                 sceneManager = gameRoot,
                 gameGraphic = gameGraphic
             };
@@ -198,8 +197,6 @@ namespace Client
         protected override void OnPaintBackground(PaintEventArgs e)
         {
         }
-
-        private void refreshDrawTimeSpan() => drawTimeSpan = TimeSpan.FromSeconds(1d / option.fps);
 
         public void run()
         {

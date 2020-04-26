@@ -6,23 +6,11 @@ using System.Text;
 
 namespace Client
 {
-    public class GameWorld
+    public class GameWorld : GameWorldMap
     {
         public string name { get; }
 
         public GameOption gameOption = new GameOption();
-
-        public MasterData masterData = new MasterData();
-
-        public GameData gameData = new GameData();
-
-        public MainTileMap mainTileMap;
-
-        public MainTileMapData mainTileMapData;
-
-        public DetailTileMap detailTileMap;
-
-        public DetailTileMapData detailTileMapData;
 
         public Character currentCharacter;
 
@@ -32,7 +20,7 @@ namespace Client
 
         private GameWorldProcessor gameWorldProcessor;
 
-        public GameWorld(string name)
+        public GameWorld(string name) 
         {
             this.name = name;
         }

@@ -143,7 +143,7 @@ namespace Client.Scene
 
         private void save()
         {
-            gameWorld.getGameWorldProcessor().save(gameWorld);
+            gameWorld.getGameWorldProcessor().saveMasterData(gameWorld);
         }
 
         private void onDetailTileMapSelected(int id)

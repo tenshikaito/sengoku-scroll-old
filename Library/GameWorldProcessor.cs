@@ -1,20 +1,20 @@
-﻿using Library;
-using Library.Helper;
+﻿using Library.Helper;
 using Library.Model;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Region = Library.Model.Region;
 
-namespace Client
+namespace Library
 {
     public class GameWorldProcessor
     {
-        private const string DirName = "Map";
+        private const string MapDirName = "Map";
+        private const string GameDirName = "Game";
 
         private const string MainMapName = "/main_map_.dat";
         private const string MainMapDataName = "/main_map_data.dat";
@@ -32,21 +32,21 @@ namespace Client
         {
             this.gameWorldName = gameWorldName;
 
-            gameWorldPath = $"{DirName}/{gameWorldName}";
+            gameWorldPath = $"{MapDirName}/{gameWorldName}";
             gameWorldFullPath = $"{Directory.GetCurrentDirectory()}/{gameWorldPath}";
         }
 
-        public static List<string> getGameWorldList()
+        public static List<string> getGameWorldMapList()
         {
             var currentDirPath = Directory.GetCurrentDirectory();
-            var path = $"{currentDirPath}/{DirName}";
+            var path = $"{currentDirPath}/{MapDirName}";
 
             Directory.CreateDirectory(path);
 
             return Directory.EnumerateDirectories(path).Select(o => new DirectoryInfo(o).Name).ToList();
         }
 
-        public bool createGameWorldDirectory(int width, int height)
+        public bool createGameWorldMapDirectory(int width, int height)
         {
             if (Directory.Exists(gameWorldFullPath)) return false;
 
@@ -328,7 +328,7 @@ namespace Client
                 }
             };
 
-            save(new GameWorld(gameWorldName)
+            saveMasterData(new GameWorldMap()
             {
                 masterData = md,
                 gameData = gd,
@@ -356,15 +356,10 @@ namespace Client
         public string getFilePath(string fileName, bool isAbsolute = false)
             => isAbsolute ? $"{gameWorldPath}/{fileName}" : $"{gameWorldFullPath}/{fileName}";
 
-        public void delete() => Directory.Delete(gameWorldFullPath, true);
+        public void deleteMasterData() => Directory.Delete(gameWorldFullPath, true);
 
-        public GameWorld load(int screenWidth, int screenHeight)
+        public T loadMasterData<T>(T gw)where T: GameWorldMap
         {
-            var gw = new GameWorld(gameWorldName)
-            {
-                camera = new Camera(screenWidth, screenHeight)
-            };
-
             gw.mainTileMap = File.ReadAllText(gameWorldFullPath + MainMapName, encoding).uncompressTileMap().fromJson<MainTileMap>();
             gw.mainTileMapData = File.ReadAllText(gameWorldFullPath + MainMapDataName, encoding).fromJson<MainTileMapData>();
             gw.masterData = File.ReadAllText(gameWorldFullPath + MasterDataName, encoding).fromJson<MasterData>();
@@ -372,7 +367,7 @@ namespace Client
             return gw;
         }
 
-        public void save(GameWorld gw)
+        public void saveMasterData(GameWorldMap gw)
         {
             File.WriteAllText(gameWorldFullPath + MainMapName, gw.mainTileMap.toJson().compressTileMap(), encoding);
             File.WriteAllText(gameWorldFullPath + MainMapDataName, gw.mainTileMapData.toJson(), encoding);
@@ -393,6 +388,11 @@ namespace Client
             var path = gameWorldFullPath + string.Format(DetailMapDataName, id);
 
             File.WriteAllText(path, tm.toJson().compressTileMap(), encoding);
+        }
+
+        public void publishGameFiles()
+        {
+
         }
     }
 }

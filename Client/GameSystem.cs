@@ -11,9 +11,6 @@ namespace Client
 {
     public class GameSystem
     {
-        public int screenWidth;
-        public int screenHeight;
-
         public FormMain formMain;
 
         public Option option;
@@ -31,10 +28,11 @@ namespace Client
         //public SceneMainMap sceneMainMap;
         //public SceneDetailMap sceneDetailMap;
 
+        public int screenWidth => option.screenWidth;
+        public int screenHeight => option.screenHeight;
+
         public void init()
         {
-            option = new Option();
-
             var lines = File.ReadAllLines("Data/Charset/system.dat", Encoding.UTF8).Union(File.ReadAllLines("Data/Charset/zh-tw.dat", Encoding.UTF8));
 
             wording = new Wording("zh-tw", lines.Where(o => !o.StartsWith("#") && !string.IsNullOrWhiteSpace(o)).Select(o =>

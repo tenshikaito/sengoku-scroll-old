@@ -1,6 +1,7 @@
 ﻿using Client.Helper;
 using Client.UI;
 using Client.UI.SceneTitle;
+using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -84,9 +85,14 @@ namespace Client.Scene
 
                 Task.Run(() =>
                 {
+                    var gw = new GameWorld(name)
+                    {
+                        camera = new Camera(gameSystem.option.screenWidth, gameSystem.option.screenHeight)
+                    };
+
                     var gwp = new GameWorldProcessor(name);
 
-                    var gw = gwp.load(gameSystem.option.screenWidth, gameSystem.option.screenHeight);
+                    gwp.loadMasterData(gw);
 
                     dispatcher.invoke(() => gameSystem.sceneToEditGame(gw));
                 });
@@ -107,7 +113,7 @@ namespace Client.Scene
 
                 try
                 {
-                    gwp.delete();
+                    gwp.deleteMasterData();
                 }
                 catch (Exception e)
                 {
@@ -149,7 +155,7 @@ namespace Client.Scene
 
             var gwp = new GameWorldProcessor(name);
 
-            if (!gwp.createGameWorldDirectory(width, height))
+            if (!gwp.createGameWorldMapDirectory(width, height))
             {
                 MessageBox.Show("create_failed");
                 return;
@@ -162,7 +168,7 @@ namespace Client.Scene
 
         private void loadGameWorldMapList()
         {
-            uiEditGameWorldDialog.setData(GameWorldProcessor.getGameWorldList());
+            uiEditGameWorldDialog.setData(GameWorldProcessor.getGameWorldMapList());
         }
     }
 }

@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace Client
+namespace Server
 {
     public class Option
     {
-        public int screenWidth = 1366;
-
-        public int screenHeight = 768;
-
         public string title = "SengokuScroll";
 
-        public int scrollSpeed = 10;
-
         public int port = 7789;
+
+        public int saveMinuteInterval = 3;
     }
 }
