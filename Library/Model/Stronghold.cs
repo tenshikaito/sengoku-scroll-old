@@ -55,7 +55,7 @@ namespace Library.Model
 
         public class Type : BaseObject
         {
-            public byte id;
+            public int id;
             public string name;
             public int? culture;
             public string introduction;

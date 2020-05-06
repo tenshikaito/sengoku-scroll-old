@@ -106,7 +106,7 @@ namespace Server
                 return;
             }
 
-            game = new Game((string)gameName.Tag);
+            game = new Game(option, (string)gameName.Tag);
 
             game.start();
 

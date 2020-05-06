@@ -19,7 +19,7 @@ namespace Client.UI.SceneEditGameWorld
 
         public UIEditGameWorldDatabaseWindow(GameSystem gs, GameWorld gw) : base(gs)
         {
-            gameWorldMasterData = gw.masterData;
+            gameWorldMasterData = gw.masterData.toJson().fromJson<MasterData>();
 
             MaximizeBox = false;
 
@@ -41,9 +41,7 @@ namespace Client.UI.SceneEditGameWorld
 
             new TabPageDetailTileMapInfo(this, gameWorldMasterData.detailTileMapInfo, gameWorldMasterData.terrain).addTo(tc);
 
-            new TabPageMainMapTileImageInfo(this, gameWorldMasterData.mainTileMapImageInfo, gameWorldMasterData).addTo(tc);
-
-            new TabPageDetailMapTileImageInfo(this, gameWorldMasterData.detailTileMapImageInfo, gameWorldMasterData).addTo(tc);
+            new TabPageTerrainImage(this, gameWorldMasterData.terrainImage, gameWorldMasterData.terrain).addTo(tc);
 
             addSaveableConfirmButtons();
         }
@@ -98,7 +96,7 @@ namespace Client.UI.SceneEditGameWorld
                 {
                     if (lv.FocusedItem == null) return;
 
-                    btnDeleteClick(lv, (byte)lv.FocusedItem.Tag);
+                    btnDeleteClick(lv, (int)lv.FocusedItem.Tag);
                 }).addTo(p2);
 
                 new Label().addTo(p2);
@@ -146,7 +144,7 @@ namespace Client.UI.SceneEditGameWorld
                 {
                     if (lv.FocusedItem == null) return;
 
-                    onListViewClicked(lv, (byte)lv.FocusedItem.Tag);
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
                 };
 
                 var p2 = new TableLayoutPanel()
@@ -204,11 +202,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 var max = data.getMaxId(-1);
 
-                if (++max > byte.MaxValue) return;
+                if (++max > int.MaxValue) return;
 
                 var oo = new Terrain()
                 {
-                    id = (byte)max,
+                    id = (int)max,
                     name = w.terrain.text,
                 };
 
@@ -226,7 +224,7 @@ namespace Client.UI.SceneEditGameWorld
 
             private void onDeleteButtonClicked(ListView lv, int id)
             {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (byte)o.Tag == id));
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
 
                 data.Remove(id);
 
@@ -264,7 +262,7 @@ namespace Client.UI.SceneEditGameWorld
                     oo.isFreshWater = cbIsFreshWater.Checked;
                     oo.isDeepWater = cbIsDeepWater.Checked;
 
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
                     {
@@ -320,7 +318,7 @@ namespace Client.UI.SceneEditGameWorld
                 {
                     if (lv.FocusedItem == null) return;
 
-                    onListViewClicked(lv, (byte)lv.FocusedItem.Tag);
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
                 };
 
                 var p2 = new TableLayoutPanel()
@@ -365,11 +363,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 var max = data.getMaxId(-1);
 
-                if (++max > byte.MaxValue) return;
+                if (++max > int.MaxValue) return;
 
                 var oo = new Region()
                 {
-                    id = (byte)max,
+                    id = (int)max,
                     name = w.region.text,
                 };
 
@@ -387,7 +385,7 @@ namespace Client.UI.SceneEditGameWorld
 
             private void onDeleteButtonClicked(ListView lv, int id)
             {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (byte)o.Tag == id));
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
 
                 data.Remove(id);
 
@@ -413,7 +411,7 @@ namespace Client.UI.SceneEditGameWorld
                     oo.name = tbName.Text;
                     oo.climate = (Climate)cbClimate.SelectedValue;
 
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
                     {
@@ -461,7 +459,7 @@ namespace Client.UI.SceneEditGameWorld
                 {
                     if (lv.FocusedItem == null) return;
 
-                    onListViewClicked(lv, (byte)lv.FocusedItem.Tag);
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
                 };
 
                 var p2 = new TableLayoutPanel()
@@ -501,11 +499,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 var max = data.getMaxId(-1);
 
-                if (++max > byte.MaxValue) return;
+                if (++max > int.MaxValue) return;
 
                 var oo = new Culture()
                 {
-                    id = (byte)max,
+                    id = max,
                     name = w.culture.text,
                 };
 
@@ -523,7 +521,7 @@ namespace Client.UI.SceneEditGameWorld
 
             private void onDeleteButtonClicked(ListView lv, int id)
             {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (byte)o.Tag == id));
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
 
                 data.Remove(id);
 
@@ -543,11 +541,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 if (currentId != null)
                 {
-                    var oo = data[(byte)currentId];
+                    var oo = data[(int)currentId];
 
                     oo.name = tbName.Text;
 
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
                     {
@@ -596,7 +594,7 @@ namespace Client.UI.SceneEditGameWorld
                 {
                     if (lv.FocusedItem == null) return;
 
-                    onListViewClicked(lv, (byte)lv.FocusedItem.Tag);
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
                 };
 
                 var p2 = new TableLayoutPanel()
@@ -639,11 +637,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 var max = data.getMaxId(-1);
 
-                if (++max > byte.MaxValue) return;
+                if (++max > int.MaxValue) return;
 
                 var oo = new Religion()
                 {
-                    id = (byte)max,
+                    id = max,
                     name = w.religion.text,
                 };
 
@@ -661,7 +659,7 @@ namespace Client.UI.SceneEditGameWorld
 
             private void onDeleteButtonClicked(ListView lv, int id)
             {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (byte)o.Tag == id));
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
 
                 data.Remove(id);
 
@@ -681,12 +679,12 @@ namespace Client.UI.SceneEditGameWorld
             {
                 if (currentId != null)
                 {
-                    var oo = data[(byte)currentId];
+                    var oo = data[(int)currentId];
 
                     oo.name = tbName.Text;
                     oo.isPolytheism = cbIsPolytheism.Checked;
 
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
                     {
@@ -734,7 +732,7 @@ namespace Client.UI.SceneEditGameWorld
                 {
                     if (lv.FocusedItem == null) return;
 
-                    onListViewClicked(lv, (byte)lv.FocusedItem.Tag);
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
                 };
 
                 var p2 = new TableLayoutPanel()
@@ -774,11 +772,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 var max = data.getMaxId(0);
 
-                if (++max > byte.MaxValue) return;
+                if (++max > int.MaxValue) return;
 
                 var oo = new Road()
                 {
-                    id = (byte)max,
+                    id = (int)max,
                     name = w.road.text,
                 };
 
@@ -796,7 +794,7 @@ namespace Client.UI.SceneEditGameWorld
 
             private void onDeleteButtonClicked(ListView lv, int id)
             {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (byte)o.Tag == id));
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
 
                 data.Remove(id);
 
@@ -816,11 +814,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 if (currentId != null)
                 {
-                    var oo = data[(byte)currentId];
+                    var oo = data[(int)currentId];
 
                     oo.name = tbName.Text;
 
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
                     {
@@ -874,7 +872,7 @@ namespace Client.UI.SceneEditGameWorld
                 {
                     if (lv.FocusedItem == null) return;
 
-                    onListViewClicked(lv, (byte)lv.FocusedItem.Tag);
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
                 };
 
                 var p2 = new TableLayoutPanel()
@@ -920,11 +918,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 var max = data.getMaxId(0);
 
-                if (++max > byte.MaxValue) return;
+                if (++max > int.MaxValue) return;
 
                 var oo = new Stronghold.Type()
                 {
-                    id = (byte)max,
+                    id = max,
                     name = w.stronghold_type.text,
                     introduction = string.Empty
                 };
@@ -943,7 +941,7 @@ namespace Client.UI.SceneEditGameWorld
 
             private void onDeleteButtonClicked(ListView lv, int id)
             {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (byte)o.Tag == id));
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
 
                 data.Remove(id);
 
@@ -963,13 +961,13 @@ namespace Client.UI.SceneEditGameWorld
             {
                 if (currentId != null)
                 {
-                    var oo = data[(byte)currentId];
+                    var oo = data[(int)currentId];
 
                     oo.name = tbName.Text;
                     oo.culture = int.TryParse(tbCulture.Text, out var c) ? c : (int?)null;
                     oo.introduction = tbIntroduction.Text;
 
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (byte)o.Tag == currentId);
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
                     {
@@ -992,547 +990,6 @@ namespace Client.UI.SceneEditGameWorld
                 tbName.Text = o.name;
                 tbCulture.Text = o.culture?.ToString() ?? string.Empty;
                 tbIntroduction.Text = o.introduction;
-            }
-        }
-    }
-
-    public partial class UIEditGameWorldDatabaseWindow
-    {
-        private partial class TabPageMainMapTileImageInfo : TabPageBase
-        {
-            private Dictionary<int, MainTileMapImageInfo> data;
-            private int? currentId;
-
-            private TextBox tbName;
-            private TextBox tbTileWidth;
-            private TextBox tbTileHeight;
-
-            private TabPageMainMapTileImageInfoTerrain tpTerrain;
-
-            public TabPageMainMapTileImageInfo(
-                UIEditGameWorldDatabaseWindow bw, Dictionary<int, MainTileMapImageInfo> data, MasterData gameData)
-                : base(bw)
-            {
-                this.data = data;
-
-                this.init(w.main_tile_map_image_info.text).setAutoSizeP();
-
-                var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
-
-                lv.addColumn(w.id)
-                    .addColumn(w.name)
-                    .addColumn(w.tile_map_image_info.tile_size);
-
-                lv.Click += (s, e) =>
-                {
-                    if (lv.FocusedItem == null) return;
-
-                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
-                };
-
-                var p2 = new TableLayoutPanel()
-                {
-                    Dock = DockStyle.Fill,
-                    ColumnCount = 2,
-                    RowCount = 1,
-                }.addColumnStyle(33).addColumnStyle(66).addTo(sc);
-
-                var gb = new GroupBox()
-                {
-                    Dock = DockStyle.Fill,
-                    Text = w.scene_edit_game_world.property
-                }.addTo(p2);
-
-                var p3 = new TableLayoutPanel()
-                {
-                    Dock = DockStyle.Fill,
-                    ColumnCount = 2,
-                    RowCount = 2,
-                    AutoScroll = true
-                }.addTo(gb);
-
-                new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init(w.tile_map_image_info.tile_width + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbTileWidth = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init(w.tile_map_image_info.tile_height + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbTileHeight = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init("").addTo(p3);
-
-                gb = new GroupBox()
-                {
-                    Dock = DockStyle.Fill,
-                    Text = w.detail
-                }.addTo(p2);
-
-                var tc = new TabControl() { Dock = DockStyle.Fill }.init().setAutoSize().addTo(gb);
-
-                tpTerrain = new TabPageMainMapTileImageInfoTerrain(bw, lv).addTo(tc);
-
-                initData(lv);
-
-                lv.autoResizeColumns();
-            }
-
-            private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
-
-            private void onAddButtonClicked(ListView lv)
-            {
-                var max = data.getMaxId(0);
-
-                if (++max > int.MaxValue) return;
-
-                var oo = new MainTileMapImageInfo()
-                {
-                    id = max,
-                    name = w.tile_map_image_info.text,
-                    terrainAnimation = new Dictionary<byte, TileAnimation>(),
-                    strongholdAnimation = new Dictionary<int, TileAnimation>()
-                };
-
-                data[oo.id] = oo;
-
-                var lvi = new ListViewItem()
-                {
-                    Tag = oo.id
-                };
-
-                lv.Items.Add(setRow(lvi, oo));
-
-                lv.autoResizeColumns();
-            }
-
-            private void onDeleteButtonClicked(ListView lv, int id)
-            {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
-
-                data.Remove(id);
-
-                if (currentId == id) currentId = null;
-
-                lv.autoResizeColumns();
-            }
-
-            private ListViewItem setRow(ListViewItem lvi, MainTileMapImageInfo o)
-            {
-                lvi.Text = o.id.ToString();
-
-                lvi.addColumn(o.name);
-                lvi.addColumn($"({o.tileSize.Width},{o.tileSize.Height})");
-
-                return lvi;
-            }
-
-            private void refresh(ListView lv)
-            {
-                if (currentId != null)
-                {
-                    var oo = data[(int)currentId];
-
-                    oo.name = tbName.Text;
-                    if (int.TryParse(tbTileWidth.Text, out var width)) oo.tileSize.Width = width;
-                    if (int.TryParse(tbTileHeight.Text, out var height)) oo.tileSize.Height = height;
-
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
-
-                    if (lvi != null)
-                    {
-                        lvi.SubItems.Clear();
-
-                        setRow(lvi, oo);
-
-                        lv.autoResizeColumns();
-                    }
-                }
-            }
-
-            private void onListViewClicked(ListView lv, int id)
-            {
-                refresh(lv);
-
-                currentId = id;
-                var o = data[id];
-
-                tbName.Text = o.name;
-                tbTileWidth.Text = o.tileSize.Width.ToString();
-                tbTileHeight.Text = o.tileSize.Height.ToString();
-
-                tpTerrain.setData(o);
-
-                //tpTerrain.setData(o);
-                //tpTerrain.refreshTerrain();
-            }
-        }
-    }
-
-    public partial class UIEditGameWorldDatabaseWindow
-    {
-        private partial class TabPageMainMapTileImageInfo : TabPageBase
-        {
-            private class TabPageMainMapTileImageInfoTerrain : TabPageBase
-            {
-                private MainTileMapImageInfo data;
-
-                private Label lbStatus;
-                private TextBox tbContent;
-
-                public TabPageMainMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, ListView lv) : base(bw)
-                {
-                    this.init(w.terrain.text).setAutoSizeP();
-
-                    var tlp = new TableLayoutPanel()
-                    {
-                        RowCount = 2,
-                        ColumnCount = 2,
-                        Dock = DockStyle.Fill
-                    }.addColumnStyle(50).addColumnStyle(50).addTo(this);
-
-                    lbStatus = new Label().init(string.Empty).setAutoSize().setLeftCenter().addTo(tlp);
-
-                    tlp.SetColumnSpan(lbStatus, 2);
-
-                    tbContent = new TextBox()
-                    {
-                        Dock = DockStyle.Fill,
-                        Multiline = true,
-                        AcceptsReturn = true,
-                        ScrollBars = ScrollBars.Both
-                    }.refreshListViewOnClick(lv, refresh).addTo(tlp);
-
-                    new TextBox()
-                    {
-                        Dock = DockStyle.Fill,
-                        ReadOnly = true,
-                        Multiline = true,
-                        ScrollBars = ScrollBars.Horizontal,
-                        Text = new Dictionary<int, TileAnimation>()
-                        {
-                            { 0, new TileAnimation()
-                            {
-                                id = 0,
-                                interval = 0.5f,
-                                frames = new List<TileAnimation.Frame>()
-                                {
-                                    new TileAnimation.Frame()
-                                    {
-                                        fileName = "path/file_name.png",
-                                        vertex = new System.Drawing.Point()
-                                        {
-                                            X = 0,
-                                            Y = 0
-                                        }
-                                    }
-                                }
-                            }
-                            }
-                        }.toJson(true)
-                    }.addTo(tlp);
-                }
-
-                public void setData(MainTileMapImageInfo data)
-                {
-                    this.data = data;
-
-                    tbContent.Text = data.terrainAnimation.toJson(true);
-                }
-
-                private void refresh(ListView lv)
-                {
-                    if (data == null) return;
-
-                    if (lv.FocusedItem == null) return;
-
-                    try
-                    {
-                        var json = tbContent.Text.fromJson<Dictionary<byte, TileAnimation>>();
-
-                        foreach (var o in json.Values)
-                        {
-                            if (o.frames == null) o.frames = new List<TileAnimation.Frame>();
-                        }
-
-                        data.terrainAnimation = json;
-
-                        lbStatus.Text = w.tile_map_image_info.edit_success;
-                    }
-                    catch (Exception e)
-                    {
-                        lbStatus.Text = $"{w.tile_map_image_info.edit_failure}{e.Message.Substring(e.Message.IndexOf(':'))}";
-                    }
-                }
-            }
-        }
-    }
-
-    public partial class UIEditGameWorldDatabaseWindow
-    {
-        private partial class TabPageDetailMapTileImageInfo : TabPageBase
-        {
-            private Dictionary<int, DetailTileMapImageInfo> data;
-            private int? currentId;
-
-            private TextBox tbName;
-            private TextBox tbTileWidth;
-            private TextBox tbTileHeight;
-
-            private TabPageDetailMapTileImageInfoTerrain tpTerrain;
-
-            public TabPageDetailMapTileImageInfo(
-                UIEditGameWorldDatabaseWindow bw, Dictionary<int, DetailTileMapImageInfo> data, MasterData gameData)
-                : base(bw)
-            {
-                this.data = data;
-
-                this.init(w.detail_tile_map_image_info.text).setAutoSizeP();
-
-                var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
-
-                lv.addColumn(w.id)
-                    .addColumn(w.name)
-                    .addColumn(w.tile_map_image_info.tile_size);
-
-                lv.Click += (s, e) =>
-                {
-                    if (lv.FocusedItem == null) return;
-
-                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
-                };
-
-                var p2 = new TableLayoutPanel()
-                {
-                    Dock = DockStyle.Fill,
-                    ColumnCount = 2,
-                    RowCount = 1,
-                }.addColumnStyle(33).addColumnStyle(66).addTo(sc);
-
-                var gb = new GroupBox()
-                {
-                    Dock = DockStyle.Fill,
-                    Text = w.scene_edit_game_world.property
-                }.addTo(p2);
-
-                var p3 = new TableLayoutPanel()
-                {
-                    Dock = DockStyle.Fill,
-                    ColumnCount = 2,
-                    RowCount = 2,
-                    AutoScroll = true
-                }.addTo(gb);
-
-                new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init(w.tile_map_image_info.tile_width + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbTileWidth = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init(w.tile_map_image_info.tile_height + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbTileHeight = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init("").addTo(p3);
-
-                gb = new GroupBox()
-                {
-                    Dock = DockStyle.Fill,
-                    Text = w.detail
-                }.addTo(p2);
-
-                var tc = new TabControl() { Dock = DockStyle.Fill }.init().setAutoSize().addTo(gb);
-
-                tpTerrain = new TabPageDetailMapTileImageInfoTerrain(bw, lv).addTo(tc);
-
-                initData(lv);
-
-                lv.autoResizeColumns();
-            }
-
-            private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
-
-            private void onAddButtonClicked(ListView lv)
-            {
-                var max = data.getMaxId(0);
-
-                if (++max > int.MaxValue) return;
-
-                var oo = new DetailTileMapImageInfo()
-                {
-                    id = max,
-                    name = w.tile_map_image_info.text,
-                    terrainAnimation = new Dictionary<byte, TileAnimation>(),
-                };
-
-                data[oo.id] = oo;
-
-                var lvi = new ListViewItem()
-                {
-                    Tag = oo.id
-                };
-
-                lv.Items.Add(setRow(lvi, oo));
-
-                lv.autoResizeColumns();
-            }
-
-            private void onDeleteButtonClicked(ListView lv, int id)
-            {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
-
-                data.Remove(id);
-
-                if (currentId == id) currentId = null;
-
-                lv.autoResizeColumns();
-            }
-
-            private ListViewItem setRow(ListViewItem lvi, DetailTileMapImageInfo o)
-            {
-                lvi.Text = o.id.ToString();
-
-                lvi.addColumn(o.name);
-                lvi.addColumn($"({o.tileSize.Width},{o.tileSize.Height})");
-
-                return lvi;
-            }
-
-            private void refresh(ListView lv)
-            {
-                if (currentId != null)
-                {
-                    var oo = data[(int)currentId];
-
-                    oo.name = tbName.Text;
-                    if (int.TryParse(tbTileWidth.Text, out var width)) oo.tileSize.Width = width;
-                    if (int.TryParse(tbTileHeight.Text, out var height)) oo.tileSize.Height = height;
-
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
-
-                    if (lvi != null)
-                    {
-                        lvi.SubItems.Clear();
-
-                        setRow(lvi, oo);
-
-                        lv.autoResizeColumns();
-                    }
-                }
-            }
-
-            private void onListViewClicked(ListView lv, int id)
-            {
-                refresh(lv);
-
-                currentId = id;
-                var o = data[id];
-
-                tbName.Text = o.name;
-                tbTileWidth.Text = o.tileSize.Width.ToString();
-                tbTileHeight.Text = o.tileSize.Height.ToString();
-
-                tpTerrain.setData(o);
-
-                //tpTerrain.setData(o);
-                //tpTerrain.refreshTerrain();
-            }
-        }
-    }
-
-    public partial class UIEditGameWorldDatabaseWindow
-    {
-        private partial class TabPageDetailMapTileImageInfo : TabPageBase
-        {
-            private class TabPageDetailMapTileImageInfoTerrain : TabPageBase
-            {
-                private DetailTileMapImageInfo data;
-
-                private Label lbStatus;
-                private TextBox tbContent;
-
-                public TabPageDetailMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, ListView lv) : base(bw)
-                {
-                    this.init(w.terrain.text).setAutoSizeP();
-
-                    var tlp = new TableLayoutPanel()
-                    {
-                        RowCount = 2,
-                        ColumnCount = 2,
-                        Dock = DockStyle.Fill
-                    }.addColumnStyle(50).addColumnStyle(50).addTo(this);
-
-                    lbStatus = new Label().init(string.Empty).setAutoSize().setLeftCenter().addTo(tlp);
-
-                    tlp.SetColumnSpan(lbStatus, 2);
-
-                    tbContent = new TextBox()
-                    {
-                        Dock = DockStyle.Fill,
-                        Multiline = true,
-                        AcceptsReturn = true,
-                        ScrollBars = ScrollBars.Both
-                    }.refreshListViewOnClick(lv, refresh).addTo(tlp);
-
-                    new TextBox()
-                    {
-                        Dock = DockStyle.Fill,
-                        ReadOnly = true,
-                        Multiline = true,
-                        ScrollBars = ScrollBars.Horizontal,
-                        Text = new Dictionary<int, TileAnimation>()
-                        {
-                            { 0, new TileAnimation()
-                            {
-                                id = 0,
-                                interval = 0.5f,
-                                frames = new List<TileAnimation.Frame>()
-                                {
-                                    new TileAnimation.Frame()
-                                    {
-                                        fileName = "path/file_name.png",
-                                        vertex = new System.Drawing.Point()
-                                        {
-                                            X = 0,
-                                            Y = 0
-                                        }
-                                    }
-                                }
-                            }
-                            }
-                        }.toJson(true)
-                    }.addTo(tlp);
-                }
-
-                public void setData(DetailTileMapImageInfo data)
-                {
-                    this.data = data;
-
-                    tbContent.Text = data.terrainAnimation.toJson(true);
-                }
-
-                private void refresh(ListView lv)
-                {
-                    if (data == null) return;
-
-                    if (lv.FocusedItem == null) return;
-
-                    try
-                    {
-                        var json = tbContent.Text.fromJson<Dictionary<byte, TileAnimation>>();
-
-                        foreach (var o in json.Values)
-                        {
-                            if (o.frames == null) o.frames = new List<TileAnimation.Frame>();
-                        }
-
-                        data.terrainAnimation = json;
-
-                        lbStatus.Text = w.tile_map_image_info.edit_success;
-                    }
-                    catch (Exception e)
-                    {
-                        lbStatus.Text = $"{w.tile_map_image_info.edit_failure}{e.Message.Substring(e.Message.IndexOf(':'))}";
-                    }
-                }
             }
         }
     }
@@ -1712,180 +1169,291 @@ namespace Client.UI.SceneEditGameWorld
         }
     }
 
-    #region 图形化编辑界面模板、状态基本完成、因为结构麻烦而废弃
-    //public partial class UIEditGameWorldDatabaseWindow
-    //{
-    //    private partial class TabPageMainMapTileImageInfo : TabPageBase
-    //    {
-    //        private class TabPageMainMapTileImageInfoTerrain : TabPageBase
-    //        {
-    //            private MainTileMapImageInfo data;
-    //            private Dictionary<int, Terrain> terrain;
+    public partial class UIEditGameWorldDatabaseWindow
+    {
+        private partial class TabPageTerrainImage : TabPageBase
+        {
+            private Dictionary<int, TerrainImage> data;
+            private Dictionary<int, Terrain> terrain;
+            private int? currentId;
 
-    //            private TextBox tbInterval;
-    //            private ListView lvTerrain;
-    //            private ListView lvFrame;
+            private TextBox tbName;
+            private TextBox tbAnimationViewSpring;
+            private TextBox tbAnimationViewSummer;
+            private TextBox tbAnimationViewAutumn;
+            private TextBox tbAnimationViewWinter;
+            private TextBox tbAnimationDetailSpring;
+            private TextBox tbAnimationDetailSummer;
+            private TextBox tbAnimationDetailAutumn;
+            private TextBox tbAnimationDetailWinter;
+            private ComboBox cbTerrain;
 
-    //            public TabPageMainMapTileImageInfoTerrain(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Terrain> terrain) : base(bw)
-    //            {
-    //                this.terrain = terrain;
+            public TabPageTerrainImage(
+                UIEditGameWorldDatabaseWindow bw, Dictionary<int, TerrainImage> data, Dictionary<int, Terrain> terrain)
+                : base(bw)
+            {
+                this.data = data;
+                this.terrain = terrain;
 
-    //                this.init(w.terrain.name).setAutoSizeP();
+                this.init(w.terrain_image.text).setAutoSizeP();
 
-    //                var sc = new TableLayoutPanel()
-    //                {
-    //                    RowCount = 1,
-    //                    ColumnCount = 3,
-    //                    Dock = DockStyle.Fill
-    //                }.addColumnStyle(25).addColumnStyle(75).addTo(this);
+                bw.tabControl.SelectedIndexChanged += (s, e) =>
+                {
+                    if (bw.tabControl.SelectedTab == this) refresh();
+                };
 
-    //                var gb = new GroupBox()
-    //                {
-    //                    Dock = DockStyle.Fill,
-    //                    Text = w.type
-    //                }.addTo(sc);
+                var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
-    //                lvTerrain = new ListView().init().addColumn(w.name).addTo(gb);
+                lv.addColumn(w.id)
+                    .addColumn(w.name)
+                    .addColumn(w.terrain_image.text);
 
-    //                gb = new GroupBox()
-    //                {
-    //                    Dock = DockStyle.Fill,
-    //                    Text = w.tile_map_image_info.frame
-    //                }.addTo(sc);
+                lv.Click += (s, e) =>
+                {
+                    if (lv.FocusedItem == null) return;
 
-    //                var mtlp = new TableLayoutPanel()
-    //                {
-    //                    RowCount = 2,
-    //                    ColumnCount = 2,
-    //                    Dock = DockStyle.Fill
-    //                }.addRowStyle(80).addRowStyle(20).addColumnStyle(50).addColumnStyle(50).addTo(gb);
+                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
+                };
 
-    //                lvFrame = new ListView().init().addColumn(w.name).addTo(mtlp);
+                var p2 = new TableLayoutPanel()
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 1,
+                    RowCount = 2
+                }.addRowStyle(80).addRowStyle(20).addTo(sc);
 
-    //                mtlp.SetColumnSpan(lvFrame, 2);
+                var gb = new GroupBox()
+                {
+                    Dock = DockStyle.Fill,
+                    Text = w.scene_edit_game_world.property
+                }.addTo(p2);
 
-    //                new Button().init("+", () =>
-    //                {
-    //                    if (data == null) return;
+                var p3 = new TableLayoutPanel()
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 2,
+                    RowCount = 2,
+                    AutoScroll = true
+                }.addTo(gb);
 
-    //                    if (lvTerrain.FocusedItem == null) return;
+                var width = 320;
+                var height = 48;
 
-    //                    var id = (byte)lvTerrain.FocusedItem.Tag;
+                new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-    //                    var frame = new TileAnimation.Frame();
+                new Label().init(w.terrain.text + ":").setAutoSize().setRightCenter().addTo(p3);
+                cbTerrain = new ComboBox().initDropDownList<int>().addTo(p3);
 
-    //                    data.terrainAnimation[id].frames.Add(frame);
+                new Label().init(w.terrain_image.animation_view_spring + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationViewSpring = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
-    //                    lvFrame.Items.Add(new ListViewItem()
-    //                    {
-    //                        Tag = frame
-    //                    });
-    //                }).addTo(mtlp);
+                new Label().init(w.terrain_image.animation_view_summer + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationViewSummer = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
-    //                new Button().init("-", () =>
-    //                {
-    //                    if (lvTerrain.FocusedItem == null) return;
+                new Label().init(w.terrain_image.animation_view_autumn + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationViewAutumn = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
-    //                    if (lvFrame.FocusedItem == null) return;
+                new Label().init(w.terrain_image.animation_view_winter + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationViewWinter = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
-    //                    var id = (byte)lvTerrain.FocusedItem.Tag;
+                new Label().init(w.terrain_image.animation_detail_spring + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationDetailSpring = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
-    //                    var frame = lvFrame.FocusedItem.Tag as TileAnimation.Frame;
+                new Label().init(w.terrain_image.animation_detail_summer + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationDetailSummer = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
-    //                    data.terrainAnimation[id].frames.Remove(frame);
+                new Label().init(w.terrain_image.animation_detail_autumn + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationDetailAutumn = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
-    //                    lvFrame.Items.Remove(lvFrame.FocusedItem);
-    //                }).addTo(mtlp);
+                new Label().init(w.terrain_image.animation_detail_winter + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationDetailWinter = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
-    //                gb = new GroupBox()
-    //                {
-    //                    Dock = DockStyle.Fill,
-    //                    Text = w.scene_edit_game_world.property
-    //                }.addTo(sc);
+                new Label().init("").addTo(p3);
 
-    //                var rtlp = new TableLayoutPanel()
-    //                {
-    //                    RowCount = 3,
-    //                    ColumnCount = 2,
-    //                    Dock = DockStyle.Fill
-    //                }.addTo(gb);
+                initData(lv);
 
-    //                new Label().init(w.tile_map_image_info.interval + ":").setAutoSize().setRightCenter().addTo(rtlp);
-    //                tbInterval = new TextBox()/*.refreshListViewOnClick(lvTerrain, refresh)*/.addTo(rtlp);
+                lv.autoResizeColumns();
 
-    //                new Label().init(w.tile_map_image_info.file_name).setAutoSize().setRightCenter().addTo(rtlp);
-    //                var tbFileName = new TextBox().addTo(rtlp);
+                refresh();
+            }
 
-    //                new Label().init(w.tile_map_image_info.position).setAutoSize().setRightCenter().addTo(rtlp);
-    //                var tbVertex = new TextBox().addTo(rtlp);
+            private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
 
-    //                lvTerrain.SelectedIndexChanged += (s, e) =>
-    //                {
-    //                    lvFrame.Items.Clear();
-    //                    tbInterval.Text = string.Empty;
-    //                    tbFileName.Text = string.Empty;
-    //                    tbVertex.Text = string.Empty;
+            private void refresh() => cbTerrain.setDropDownList(terrain.Select(o => new KeyValuePair<int, string>(o.Key, o.Value.name)).ToList());
 
-    //                    if (lvTerrain.FocusedItem == null) return;
+            private void onAddButtonClicked(ListView lv)
+            {
+                var max = data.getMaxId(0);
 
-    //                    var id = (byte)lvTerrain.FocusedItem.Tag;
+                if (++max > int.MaxValue) return;
 
-    //                    if (!data.terrainAnimation.TryGetValue(id, out var value)) return;
+                var oo = new TerrainImage()
+                {
+                    id = max,
+                    name = w.terrain_image.text,
+                    terrainId = 1,
+                    animationViewSpring = new List<TileAnimationFrame>(),
+                    animationViewSummer = new List<TileAnimationFrame>(),
+                    animationViewAutumn = new List<TileAnimationFrame>(),
+                    animationViewWinter = new List<TileAnimationFrame>(),
+                    animationDetailSpring = new List<TileAnimationFrame>(),
+                    animationDetailSummer = new List<TileAnimationFrame>(),
+                    animationDetailAutumn = new List<TileAnimationFrame>(),
+                    animationDetailWinter = new List<TileAnimationFrame>()
+                };
 
-    //                    tbInterval.Text = value.interval.ToString();
+                data[oo.id] = oo;
 
-    //                    refreshFrame();
-    //                };
+                var lvi = new ListViewItem()
+                {
+                    Tag = oo.id
+                };
 
-    //                lvFrame.SelectedIndexChanged += (s, e) =>
-    //                {
-    //                    if (lvFrame.FocusedItem == null) return;
+                lv.Items.Add(setRow(lvi, oo));
 
-    //                    var data = lvFrame.FocusedItem.Tag as TileAnimation.Frame;
+                lv.autoResizeColumns();
+            }
 
-    //                    tbFileName.Text = data.fileName;
-    //                    tbVertex.Text = $"{data.vertex.X},{data.vertex.Y}";
+            private void onDeleteButtonClicked(ListView lv, int id)
+            {
+                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
 
-    //                    // select image
-    //                };
+                data.Remove(id);
 
-    //                lvTerrain.autoResizeColumns(-5);
-    //                lvFrame.autoResizeColumns(-5);
-    //            }
+                if (currentId == id) currentId = null;
 
-    //            public void refreshTerrain()
-    //            {
-    //                lvTerrain.Items.Clear();
+                lv.autoResizeColumns();
+            }
 
-    //                lvTerrain.Items.AddRange(terrain.Values.ToList().Select(o => new ListViewItem()
-    //                {
-    //                    Tag = o.id,
-    //                    Text = o.name
-    //                }).ToArray());
+            private ListViewItem setRow(ListViewItem lvi, TerrainImage o)
+            {
+                lvi.Text = o.id.ToString();
 
-    //                lvTerrain.autoResizeColumns(-5);
-    //            }
+                lvi.addColumn(o.name);
+                lvi.addColumn(terrain.TryGetValue(o.terrainId, out var t) ? t.name : w.symbol_unselected);
 
-    //            public void refreshFrame()
-    //            {
-    //                lvFrame.Items.Clear();
+                return lvi;
+            }
 
-    //                if (lvTerrain.FocusedItem == null) return;
+            private void refresh(ListView lv)
+            {
+                if (currentId != null)
+                {
+                    var oo = data[(int)currentId];
 
-    //                var terrainId = (byte)lvTerrain.FocusedItem.Tag;
+                    oo.name = tbName.Text;
 
-    //                lvFrame.Items.AddRange(data.terrainAnimation[terrainId].frames.ToList().Select(o => new ListViewItem()
-    //                {
-    //                    Tag = o,
-    //                    Text = $"{o.vertex.X},{o.vertex.Y}"
-    //                }).ToArray());
+                    var showDialog = new Action<string>(text =>
+                    {
+                        new UIDialog(window.gameSystem, "alert", text).ShowDialog();
+                    });
 
-    //                lvFrame.autoResizeColumns(-5);
-    //            }
+                    try
+                    {
+                        oo.animationViewSpring = tbAnimationViewSpring.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_view_spring);
+                    }
 
-    //            public void setData(MainTileMapImageInfo data) => this.data = data;
-    //        }
-    //    }
-    //}
-    #endregion
+                    try
+                    {
+                        oo.animationViewSummer = tbAnimationViewSummer.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_view_summer);
+                    }
+
+                    try
+                    {
+                        oo.animationViewAutumn = tbAnimationViewAutumn.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_view_autumn);
+                    }
+
+                    try
+                    {
+                        oo.animationViewWinter = tbAnimationViewWinter.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_view_winter);
+                    }
+
+                    try
+                    {
+                        oo.animationDetailSpring = tbAnimationDetailSpring.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_detail_spring);
+                    }
+
+                    try
+                    {
+                        oo.animationDetailSummer = tbAnimationDetailSummer.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_detail_summer);
+                    }
+
+                    try
+                    {
+                        oo.animationDetailAutumn = tbAnimationDetailAutumn.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_detail_autumn);
+                    }
+
+                    try
+                    {
+                        oo.animationDetailWinter = tbAnimationDetailWinter.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_detail_winter);
+                    }
+
+                    if (cbTerrain.SelectedValue != null) oo.terrainId = (int)cbTerrain.SelectedValue;
+
+                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
+
+                    if (lvi != null)
+                    {
+                        lvi.SubItems.Clear();
+
+                        setRow(lvi, oo);
+
+                        lv.autoResizeColumns();
+                    }
+                }
+            }
+
+            private void onListViewClicked(ListView lv, int id)
+            {
+                refresh(lv);
+
+                currentId = id;
+                var o = data[id];
+
+                tbName.Text = o.name;
+                tbAnimationViewSpring.Text = o.animationViewSpring.toString();
+                tbAnimationViewSummer.Text = o.animationViewSummer.toString();
+                tbAnimationViewAutumn.Text = o.animationViewAutumn.toString();
+                tbAnimationViewWinter.Text = o.animationViewWinter.toString();
+                tbAnimationDetailSpring.Text = o.animationDetailSpring.toString();
+                tbAnimationDetailSummer.Text = o.animationDetailSummer.toString();
+                tbAnimationDetailAutumn.Text = o.animationDetailAutumn.toString();
+                tbAnimationDetailWinter.Text = o.animationDetailWinter.toString();
+                cbTerrain.SelectedValue = o.terrainId;
+            }
+        }
+    }
 }

@@ -52,6 +52,8 @@ namespace Client.Graphic
             tileHeightCount = camera.height / tileHeight + 2;
         }
 
+        public abstract void refresh();
+
         public MapPoint getTileLocation(MouseEventArgs e) => getTileLocation(e.X, e.Y);
 
         public MapPoint getTileLocation(Point p) => getTileLocation(p.X, p.Y);
@@ -96,32 +98,19 @@ namespace Client.Graphic
 
         protected class TileSpriteAnimation
         {
-            private TileAnimation tileAnimation;
+            private List<TileAnimationFrame> tileAnimation;
             private int index;
 
-            private TimeSpan updateSpriteInterval;
-            private DateTime lastUpdateSpriteTime = DateTime.Now;
+            public string fileName => tileAnimation[index].fileName;
 
-            public string fileName => tileAnimation.frames[index].fileName;
+            public Point currentPoint => tileAnimation[index].vertex;
 
-            public Point currentPoint => tileAnimation.frames[index].vertex;
-
-            public TileSpriteAnimation(TileAnimation ta)
+            public TileSpriteAnimation(List<TileAnimationFrame> ta)
             {
                 tileAnimation = ta;
-
-                updateSpriteInterval = TimeSpan.FromSeconds(ta.interval);
             }
 
-            public void update(DateTime now)
-            {
-                if (now - lastUpdateSpriteTime >= updateSpriteInterval)
-                {
-                    lastUpdateSpriteTime = now;
-
-                    index = ++index % tileAnimation.frames.Count;
-                }
-            }
+            public void update() => index = ++index % tileAnimation.Count;
         }
 
         public abstract class MapSpritesInfo

@@ -23,6 +23,8 @@ namespace Client.Graphic
             previous();
         }
 
+        public void refresh() => tileMapSpritesList.ForEach(o => o.refresh());
+
         public bool next()
         {
             hideAll();

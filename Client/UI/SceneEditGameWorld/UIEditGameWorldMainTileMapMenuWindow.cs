@@ -24,7 +24,7 @@ namespace Client.UI.SceneEditGameWorld
             Action rectangle,
             Action fill,
             Action detailTileMap,
-            Action<byte> onTerrainSelected) : base(gs)
+            Action<int> onTerrainSelected) : base(gs)
         {
             this.setCommandWindow(w.main_tile_map).setAutoSizeF().setCenter();
 
@@ -86,11 +86,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 if (lvTerrain.FocusedItem == null) return;
 
-                onTerrainSelected((byte)lvTerrain.FocusedItem.Tag);
+                onTerrainSelected((int)lvTerrain.FocusedItem.Tag);
             };
         }
 
-        public void setTerrain(List<Terrain> data)
+        public void setTerrain(List<TerrainImage> data)
         {
             lvTerrain.Items.Clear();
 

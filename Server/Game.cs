@@ -19,15 +19,18 @@ namespace Server
         private ReaderWriterLockSlim @lock = new ReaderWriterLockSlim();
         private bool isRunning = false;
 
+        private Option option;
         private GameServer gameServer;
 
         public GameWorldMap gameWorldMap;
 
         public string gameWorldName { get; }
 
-        public Game(string gameWorldName)
+        public Game(Option o, string gameWorldName)
         {
             this.gameWorldName = gameWorldName;
+
+            option = o;
 
             gameServer = new GameServer()
             {
@@ -67,7 +70,7 @@ namespace Server
 
             isRunning = true;
 
-            gameServer.start();
+            gameServer.bind(option.port).start();
         }
 
         private void processData(GameClient gc, string data)

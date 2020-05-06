@@ -25,7 +25,7 @@ namespace Client.UI.SceneEditGameWorld
             Action fill,
             Action save,
             Action exit,
-            Action<byte> onTerrainSelected) : base(gs)
+            Action<int> onTerrainSelected) : base(gs)
         {
             this.setCommandWindow(w.detail_tile_map).setAutoSizeF().setCenter();
 
@@ -89,11 +89,11 @@ namespace Client.UI.SceneEditGameWorld
             {
                 if (lvTerrain.FocusedItem == null) return;
 
-                onTerrainSelected((byte)lvTerrain.FocusedItem.Tag);
+                onTerrainSelected((int)lvTerrain.FocusedItem.Tag);
             };
         }
 
-        public void setTerrain(List<Terrain> data)
+        public void setTerrain(List<TerrainImage> data)
         {
             lvTerrain.Items.Clear();
 

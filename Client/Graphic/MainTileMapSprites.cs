@@ -12,51 +12,91 @@ using static Library.MainTileMapData;
 
 namespace Client.Graphic
 {
-    public class MainTileMapSprites : TileMapSpritesBase
+    public abstract class MainTileMapSprites : TileMapSpritesBase
     {
-        private MainTileMapImageInfo tileMapImageInfo;
         private MainMapSpritesInfo mapSpritesInfo;
 
         private AutoTileSprite tileSprite;
 
-        private Dictionary<int, TileSpriteAnimation> terrainSprite = new Dictionary<int, TileSpriteAnimation>();
+        private Dictionary<int, TileSpriteAnimation> terrainSpriteSpring;
+        private Dictionary<int, TileSpriteAnimation> terrainSpriteSummer;
+        private Dictionary<int, TileSpriteAnimation> terrainSpriteAutumn;
+        private Dictionary<int, TileSpriteAnimation> terrainSpriteWinter;
 
         public override int tileWidth => tileMapImageInfo.tileSize.Width;
 
         public override int tileHeight => tileMapImageInfo.tileSize.Height;
 
         protected override TileMap map => gameWorld.mainTileMap;
+
         private MainTileMap tileMap => gameWorld.mainTileMap;
 
-        public MainTileMapSprites(GameSystem gs, GameWorld gw, MainTileMapImageInfo mii, MainMapSpritesInfo msi, bool isEditor = false)
+        protected abstract MainTileMapImageInfo tileMapImageInfo { get; }
+
+        private DateTime lastUpdateTime = DateTime.Now;
+        private static TimeSpan nextFrameSpan = TimeSpan.FromMilliseconds(500);
+
+        public MainTileMapSprites(GameSystem gs, GameWorld gw, MainMapSpritesInfo msi, bool isEditor = false)
             : base(gs, gw, isEditor)
         {
-            init(mii, msi);
+            mapSpritesInfo = msi;
+
+            init(msi);
+
+            tileSprite = new AutoTileSprite(this);
 
             resize();
         }
 
-        public void init(MainTileMapImageInfo mii, MainMapSpritesInfo msi)
+        public void init(MainMapSpritesInfo msi)
         {
-            tileMapImageInfo = mii;
-            mapSpritesInfo = msi;
+            refresh();
+        }
 
-            terrainSprite = mii.terrainAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
-            strongholdSprite = mii.strongholdAnimation.Select(o => new KeyValuePair<int, TileSpriteAnimation>(o.Key, new TileSpriteAnimation(o.Value))).ToDictionary(o => o.Key, o => o.Value);
+        public override void refresh()
+        {
+            var mii = tileMapImageInfo;
+            var msi = mapSpritesInfo;
 
-            mii.terrainAnimation.Values.ToList().ForEach(o => o.frames.ForEach(oo => gameWorld.getImage(oo.fileName)));
+            terrainSpriteSpring = mii.terrainAnimationSpring.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
+            terrainSpriteSummer = mii.terrainAnimationSummer.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
+            terrainSpriteAutumn = mii.terrainAnimationAutumn.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
+            terrainSpriteWinter = mii.terrainAnimationWinter.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
+
+            //strongholdSprite = mii.strongholdAnimation.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
+
+            mii.terrainAnimationSpring.Values.ToList().ForEach(o => o.ForEach(oo => gameWorld.getImage(oo.fileName)));
+            mii.terrainAnimationSummer.Values.ToList().ForEach(o => o.ForEach(oo => gameWorld.getImage(oo.fileName)));
+            mii.terrainAnimationAutumn.Values.ToList().ForEach(o => o.ForEach(oo => gameWorld.getImage(oo.fileName)));
+            mii.terrainAnimationWinter.Values.ToList().ForEach(o => o.ForEach(oo => gameWorld.getImage(oo.fileName)));
+
             //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
 
-            tileSprite = new AutoTileSprite(this);
+            mapSpritesInfo.removeTileFlag();
         }
 
         public override void update()
         {
             var now = DateTime.Now;
 
-            foreach (var o in terrainSprite.Values) o.update(now);
+            if (now - lastUpdateTime >= nextFrameSpan)
+            {
+                lastUpdateTime = now;
 
-            foreach (var o in strongholdSprite.Values) o.update(now);
+                var terrainSprite = null as Dictionary<int, TileSpriteAnimation>;
+
+                switch (gameWorld.gameDate.season)
+                {
+                    case GameDate.Season.spring: terrainSprite = terrainSpriteSpring; break;
+                    case GameDate.Season.summer: terrainSprite = terrainSpriteSummer; break;
+                    case GameDate.Season.autumn: terrainSprite = terrainSpriteAutumn; break;
+                    case GameDate.Season.winter: terrainSprite = terrainSpriteWinter; break;
+                }
+
+                foreach (var o in terrainSprite.Values) o.update();
+
+                foreach (var o in strongholdSprite.Values) o.update();
+            }
         }
 
         protected override void draw(GameGraphic g, int fx, int fy, MapPoint p, int sx, int sy)
@@ -83,7 +123,31 @@ namespace Client.Graphic
 
         private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, MainMapTile t)
         {
-            if (!terrainSprite.TryGetValue(t.terrain, out var s)) return;
+            var s = null as TileSpriteAnimation;
+
+            switch (gameWorld.gameDate.season)
+            {
+                case GameDate.Season.spring:
+                    if (!terrainSpriteSpring.TryGetValue(t.terrain, out var s1)) return;
+                    s = s1;
+                    break;
+                case GameDate.Season.summer:
+                    if (!terrainSpriteSummer.TryGetValue(t.terrain, out var s2)) return;
+                    s = s2;
+                    break;
+                case GameDate.Season.autumn:
+                    if (!terrainSpriteAutumn.TryGetValue(t.terrain, out var s3)) return;
+                    s = s3;
+                    break;
+                case GameDate.Season.winter:
+                    if (!terrainSpriteWinter.TryGetValue(t.terrain, out var s4)) return;
+                    s = s4;
+                    break;
+            }
+
+            var img = gameWorld.getImage(s.fileName);
+
+            if (img == null) return;
 
             var point = s.currentPoint;
 
@@ -95,7 +159,7 @@ namespace Client.Graphic
 
             var type = mapSpritesInfo.checkTerrainBorder(p);
 
-            ts.refresh(gameWorld.getImage(s.fileName), point, type);
+            ts.refresh(img, point, type);
 
             g.drawSprite(ts);
 
@@ -205,9 +269,12 @@ namespace Client.Graphic
                 if (tileMap.isOutOfBounds(p)) return 0;
 
                 var t = (MainMapTile)mainTileMap[p];
-                int y = p.y, x = p.x;
+                var y = p.y;
+                var x = p.x;
 
-                if (!terrain.TryGetValue(t.terrain, out var tt)) return 0;
+                if (!gameWorld.masterData.terrainImage.TryGetValue(t.terrain, out var ti)) return 0;
+
+                if (!terrain.TryGetValue(ti.terrainId, out var tt)) return 0;
 
                 byte flag = 0;
 
@@ -232,11 +299,29 @@ namespace Client.Graphic
                 var tt = mainTileMap[p];
                 var ttt = (MainMapTile)tt;
 
-                if (terrain.TryGetValue(ttt.terrain, out var tttt))
+                if (terrain.TryGetValue(gameWorld.masterData.terrainImage[ttt.terrain].terrainId, out var tttt))
                 {
                     if (t.isWater != tttt.isWater) flag |= direction;
                 }
             }
+        }
+    }
+
+    public class MainTileMapViewSprites : MainTileMapSprites
+    {
+        protected override MainTileMapImageInfo tileMapImageInfo => gameWorld.masterData.mainTileMapViewImageInfo;
+     
+        public MainTileMapViewSprites(GameSystem gs, GameWorld gw, MainMapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
+        {
+        }
+    }
+
+    public class MainTileMapDetailSprites : MainTileMapSprites
+    {
+        protected override MainTileMapImageInfo tileMapImageInfo => gameWorld.masterData.mainTileMapDetailImageInfo;
+
+        public MainTileMapDetailSprites(GameSystem gs, GameWorld gw, MainMapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
+        {
         }
     }
 }

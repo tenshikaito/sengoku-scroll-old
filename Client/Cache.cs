@@ -14,7 +14,9 @@ namespace Client
         {
             if (!images.TryGetValue(filepath, out var img))
             {
-                using(var s = File.OpenRead(filepath))
+                if (!File.Exists(filepath)) return images[filepath] = null;
+
+                using (var s = File.OpenRead(filepath))
                 {
                     return images[filepath] = Image.FromStream(s);
                 }

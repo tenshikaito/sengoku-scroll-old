@@ -6,7 +6,7 @@ namespace Library.Model
 {
     public class Culture : BaseObject
     {
-        public byte id;
+        public int id;
         public string name;
     }
 }

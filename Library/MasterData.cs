@@ -15,9 +15,12 @@ namespace Library
         public Dictionary<int, Road> road;
         public Dictionary<int, Stronghold.Type> strongholdType;
 
+        public Dictionary<int, TerrainImage> terrainImage;
         public Dictionary<int, DetailTileMapInfo> detailTileMapInfo;
 
-        public Dictionary<int, MainTileMapImageInfo> mainTileMapImageInfo;
-        public Dictionary<int, DetailTileMapImageInfo> detailTileMapImageInfo;
+        public MainTileMapImageInfo mainTileMapViewImageInfo;
+        public MainTileMapImageInfo mainTileMapDetailImageInfo;
+        public DetailTileMapImageInfo detailTileMapViewImageInfo;
+        public DetailTileMapImageInfo detailTileMapDetailImageInfo;
     }
 }

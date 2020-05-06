@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="BaseObject.cs" />
     <Compile Include="GameData.cs" />
+    <Compile Include="GameDate.cs" />
     <Compile Include="GameWorldMap.cs" />
     <Compile Include="GameWorldProcessor.cs" />
     <Compile Include="Helper\NetworkHelper.cs" />
@@ -68,10 +69,10 @@
     <Compile Include="Model\DetailTileMapInfo.cs" />
     <Compile Include="Model\Province.cs" />
     <Compile Include="DetailTileMap.cs" />
+    <Compile Include="Model\TerrainImage.cs" />
     <Compile Include="Network\GameClient.cs" />
     <Compile Include="TileAnimation.cs" />
     <Compile Include="TileMap.cs" />
-    <Compile Include="TileMapImageInfo.cs" />
     <Compile Include="Model\Holding.cs" />
     <Compile Include="Model\Item.cs" />
     <Compile Include="Model\Player.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Supplies.cs" />
     <Compile Include="MainTileMap.cs" />
+    <Compile Include="TileMapImageInfo.cs" />
     <Compile Include="WordingBase.cs" />
   </ItemGroup>
   <ItemGroup>

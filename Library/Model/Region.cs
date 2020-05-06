@@ -10,7 +10,7 @@ namespace Library.Model
     {
         public static readonly List<Climate> list = CommonHelper.getEnumList<Climate>();
 
-        public byte id;
+        public int id;
         public string name;
         /// <summary>气候</summary>
         public Climate climate;

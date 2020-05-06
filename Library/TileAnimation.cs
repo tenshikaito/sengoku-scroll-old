@@ -7,16 +7,9 @@ using System.Threading.Tasks;
 
 namespace Library
 {
-    public class TileAnimation
+    public class TileAnimationFrame
     {
-        public int id;
-        public float interval;
-        public List<Frame> frames;
-
-        public class Frame
-        {
-            public string fileName;
-            public Point vertex;
-        }
+        public string fileName;
+        public Point vertex;
     }
 }

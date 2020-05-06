@@ -45,6 +45,7 @@ namespace Client.Scene
             uiEditGameWorldMenuWindow = new UIEditGameWorldMenuWindow(
                 gs,
                 onDatabaseButtonClicked,
+                onRefreshButtonClicked,
                 onSaveButtonClicked,
                 onExitButtonClicked);
         }
@@ -54,7 +55,7 @@ namespace Client.Scene
             terrain
         }
 
-        private void onTerrainSelected(byte id)
+        private void onTerrainSelected(int id)
         {
             drawContent = DrawContent.terrain;
 
@@ -83,7 +84,7 @@ namespace Client.Scene
             {
                 okButtonClicked = onDatabaseWindowOkButtonClicked,
                 cancelButtonClicked = () => uiEditGameWorldDatabaseWindow.Close(),
-                applyButtonClicked = saveDatabase
+                applyButtonClicked = onDatabaseWindowApplyButtonClicked
             };
 
             uiEditGameWorldDatabaseWindow.FormClosing += (s, e) => uiEditGameWorldDatabaseWindow = null;
@@ -97,9 +98,21 @@ namespace Client.Scene
             uiEditGameWorldDatabaseWindow.Close();
         }
 
+        private void onDatabaseWindowApplyButtonClicked()
+        {
+            saveDatabase();
+
+            new UIDialog(gameSystem, "alert", "saved").ShowDialog();
+        }
+
         private void saveDatabase()
         {
             gameWorld.masterData = uiEditGameWorldDatabaseWindow.gameWorldMasterData;
+        }
+
+        private void onRefreshButtonClicked()
+        {
+            mainTileMapStatus.refreshTileMap();
         }
 
         private void onSaveButtonClicked()
@@ -218,9 +231,15 @@ namespace Client.Scene
             {
                 var msi = mainMapSpritesInfo = new MainTileMapSprites.MainMapSpritesInfo(s.gameWorld);
 
-                zoomableTileMapSprites = new ZoomableTileMapSprites<MainTileMapSprites>(
-                    s.gameWorld.masterData.mainTileMapImageInfo.Values.Select(
-                        o => new MainTileMapSprites(s.gameSystem, s.gameWorld, o, msi, true)).ToList());
+                setImageInfo();
+
+                var list = new List<MainTileMapSprites>()
+                {
+                    new MainTileMapViewSprites(s.gameSystem, s.gameWorld, msi, true),
+                    new MainTileMapDetailSprites(s.gameSystem, s.gameWorld, msi, true)
+                };
+
+                zoomableTileMapSprites = new ZoomableTileMapSprites<MainTileMapSprites>(list);
 
                 uiEditGameWorldMainTileMapMenuWindow = new UIEditGameWorldMainTileMapMenuWindow(
                     scene.gameSystem,
@@ -237,6 +256,22 @@ namespace Client.Scene
                 drawTileFillStatus = new DrawTileFillStatus(this);
             }
 
+            private void setImageInfo()
+            {
+                var s = scene;
+                var md = s.gameWorld.masterData;
+                
+                md.mainTileMapViewImageInfo.terrainAnimationSpring = md.terrainImage.Values.ToDictionary(o => o.id, o => o.animationViewSpring);
+                md.mainTileMapViewImageInfo.terrainAnimationSummer = md.terrainImage.Values.ToDictionary(o => o.id, o => o.animationViewSummer);
+                md.mainTileMapViewImageInfo.terrainAnimationAutumn = md.terrainImage.Values.ToDictionary(o => o.id, o => o.animationViewAutumn);
+                md.mainTileMapViewImageInfo.terrainAnimationWinter = md.terrainImage.Values.ToDictionary(o => o.id, o => o.animationViewWinter);
+
+                md.mainTileMapDetailImageInfo.terrainAnimationSpring = md.terrainImage.Values.ToDictionary(o => o.id, o => o.animationDetailSpring);
+                md.mainTileMapDetailImageInfo.terrainAnimationSummer = md.terrainImage.Values.ToDictionary(o => o.id, o => o.animationDetailSummer);
+                md.mainTileMapDetailImageInfo.terrainAnimationAutumn = md.terrainImage.Values.ToDictionary(o => o.id, o => o.animationDetailAutumn);
+                md.mainTileMapDetailImageInfo.terrainAnimationWinter = md.terrainImage.Values.ToDictionary(o => o.id, o => o.animationDetailWinter);
+            }
+
             public override void start()
             {
                 children.Add(zoomableTileMapSprites);
@@ -245,7 +280,7 @@ namespace Client.Scene
 
                 setDrawMode(DrawMode.pointer);
 
-                uiEditGameWorldMainTileMapMenuWindow.setTerrain(scene.gameWorld.masterData.terrain.Values.ToList());
+                uiEditGameWorldMainTileMapMenuWindow.setTerrain(scene.gameWorld.masterData.terrainImage.Values.ToList());
             }
 
             public override void finish()
@@ -309,6 +344,13 @@ namespace Client.Scene
             }
 
             private void addStatus(Status s) => addChild(currentStatus = s);
+
+            public void refreshTileMap()
+            {
+                setImageInfo();
+
+                zoomableTileMapSprites.refresh();
+            }
 
             public class Status : GameObject
             {
@@ -539,9 +581,16 @@ namespace Client.Scene
             {
                 detailMapSpritesInfo = new DetailTileMapSprites.DetailMapSpritesInfo(s.gameWorld);
 
+                setImageInfo();
+
+                var list = new DetailTileMapImageInfo[]
+                {
+                    s.gameWorld.masterData.detailTileMapViewImageInfo,
+                    s.gameWorld.masterData.detailTileMapDetailImageInfo,
+                };
+
                 zoomableTileMapSprites = new ZoomableTileMapSprites<DetailTileMapSprites>(
-                    s.gameWorld.masterData.detailTileMapImageInfo.Values.Select(
-                        o => new DetailTileMapSprites(s.gameSystem, s.gameWorld, o, detailMapSpritesInfo, true)).ToList());
+                    list.Select(o => new DetailTileMapSprites(s.gameSystem, s.gameWorld, o, detailMapSpritesInfo, true)).ToList());
 
                 uiEditGameWorldDetailTileMapMenuWindow = new UIEditGameWorldDetailTileMapMenuWindow(
                     scene.gameSystem,
@@ -559,6 +608,22 @@ namespace Client.Scene
                 drawTileFillStatus = new DrawTileFillStatus(this);
             }
 
+            private void setImageInfo()
+            {
+                var s = scene;
+                var md = s.gameWorld.masterData;
+
+                md.detailTileMapViewImageInfo.terrainAnimationSpring = md.terrainImage.Values.ToDictionary(o => (int)o.id, o => o.animationViewSpring);
+                md.detailTileMapViewImageInfo.terrainAnimationSummer = md.terrainImage.Values.ToDictionary(o => (int)o.id, o => o.animationViewSummer);
+                md.detailTileMapViewImageInfo.terrainAnimationAutumn = md.terrainImage.Values.ToDictionary(o => (int)o.id, o => o.animationViewAutumn);
+                md.detailTileMapViewImageInfo.terrainAnimationWinter = md.terrainImage.Values.ToDictionary(o => (int)o.id, o => o.animationViewWinter);
+
+                md.detailTileMapDetailImageInfo.terrainAnimationSpring = md.terrainImage.Values.ToDictionary(o => (int)o.id, o => o.animationDetailSpring);
+                md.detailTileMapDetailImageInfo.terrainAnimationSummer = md.terrainImage.Values.ToDictionary(o => (int)o.id, o => o.animationDetailSummer);
+                md.detailTileMapDetailImageInfo.terrainAnimationAutumn = md.terrainImage.Values.ToDictionary(o => (int)o.id, o => o.animationDetailAutumn);
+                md.detailTileMapDetailImageInfo.terrainAnimationWinter = md.terrainImage.Values.ToDictionary(o => (int)o.id, o => o.animationDetailWinter);
+            }
+
             public void setTileMap(int id, DetailTileMap tm)
             {
                 currentTileMapId = id;
@@ -573,7 +638,7 @@ namespace Client.Scene
 
                 scene.uiEditGameWorldMenuWindow.Visible = false;
 
-                uiEditGameWorldDetailTileMapMenuWindow.setTerrain(scene.gameWorld.masterData.terrain.Values.ToList());
+                uiEditGameWorldDetailTileMapMenuWindow.setTerrain(scene.gameWorld.masterData.terrainImage.Values.ToList());
 
                 uiEditGameWorldDetailTileMapMenuWindow.Show(scene.formMain);
 

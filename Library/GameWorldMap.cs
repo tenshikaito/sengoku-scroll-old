@@ -12,6 +12,8 @@ namespace Library
 
         public GameData gameData = new GameData();
 
+        public GameDate gameDate = new GameDate();
+
         public MainTileMap mainTileMap;
 
         public MainTileMapData mainTileMapData;

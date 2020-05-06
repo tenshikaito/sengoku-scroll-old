@@ -455,6 +455,7 @@ namespace Client
         public TileMapImageInfo tile_map_image_info;
         public MainTileMapImageInfo main_tile_map_image_info;
         public DetailTileMapImageInfo detail_tile_map_image_info;
+        public TerrainImage terrain_image;
 
         public SceneTitle scene_title;
 
@@ -472,6 +473,7 @@ namespace Client
             tile_map_image_info = new TileMapImageInfo(this, nameof(tile_map_image_info));
             main_tile_map_image_info = new MainTileMapImageInfo(this, nameof(main_tile_map_image_info));
             detail_tile_map_image_info = new DetailTileMapImageInfo(this, nameof(detail_tile_map_image_info));
+            terrain_image = new TerrainImage(this, nameof(terrain_image));
 
             scene_title = new SceneTitle(this, nameof(scene_title));
             scene_edit_game_world = new SceneEditGameWorld(this, nameof(scene_title));
@@ -621,6 +623,31 @@ namespace Client
             {
             }
         }
+
+        public class TerrainImage : Part
+        {
+            public string text => this[prefix];
+
+            public string animation_view_spring => this[nameof(animation_view_spring)];
+
+            public string animation_view_summer => this[nameof(animation_view_summer)];
+
+            public string animation_view_autumn => this[nameof(animation_view_autumn)];
+
+            public string animation_view_winter => this[nameof(animation_view_winter)];
+
+            public string animation_detail_spring => this[nameof(animation_detail_spring)];
+
+            public string animation_detail_summer => this[nameof(animation_detail_summer)];
+
+            public string animation_detail_autumn => this[nameof(animation_detail_autumn)];
+
+            public string animation_detail_winter => this[nameof(animation_detail_winter)];
+
+            public TerrainImage(Wording w, string prefix) : base(w, prefix)
+            {
+            }
+        }
     }
 
     public partial class Wording
@@ -656,6 +683,8 @@ namespace Client
             public string fill => this[nameof(fill)];
 
             public string database => this[nameof(database)];
+
+            public string refresh => this[nameof(refresh)];
 
             public string save => this[nameof(save)];
 

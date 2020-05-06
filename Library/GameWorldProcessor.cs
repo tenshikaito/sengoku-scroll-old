@@ -75,18 +75,18 @@ namespace Library
             {
                 terrain = new Dictionary<int, Terrain>()
                 {
-                    { 0, new Terrain()
-                    {
-                        id = 0,
-                        name = "plain",
-                        isWater = false
-                    }
-                    },
                     { 1, new Terrain()
                     {
                         id = 1,
+                        name = "plain",
+                        isWater = false,
+                    }
+                    },
+                    { 2, new Terrain()
+                    {
+                        id = 2,
                         name = "water",
-                        isWater = true
+                        isWater = true,
                     }
                     }
                 },
@@ -132,189 +132,217 @@ namespace Library
                     }
                     }
                 },
-                mainTileMapImageInfo = new Dictionary<int, MainTileMapImageInfo>()
+
+                terrainImage = new Dictionary<int, TerrainImage>()
                 {
-                    { 1, new MainTileMapImageInfo()
+                    { 0, new TerrainImage()
                     {
-                        id = 1,
-                        name="default view map",
-                        tileSize = new Size(24, 24),
-                        terrainAnimation = new Dictionary<byte, TileAnimation>()
+                        id = 0,
+                        name = "plain",
+                        terrainId = 1,
+                        animationDetailSpring = new List<TileAnimationFrame>()
                         {
-                            { 0, new TileAnimation()
+                            new TileAnimationFrame()
                             {
-                                id = 0,
-                                interval = 0.5f,
-                                frames = new List<TileAnimation.Frame>()
-                                {
-                                    new TileAnimation.Frame()
-                                    {
-                                        fileName = "view_terrain_plain.png",
-                                        vertex = new Point(0, 0)
-                                    }
-                                }
-                            }
-                            },
-                            { 1, new TileAnimation()
-                            {
-                                id = 0,
-                                interval = 0.5f,
-                                frames = new List<TileAnimation.Frame>()
-                                {
-                                    new TileAnimation.Frame()
-                                    {
-                                        fileName = "view_terrain_water.png",
-                                        vertex = new Point(0, 0)
-                                    }
-                                }
-                            }
+                                fileName = "detail_terrain_plain.png",
+                                vertex = new Point(0, 0)
                             }
                         },
-                        strongholdAnimation = new Dictionary<int, TileAnimation>()
+                        animationDetailSummer = new List<TileAnimationFrame>()
                         {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_plain.png",
+                                vertex = new Point(0, 0)
+                            }
+                        },
+                        animationDetailAutumn = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_plain.png",
+                                vertex = new Point(0, 0)
+                            }
+                        },
+                        animationDetailWinter = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_plain.png",
+                                vertex = new Point(0, 0)
+                            }
+                        },
+                        animationViewSpring = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "view_terrain_plain.png",
+                                vertex = new Point(0, 0)
+                            }
+                        },
+                        animationViewSummer = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "view_terrain_plain.png",
+                                vertex = new Point(0, 0)
+                            }
+                        },
+                        animationViewAutumn = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "view_terrain_plain.png",
+                                vertex = new Point(0, 0)
+                            }
+                        },
+                        animationViewWinter = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "view_terrain_plain.png",
+                                vertex = new Point(0, 0)
+                            }
                         }
                     }
                     },
-                    //{ 2, new MainTileMapImageInfo()
-                    //{
-                    //    id = 2,
-                    //    name="default detail map",
-                    //    tileSize = new Size(48, 48),
-                    //    terrainAnimation = new Dictionary<byte, TileAnimation>()
-                    //    {
-                    //        { 0, new TileAnimation()
-                    //        {
-                    //            id = 0,
-                    //            interval = 0.5f,
-                    //            frames= new List<TileAnimation.Frame>()
-                    //            {
-                    //                new TileAnimation.Frame()
-                    //                {
-                    //                    fileName = "detail_terrain_plain.png",
-                    //                    vertex = new Point(0, 0)
-                    //                }
-                    //            }
-                    //        }
-                    //        },
-                    //        { 1, new TileAnimation()
-                    //        {
-                    //            id = 1,
-                    //            interval = 0.5f,
-                    //            frames= new List<TileAnimation.Frame>()
-                    //            {
-                    //                new TileAnimation.Frame()
-                    //                {
-                    //                    fileName = "detail_terrain_water.png",
-                    //                    vertex = new Point(0, 0)
-                    //                },
-                    //                new TileAnimation.Frame()
-                    //                {
-                    //                    fileName="detail_terrain_water.png",
-                    //                    vertex = new Point(0, 144),
-                    //                },
-                    //                new TileAnimation.Frame()
-                    //                {
-                    //                    fileName="detail_terrain_water.png",
-                    //                    vertex = new Point(0, 288),
-                    //                },
-                    //            }
-                    //        }
-                    //        }
-                    //    },
-                    //    strongholdAnimation = new Dictionary<int, TileAnimation>()
-                    //    {
-                    //    }
-                    //}
-                    //}
-                },
-                detailTileMapImageInfo = new Dictionary<int, DetailTileMapImageInfo>() {
-                    { 1, new DetailTileMapImageInfo()
+                    { 1, new TerrainImage()
                     {
                         id = 1,
-                        name="default view map",
-                        tileSize = new Size(24, 24),
-                        terrainAnimation = new Dictionary<byte, TileAnimation>()
+                        name = "water",
+                        terrainId = 2,
+                        animationDetailSpring = new List<TileAnimationFrame>()
                         {
-                            { 0, new TileAnimation()
+                            new TileAnimationFrame()
                             {
-                                id = 0,
-                                interval = 0.5f,
-                                frames = new List<TileAnimation.Frame>()
-                                {
-                                    new TileAnimation.Frame()
-                                    {
-                                        fileName = "view_terrain_plain.png",
-                                        vertex = new Point(0, 0)
-                                    }
-                                }
-                            }
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 0)
                             },
-                            { 1, new TileAnimation()
+                            new TileAnimationFrame()
                             {
-                                id = 0,
-                                interval = 0.5f,
-                                frames = new List<TileAnimation.Frame>()
-                                {
-                                    new TileAnimation.Frame()
-                                    {
-                                        fileName = "view_terrain_water.png",
-                                        vertex = new Point(0, 0)
-                                    }
-                                }
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 144),
+                            },
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 288),
+                            },
+                        },
+                        animationDetailSummer = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 0)
+                            },
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 144),
+                            },
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 288),
+                            },
+                        },
+                        animationDetailAutumn = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 0)
+                            },
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 144),
+                            },
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 288),
+                            },
+                        },
+                        animationDetailWinter = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 0)
+                            },
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 144),
+                            },
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_water.png",
+                                vertex = new Point(0, 288),
+                            },
+                        },
+                        animationViewSpring = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "view_terrain_water.png",
+                                vertex = new Point(0, 0)
                             }
+                        },
+                        animationViewSummer = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "view_terrain_water.png",
+                                vertex = new Point(0, 0)
+                            }
+                        },
+                        animationViewAutumn = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "view_terrain_water.png",
+                                vertex = new Point(0, 0)
+                            }
+                        },
+                        animationViewWinter = new List<TileAnimationFrame>()
+                        {
+                            new TileAnimationFrame()
+                            {
+                                fileName = "view_terrain_water.png",
+                                vertex = new Point(0, 0)
                             }
                         }
                     }
-                    },
-                    //{ 2, new DetailTileMapImageInfo()
-                    //{
-                    //    id = 2,
-                    //    name="default detail map",
-                    //    tileSize = new Size(48, 48),
-                    //    terrainAnimation = new Dictionary<byte, TileAnimation>()
-                    //    {
-                    //        { 0, new TileAnimation()
-                    //        {
-                    //            id = 0,
-                    //            interval = 0.5f,
-                    //            frames= new List<TileAnimation.Frame>()
-                    //            {
-                    //                new TileAnimation.Frame()
-                    //                {
-                    //                    fileName = "detail_terrain_plain.png",
-                    //                    vertex = new Point(0, 0)
-                    //                }
-                    //            }
-                    //        }
-                    //        },
-                    //        { 1, new TileAnimation()
-                    //        {
-                    //            id = 1,
-                    //            interval = 0.5f,
-                    //            frames= new List<TileAnimation.Frame>()
-                    //            {
-                    //                new TileAnimation.Frame()
-                    //                {
-                    //                    fileName = "detail_terrain_water.png",
-                    //                    vertex = new Point(0, 0)
-                    //                },
-                    //                new TileAnimation.Frame()
-                    //                {
-                    //                    fileName="detail_terrain_water.png",
-                    //                    vertex = new Point(0, 144),
-                    //                },
-                    //                new TileAnimation.Frame()
-                    //                {
-                    //                    fileName="detail_terrain_water.png",
-                    //                    vertex = new Point(0, 288),
-                    //                },
-                    //            }
-                    //        }
-                    //        }
-                    //    },
-                    //}
-                    //}
-                    },
+                    }
+                },
+
+                mainTileMapViewImageInfo = new MainTileMapImageInfo()
+                {
+                    id = 1,
+                    name = "default view map",
+                    tileSize = new Size(24, 24),
+                },
+                mainTileMapDetailImageInfo = new MainTileMapImageInfo()
+                {
+                    id = 2,
+                    name = "default detail map",
+                    tileSize = new Size(48, 48),
+                },
+                detailTileMapViewImageInfo = new DetailTileMapImageInfo()
+                {
+                    id = 1,
+                    name = "default view map",
+                    tileSize = new Size(24, 24),
+                },
+                detailTileMapDetailImageInfo = new DetailTileMapImageInfo()
+                {
+                    id = 2,
+                    name = "default detail map",
+                    tileSize = new Size(48, 48),
+                },
                 detailTileMapInfo = new Dictionary<int, DetailTileMapInfo>()
                 {
                     { 1, new DetailTileMapInfo()
@@ -358,7 +386,7 @@ namespace Library
 
         public void deleteMasterData() => Directory.Delete(gameWorldFullPath, true);
 
-        public T loadMasterData<T>(T gw)where T: GameWorldMap
+        public T loadMasterData<T>(T gw) where T : GameWorldMap
         {
             gw.mainTileMap = File.ReadAllText(gameWorldFullPath + MainMapName, encoding).uncompressTileMap().fromJson<MainTileMap>();
             gw.mainTileMapData = File.ReadAllText(gameWorldFullPath + MainMapDataName, encoding).fromJson<MainTileMapData>();
