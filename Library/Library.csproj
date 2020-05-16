@@ -50,6 +50,7 @@
     <Compile Include="GameData.cs" />
     <Compile Include="GameDate.cs" />
     <Compile Include="GameWorldMap.cs" />
+    <Compile Include="GameResourceProcessor.cs" />
     <Compile Include="GameWorldProcessor.cs" />
     <Compile Include="Helper\NetworkHelper.cs" />
     <Compile Include="Helper\UIExtensionHelper.cs" />
@@ -95,7 +96,51 @@
     <Compile Include="WordingBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="charset\system.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="charset\zh-tw.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="charset\index.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\system\icons.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\detail_object.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\detail_terrain.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\detail_terrain_plain.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\detail_terrain_water.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\view_object.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\view_terrain.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\view_terrain_plain.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\view_terrain_water.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="audio\bgm\" />
+    <Folder Include="audio\se\" />
+    <Folder Include="resource\default\audio\bgm\" />
+    <Folder Include="resource\default\audio\se\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

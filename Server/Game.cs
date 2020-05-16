@@ -66,7 +66,7 @@ namespace Server
         {
             var gwp = new GameWorldProcessor(gameWorldName);
 
-            gameWorldMap = gwp.loadMasterData(new GameWorldMap());
+            gameWorldMap = gwp.loadMapMasterData(new GameWorldMap());
 
             isRunning = true;
 

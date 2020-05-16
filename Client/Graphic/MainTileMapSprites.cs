@@ -18,10 +18,10 @@ namespace Client.Graphic
 
         private AutoTileSprite tileSprite;
 
-        private Dictionary<int, TileSpriteAnimation> terrainSpriteSpring;
-        private Dictionary<int, TileSpriteAnimation> terrainSpriteSummer;
-        private Dictionary<int, TileSpriteAnimation> terrainSpriteAutumn;
-        private Dictionary<int, TileSpriteAnimation> terrainSpriteWinter;
+        protected Dictionary<int, TileSpriteAnimation> terrainSpriteSpring;
+        protected Dictionary<int, TileSpriteAnimation> terrainSpriteSummer;
+        protected Dictionary<int, TileSpriteAnimation> terrainSpriteAutumn;
+        protected Dictionary<int, TileSpriteAnimation> terrainSpriteWinter;
 
         public override int tileWidth => tileMapImageInfo.tileSize.Width;
 
@@ -31,7 +31,7 @@ namespace Client.Graphic
 
         private MainTileMap tileMap => gameWorld.mainTileMap;
 
-        protected abstract MainTileMapImageInfo tileMapImageInfo { get; }
+        protected abstract TileMapImageInfo tileMapImageInfo { get; }
 
         private DateTime lastUpdateTime = DateTime.Now;
         private static TimeSpan nextFrameSpan = TimeSpan.FromMilliseconds(500);
@@ -41,38 +41,9 @@ namespace Client.Graphic
         {
             mapSpritesInfo = msi;
 
-            init(msi);
-
             tileSprite = new AutoTileSprite(this);
 
             resize();
-        }
-
-        public void init(MainMapSpritesInfo msi)
-        {
-            refresh();
-        }
-
-        public override void refresh()
-        {
-            var mii = tileMapImageInfo;
-            var msi = mapSpritesInfo;
-
-            terrainSpriteSpring = mii.terrainAnimationSpring.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
-            terrainSpriteSummer = mii.terrainAnimationSummer.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
-            terrainSpriteAutumn = mii.terrainAnimationAutumn.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
-            terrainSpriteWinter = mii.terrainAnimationWinter.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
-
-            //strongholdSprite = mii.strongholdAnimation.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
-
-            mii.terrainAnimationSpring.Values.ToList().ForEach(o => o.ForEach(oo => gameWorld.getImage(oo.fileName)));
-            mii.terrainAnimationSummer.Values.ToList().ForEach(o => o.ForEach(oo => gameWorld.getImage(oo.fileName)));
-            mii.terrainAnimationAutumn.Values.ToList().ForEach(o => o.ForEach(oo => gameWorld.getImage(oo.fileName)));
-            mii.terrainAnimationWinter.Values.ToList().ForEach(o => o.ForEach(oo => gameWorld.getImage(oo.fileName)));
-
-            //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
-
-            mapSpritesInfo.removeTileFlag();
         }
 
         public override void update()
@@ -145,7 +116,7 @@ namespace Client.Graphic
                     break;
             }
 
-            var img = gameWorld.getImage(s.fileName);
+            var img = gameWorld.getTileMapImage(s.fileName);
 
             if (img == null) return;
 
@@ -205,7 +176,7 @@ namespace Client.Graphic
 
             var p = s.currentPoint;
 
-            g.drawImage(gameWorld.getImage(s.fileName), x, y, new Rectangle()
+            g.drawImage(gameWorld.getTileMapImage(s.fileName), x, y, new Rectangle()
             {
                 X = p.X,
                 Y = p.Y,
@@ -309,19 +280,51 @@ namespace Client.Graphic
 
     public class MainTileMapViewSprites : MainTileMapSprites
     {
-        protected override MainTileMapImageInfo tileMapImageInfo => gameWorld.masterData.mainTileMapViewImageInfo;
+        protected override TileMapImageInfo tileMapImageInfo => gameWorld.masterData.mainTileMapViewImageInfo;
      
         public MainTileMapViewSprites(GameSystem gs, GameWorld gw, MainMapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
         {
+            var ti = gameWorld.masterData.terrainImage;
+            var list = ti.Values.ToList();
+
+            terrainSpriteSpring = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewSpring));
+            terrainSpriteSummer = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewSummer));
+            terrainSpriteAutumn = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewAutumn));
+            terrainSpriteWinter = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewWinter));
+
+            //strongholdSprite = mii.strongholdAnimation.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
+
+            list.ForEach(o => o.animationViewSpring.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewSummer.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewAutumn.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewWinter.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+
+            //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
         }
     }
 
     public class MainTileMapDetailSprites : MainTileMapSprites
     {
-        protected override MainTileMapImageInfo tileMapImageInfo => gameWorld.masterData.mainTileMapDetailImageInfo;
+        protected override TileMapImageInfo tileMapImageInfo => gameWorld.masterData.mainTileMapDetailImageInfo;
 
         public MainTileMapDetailSprites(GameSystem gs, GameWorld gw, MainMapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
         {
+            var ti = gameWorld.masterData.terrainImage;
+            var list = ti.Values.ToList();
+
+            terrainSpriteSpring = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailSpring));
+            terrainSpriteSummer = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailSummer));
+            terrainSpriteAutumn = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailAutumn));
+            terrainSpriteWinter = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailWinter));
+
+            //strongholdSprite = mii.strongholdAnimation.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
+
+            list.ForEach(o => o.animationDetailSpring.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationDetailSummer.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationDetailAutumn.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationDetailWinter.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+
+            //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
         }
     }
 }

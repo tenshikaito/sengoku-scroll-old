@@ -18,8 +18,8 @@ namespace Library
 
         public MainTileMapData mainTileMapData;
 
-        public DetailTileMap detailTileMap;
+        //public DetailTileMap detailTileMap;
 
-        public DetailTileMapData detailTileMapData;
+        //public DetailTileMapData detailTileMapData;
     }
 }

@@ -1,11 +1,10 @@
-﻿using Client.Helper;
-using Library.Helper;
+﻿using Library.Helper;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Client.UI
+namespace Server
 {
     public class UIDialog : UIWindow
     {

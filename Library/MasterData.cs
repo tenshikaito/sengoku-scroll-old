@@ -18,9 +18,9 @@ namespace Library
         public Dictionary<int, TerrainImage> terrainImage;
         public Dictionary<int, DetailTileMapInfo> detailTileMapInfo;
 
-        public MainTileMapImageInfo mainTileMapViewImageInfo;
-        public MainTileMapImageInfo mainTileMapDetailImageInfo;
-        public DetailTileMapImageInfo detailTileMapViewImageInfo;
-        public DetailTileMapImageInfo detailTileMapDetailImageInfo;
+        public TileMapImageInfo mainTileMapViewImageInfo;
+        public TileMapImageInfo mainTileMapDetailImageInfo;
+        public TileMapImageInfo detailTileMapViewImageInfo;
+        public TileMapImageInfo detailTileMapDetailImageInfo;
     }
 }

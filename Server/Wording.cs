@@ -14,8 +14,12 @@ namespace Server
         
         public string stop => "停止";
         
-        public string refresh => "刷新";
+        public string publish => "部署";
 
         public string name => "名称";
+
+        public string ok => "确定";
+
+        public string cancel => "取消";
     }
 }

@@ -216,6 +216,17 @@ namespace Library.Helper
             return lv;
         }
 
+        public static ListView selectFirstRow(this ListView lv)
+        {
+            if (lv.Items.Count > 0)
+            {
+                lv.Focus();
+                lv.Items[0].Selected = true;
+            }
+
+            return lv;
+        }
+
         public static TableLayoutPanel addRowStyle(this TableLayoutPanel tlp, float height, SizeType st = SizeType.Percent)
         {
             tlp.RowStyles.Add(new RowStyle(st, height));

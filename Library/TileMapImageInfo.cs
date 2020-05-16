@@ -14,19 +14,5 @@ namespace Library
         public string name;
 
         public Size tileSize;
-
-        public Dictionary<int, List<TileAnimationFrame>> terrainAnimationSpring;
-        public Dictionary<int, List<TileAnimationFrame>> terrainAnimationSummer;
-        public Dictionary<int, List<TileAnimationFrame>> terrainAnimationAutumn;
-        public Dictionary<int, List<TileAnimationFrame>> terrainAnimationWinter;
-    }
-
-    public class MainTileMapImageInfo : TileMapImageInfo
-    {
-        //public Dictionary<int, TileAnimation> strongholdAnimation;
-    }
-
-    public class DetailTileMapImageInfo : TileMapImageInfo
-    {
     }
 }

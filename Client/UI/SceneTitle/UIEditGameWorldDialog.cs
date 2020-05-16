@@ -51,7 +51,7 @@ namespace Client.UI.SceneTitle
             }).setAutoSize().addTo(p);
             new Button().init(w.edit_game_world, edit).setAutoSize().addTo(p);
 
-            addConfirmButton();
+            addConfirmButton(w.close);
 
             listView.autoResizeColumns(3);
         }

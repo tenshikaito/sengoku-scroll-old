@@ -1142,7 +1142,7 @@ namespace Client.UI.SceneEditGameWorld
                     if (cbTerrain.SelectedValue != null) oo.terrainId = (int)cbTerrain.SelectedValue;
 
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
-
+                    
                     if (lvi != null)
                     {
                         lvi.SubItems.Clear();

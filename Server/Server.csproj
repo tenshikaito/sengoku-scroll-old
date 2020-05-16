@@ -48,15 +48,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormGameWorldPublishDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GameServer.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GamePlayer.cs" />
+    <Compile Include="GameSystem.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UIConfirmDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UIDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UIWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Wording.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -73,5 +86,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

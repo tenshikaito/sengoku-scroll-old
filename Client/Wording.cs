@@ -430,13 +430,17 @@ namespace Client
 
         public string loading => this[nameof(loading)];
 
+        public string ip => this[nameof(ip)];
+
+        public string port => this[nameof(port)];
+
+        public string connect => this[nameof(connect)];
+
+        public string close => this[nameof(close)];
+
         public string symbol_selected => this[nameof(symbol_selected)];
 
         public string symbol_unselected => this[nameof(symbol_unselected)];
-
-        public string ip { get; internal set; }
-        public string port { get; internal set; }
-        public string connect { get; internal set; }
 
         #endregion
 

@@ -18,7 +18,6 @@ namespace Client.UI.SceneEditGameWorld
         public UIEditGameWorldMenuWindow(
             GameSystem gs,
             Action database,
-            Action refresh,
             Action save,
             Action exit) : base(gs)
         {
@@ -30,8 +29,6 @@ namespace Client.UI.SceneEditGameWorld
             var p = panel;
 
             new Button().init(w.scene_edit_game_world.database, database).setAutoSize().addTo(p);
-
-            new Button().init(w.scene_edit_game_world.refresh, refresh).setAutoSize().addTo(p);
 
             new Button().init(w.scene_edit_game_world.save, save).setAutoSize().addTo(p);
 

@@ -14,16 +14,29 @@ namespace Client.Graphic
 
         public T tileMapSprites => tileMapSpritesList[tileMapIndex];
 
+        public ZoomableTileMapSprites() { }
+
         public ZoomableTileMapSprites(List<T> list)
         {
-            tileMapSpritesList = list;
-
-            children.AddRange(list);
+            setTileMap(list);
 
             previous();
         }
 
-        public void refresh() => tileMapSpritesList.ForEach(o => o.refresh());
+        public void setTileMap(List<T> list)
+        {
+            children.Clear();
+
+            tileMapSpritesList = list;
+
+            children.AddRange(list);
+
+            if (tileMapIndex >= list.Count) tileMapIndex = list.Count - 1;
+
+            hideAll();
+
+            showCurrent();
+        }
 
         public bool next()
         {

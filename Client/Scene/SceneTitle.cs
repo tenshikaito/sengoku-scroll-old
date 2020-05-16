@@ -92,7 +92,9 @@ namespace Client.Scene
 
                     var gwp = new GameWorldProcessor(name);
 
-                    gwp.loadMasterData(gw);
+                    gwp.loadMapMasterData(gw);
+
+                    gw.init();
 
                     dispatcher.invoke(() => gameSystem.sceneToEditGame(gw));
                 });
@@ -113,7 +115,7 @@ namespace Client.Scene
 
                 try
                 {
-                    gwp.deleteMasterData();
+                    gwp.deleteMapMasterData();
                 }
                 catch (Exception e)
                 {
@@ -155,7 +157,7 @@ namespace Client.Scene
 
             var gwp = new GameWorldProcessor(name);
 
-            if (!gwp.createGameWorldMapDirectory(width, height))
+            if (!gwp.createMapDirectory(width, height))
             {
                 MessageBox.Show("create_failed");
                 return;
@@ -168,7 +170,7 @@ namespace Client.Scene
 
         private void loadGameWorldMapList()
         {
-            uiEditGameWorldDialog.setData(GameWorldProcessor.getGameWorldMapList());
+            uiEditGameWorldDialog.setData(GameWorldProcessor.getMapList());
         }
     }
 }

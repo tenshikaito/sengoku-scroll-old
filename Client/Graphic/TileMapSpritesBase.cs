@@ -52,8 +52,6 @@ namespace Client.Graphic
             tileHeightCount = camera.height / tileHeight + 2;
         }
 
-        public abstract void refresh();
-
         public MapPoint getTileLocation(MouseEventArgs e) => getTileLocation(e.X, e.Y);
 
         public MapPoint getTileLocation(Point p) => getTileLocation(p.X, p.Y);

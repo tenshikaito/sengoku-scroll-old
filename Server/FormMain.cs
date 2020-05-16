@@ -20,9 +20,10 @@ namespace Server
         private TextBox tbPort;
         private Button btnStart;
         private Button btnStop;
-        private Button btnRefresh;
+        private Button btnPublish;
         private ListView lvGameWorld;
 
+        private GameSystem gameSystem;
         private Game game;
 
         public FormMain()
@@ -45,6 +46,8 @@ namespace Server
             Text = option.title;
             StartPosition = FormStartPosition.CenterScreen;
             Icon = new Icon("Icon.ico");
+            MinimizeBox = false;
+            MaximizeBox = false;
 
             this.setAutoSizeF();
 
@@ -79,7 +82,7 @@ namespace Server
 
             btnStart = new Button().init(w.start, onStartButtonClicked).addTo(p);
             btnStop = new Button() { Enabled = false }.init(w.stop, onStopButtonClicked).addTo(p);
-            btnRefresh = new Button().init(w.refresh, onRefreshButtonClicked).addTo(p);
+            btnPublish = new Button().init(w.publish, onPublishButtonClicked).addTo(p);
 
             lvGameWorld = new ListView()
             {
@@ -92,6 +95,13 @@ namespace Server
 
         private void initSystem()
         {
+            gameSystem = new GameSystem()
+            {
+                formMain = this,
+                option = option,
+                wording = wording
+            };
+
             loadGameWorldList();
         }
 
@@ -99,7 +109,7 @@ namespace Server
         {
             var gameName = lvGameWorld.FocusedItem;
 
-            if(gameName == null)
+            if (gameName == null)
             {
                 MessageBox.Show("select a item", "info");
 
@@ -112,6 +122,7 @@ namespace Server
 
             btnStart.Enabled = false;
             btnStop.Enabled = true;
+            btnPublish.Enabled = false;
         }
 
         private void onStopButtonClicked()
@@ -122,16 +133,50 @@ namespace Server
 
             btnStart.Enabled = true;
             btnStop.Enabled = false;
+            btnPublish.Enabled = true;
         }
 
-        private void onRefreshButtonClicked()
+        private void onPublishButtonClicked()
         {
-            loadGameWorldList();
+            var dialog = new FormGameWorldPublishDialog(gameSystem);
+
+            var publish = new Action<string>(name =>
+            {
+
+                GameWorldProcessor.publishMap(name);
+
+                loadGameWorldList();
+
+                dialog.Close();
+            });
+
+            dialog.selectGameWorldMap = name =>
+            {
+                var gameWorldList = GameWorldProcessor.getGameList();
+
+                if (gameWorldList.Contains(name))
+                {
+                    var cd = new UIConfirmDialog(gameSystem, "alert", "existed, overwrite?", this)
+                    {
+                        okButtonClicked = () => publish(name),
+                    };
+
+                    cd.cancelButtonClicked = () => cd.Close();
+
+                    cd.ShowDialog(this);
+                }
+                else
+                {
+                    publish(name);
+                }
+            };
+
+            dialog.ShowDialog(this);
         }
 
         private void loadGameWorldList()
         {
-            var list = GameWorldProcessor.getGameWorldMapList();
+            var list = GameWorldProcessor.getGameList();
 
             lvGameWorld.Items.Clear();
 
