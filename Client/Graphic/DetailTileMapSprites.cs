@@ -44,10 +44,10 @@ namespace Client.Graphic
             terrainSpriteAutumn = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewAutumn));
             terrainSpriteWinter = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewWinter));
 
-            list.ForEach(o => o.animationViewSpring.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
-            list.ForEach(o => o.animationViewSummer.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
-            list.ForEach(o => o.animationViewAutumn.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
-            list.ForEach(o => o.animationViewWinter.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewSpring?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewSummer?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewAutumn?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewWinter?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
 
             tileSprite = new AutoTileSprite(this);
 
@@ -175,50 +175,45 @@ namespace Client.Graphic
             public DetailTileMap detailTileMap;
 
             protected override TileMap tileMap => detailTileMap;
-            protected override Dictionary<int, Terrain> terrain => gameWorld.masterData.terrain;
+            protected override Dictionary<int, Terrain> terrain => gameWorld.masterData.detailTileMapTerrain;
 
             public DetailMapSpritesInfo(GameWorld gw) : base(gw)
             {
             }
 
-            public override byte calculateTileMargin(MapPoint p)
+            public override byte calculateTileMargin(MapPoint p, bool isSurface = false)
             {
                 if (tileMap.isOutOfBounds(p)) return 0;
 
                 var t = (DetailMapTile)detailTileMap[p];
                 int y = p.y, x = p.x;
 
-                if (!gameWorld.masterData.terrainImage.TryGetValue(t.terrain, out var ti)) return 0;
-
-                if (!terrain.TryGetValue(ti.terrainId, out var tt)) return 0;
+                if (!gameWorld.masterData.detailTileMapTerrain.TryGetValue(t.terrain, out var tt)) return 0;
 
                 byte flag = 0;
 
-                calculateTileMargin(ref flag, x - 1, y - 1, tt, AutoTileCalculator.topLeft);
-                calculateTileMargin(ref flag, x, y - 1, tt, AutoTileCalculator.top);
-                calculateTileMargin(ref flag, x + 1, y - 1, tt, AutoTileCalculator.topRight);
-                calculateTileMargin(ref flag, x - 1, y, tt, AutoTileCalculator.left);
-                calculateTileMargin(ref flag, x + 1, y, tt, AutoTileCalculator.right);
-                calculateTileMargin(ref flag, x - 1, y + 1, tt, AutoTileCalculator.bottomLeft);
-                calculateTileMargin(ref flag, x, y + 1, tt, AutoTileCalculator.bottom);
-                calculateTileMargin(ref flag, x + 1, y + 1, tt, AutoTileCalculator.bottomRight);
+                calculateTileMargin(ref flag, x - 1, y - 1, tt, AutoTileCalculator.topLeft, isSurface);
+                calculateTileMargin(ref flag, x, y - 1, tt, AutoTileCalculator.top, isSurface);
+                calculateTileMargin(ref flag, x + 1, y - 1, tt, AutoTileCalculator.topRight, isSurface);
+                calculateTileMargin(ref flag, x - 1, y, tt, AutoTileCalculator.left, isSurface);
+                calculateTileMargin(ref flag, x + 1, y, tt, AutoTileCalculator.right, isSurface);
+                calculateTileMargin(ref flag, x - 1, y + 1, tt, AutoTileCalculator.bottomLeft, isSurface);
+                calculateTileMargin(ref flag, x, y + 1, tt, AutoTileCalculator.bottom, isSurface);
+                calculateTileMargin(ref flag, x + 1, y + 1, tt, AutoTileCalculator.bottomRight, isSurface);
 
                 return flag;
             }
 
-            protected void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction)
+            protected void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction, bool isSurface)
             {
                 var p = new MapPoint(x, y);
 
                 if (tileMap.isOutOfBounds(p)) return;
 
                 var tt = detailTileMap[p];
-                var ttt = (DetailMapTile)tt;
+                if (!gameWorld.masterData.detailTileMapTerrain.TryGetValue(tt.Value.terrain, out var ttt)) return;
 
-                if (terrain.TryGetValue(gameWorld.masterData.terrainImage[ttt.terrain].terrainId, out var tttt))
-                {
-                    if (t.isWater != tttt.isWater) flag |= direction;
-                }
+                if (t.imageId != ttt.imageId) flag |= direction;
             }
         }
     }

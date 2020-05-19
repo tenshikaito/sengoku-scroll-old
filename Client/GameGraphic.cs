@@ -63,7 +63,7 @@ namespace Client
 
         public void drawImage(Image img, Point tr, Rectangle sr) => g.DrawImage(img, tr.X, tr.Y, sr, GraphicsUnit.Pixel);
 
-        public void drawImage(Image img, float x, float y, Rectangle sr) => g.DrawImage(img, x, y, sr, GraphicsUnit.Pixel);
+        public void drawImage(Image img, int x, int y, Rectangle sr) => g.DrawImage(img, x, y, sr, GraphicsUnit.Pixel);
 
         public SizeF measureDefaultText(SpriteText s) => g.MeasureString(s.text, s.font);
 
@@ -83,7 +83,8 @@ namespace Client
             {
                 var sr = s.sourceRectangle.Value;
 
-                s.sourceRectangle = new Rectangle(sr.X - 1, sr.Y - 1, sr.Width + 1, sr.Height + 1);
+                s.sourceRectangle = new Rectangle(sr.X, sr.Y, sr.Width, sr.Height);
+                //s.sourceRectangle = new Rectangle(sr.X - 1, sr.Y - 1, sr.Width + 1, sr.Height + 1);
             }
 
             drawImage(s.bitmap, s.displayPosition, s.sourceRectangle ?? new Rectangle(0, 0, s.bitmap.Width, s.bitmap.Height));

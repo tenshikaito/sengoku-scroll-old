@@ -14,7 +14,21 @@ namespace Library.Model
 
         public int apCost;
 
+        public int imageId;
+
+        public bool isSurface;
+
         public bool isGrass;
+
+        public bool isForest;
+
+        public bool isWaste;
+
+        public bool isDesert;
+
+        public bool isMarsh;
+
+        public bool isRock;
 
         public bool isHill;
 

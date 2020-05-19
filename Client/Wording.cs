@@ -442,6 +442,8 @@ namespace Client
 
         public string symbol_unselected => this[nameof(symbol_unselected)];
 
+        public string symbol_none => this[nameof(symbol_none)];
+
         #endregion
 
         public Terrain terrain;

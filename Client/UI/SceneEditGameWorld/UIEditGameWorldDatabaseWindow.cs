@@ -27,7 +27,7 @@ namespace Client.UI.SceneEditGameWorld
 
             var tc = tabControl = new TabControl() { MinimumSize = new System.Drawing.Size(720, 480) }.init().setAutoSize().addTo(panel);
 
-            new TabPageTerrain(this, gameWorldMasterData.terrain).addTo(tc);
+            new TabPageTerrain(this, gameWorldMasterData.mainTileMapTerrain, gameWorldMasterData.terrainImage).addTo(tc);
 
             new TabPageRegion(this, gameWorldMasterData.region).addTo(tc);
 
@@ -39,9 +39,9 @@ namespace Client.UI.SceneEditGameWorld
 
             new TabPageStronghold(this, gameWorldMasterData.strongholdType, gameWorldMasterData).addTo(tc);
 
-            new TabPageDetailTileMapInfo(this, gameWorldMasterData.detailTileMapInfo, gameWorldMasterData.terrain).addTo(tc);
+            //new TabPageDetailTileMapInfo(this, gameWorldMasterData.detailTileMapInfo, gameWorldMasterData.detailTileMapTerrain).addTo(tc);
 
-            new TabPageTerrainImage(this, gameWorldMasterData.terrainImage, gameWorldMasterData.terrain).addTo(tc);
+            new TabPageTerrainImage(this, gameWorldMasterData.terrainImage, gameWorldMasterData.mainTileMapTerrain).addTo(tc);
 
             addSaveableConfirmButtons();
         }
@@ -111,9 +111,11 @@ namespace Client.UI.SceneEditGameWorld
         private class TabPageTerrain : TabPageBase
         {
             private Dictionary<int, Terrain> data;
+            private Dictionary<int, TerrainImage> terrainImage;
             private int? currentId;
 
             private TextBox tbName;
+            private ComboBox cbImage;
             private CheckBox cbIsGrass;
             private CheckBox cbIsHill;
             private CheckBox cbIsMountain;
@@ -122,11 +124,17 @@ namespace Client.UI.SceneEditGameWorld
             private CheckBox cbIsFreshWater;
             private CheckBox cbIsDeepWater;
 
-            public TabPageTerrain(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Terrain> data) : base(bw)
+            public TabPageTerrain(UIEditGameWorldDatabaseWindow bw, Dictionary<int, Terrain> data, Dictionary<int, TerrainImage> terrainImage) : base(bw)
             {
                 this.data = data;
+                this.terrainImage = terrainImage;
 
                 this.init(w.terrain.text).setAutoSizeP();
+
+                bw.tabControl.SelectedIndexChanged += (s, e) =>
+                {
+                    if (bw.tabControl.SelectedTab == this) refresh();
+                };
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -170,6 +178,9 @@ namespace Client.UI.SceneEditGameWorld
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
+                new Label().init(w.terrain.text + ":").setAutoSize().setRightCenter().addTo(p3);
+                cbImage = new ComboBox().initDropDownList<int>().addTo(p3);
+
                 new Label().init(w.terrain.is_grass + ":").setAutoSize().setRightCenter().addTo(p3);
                 cbIsGrass = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
 
@@ -194,9 +205,13 @@ namespace Client.UI.SceneEditGameWorld
                 initData(lv);
 
                 lv.autoResizeColumns();
+
+                refresh();
             }
 
             private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
+
+            private void refresh() => cbImage.setDropDownList(terrainImage.Select(o => new KeyValuePair<int, string>(o.Key, o.Value.name)).ToList());
 
             private void onAddButtonClicked(ListView lv)
             {
@@ -262,6 +277,8 @@ namespace Client.UI.SceneEditGameWorld
                     oo.isFreshWater = cbIsFreshWater.Checked;
                     oo.isDeepWater = cbIsDeepWater.Checked;
 
+                    if (cbImage.SelectedValue != null) oo.imageId = (int)cbImage.SelectedValue;
+
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
@@ -281,6 +298,7 @@ namespace Client.UI.SceneEditGameWorld
                 var o = data[id];
 
                 tbName.Text = o.name;
+                cbImage.SelectedValue = o.imageId;
                 cbIsGrass.Checked = o.isGrass;
                 cbIsHill.Checked = o.isHill;
                 cbIsMountain.Checked = o.isMountain;
@@ -1186,7 +1204,6 @@ namespace Client.UI.SceneEditGameWorld
             private TextBox tbAnimationDetailSummer;
             private TextBox tbAnimationDetailAutumn;
             private TextBox tbAnimationDetailWinter;
-            private ComboBox cbTerrain;
 
             public TabPageTerrainImage(
                 UIEditGameWorldDatabaseWindow bw, Dictionary<int, TerrainImage> data, Dictionary<int, Terrain> terrain)
@@ -1196,11 +1213,6 @@ namespace Client.UI.SceneEditGameWorld
                 this.terrain = terrain;
 
                 this.init(w.terrain_image.text).setAutoSizeP();
-
-                bw.tabControl.SelectedIndexChanged += (s, e) =>
-                {
-                    if (bw.tabControl.SelectedTab == this) refresh();
-                };
 
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
@@ -1242,9 +1254,6 @@ namespace Client.UI.SceneEditGameWorld
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.terrain.text + ":").setAutoSize().setRightCenter().addTo(p3);
-                cbTerrain = new ComboBox().initDropDownList<int>().addTo(p3);
-
                 new Label().init(w.terrain_image.animation_view_spring + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbAnimationViewSpring = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
@@ -1274,13 +1283,9 @@ namespace Client.UI.SceneEditGameWorld
                 initData(lv);
 
                 lv.autoResizeColumns();
-
-                refresh();
             }
 
             private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
-
-            private void refresh() => cbTerrain.setDropDownList(terrain.Select(o => new KeyValuePair<int, string>(o.Key, o.Value.name)).ToList());
 
             private void onAddButtonClicked(ListView lv)
             {
@@ -1292,15 +1297,18 @@ namespace Client.UI.SceneEditGameWorld
                 {
                     id = max,
                     name = w.terrain_image.text,
-                    terrainId = 1,
+                    animationView = new List<TileAnimationFrame>(),
                     animationViewSpring = new List<TileAnimationFrame>(),
                     animationViewSummer = new List<TileAnimationFrame>(),
                     animationViewAutumn = new List<TileAnimationFrame>(),
                     animationViewWinter = new List<TileAnimationFrame>(),
+                    animationViewSnow = new List<TileAnimationFrame>(),
+                    animationDetail = new List<TileAnimationFrame>(),
                     animationDetailSpring = new List<TileAnimationFrame>(),
                     animationDetailSummer = new List<TileAnimationFrame>(),
                     animationDetailAutumn = new List<TileAnimationFrame>(),
-                    animationDetailWinter = new List<TileAnimationFrame>()
+                    animationDetailWinter = new List<TileAnimationFrame>(),
+                    animationDetailSnow = new List<TileAnimationFrame>()
                 };
 
                 data[oo.id] = oo;
@@ -1331,7 +1339,6 @@ namespace Client.UI.SceneEditGameWorld
                 lvi.Text = o.id.ToString();
 
                 lvi.addColumn(o.name);
-                lvi.addColumn(terrain.TryGetValue(o.terrainId, out var t) ? t.name : w.symbol_unselected);
 
                 return lvi;
             }
@@ -1421,8 +1428,6 @@ namespace Client.UI.SceneEditGameWorld
                         showDialog(w.terrain_image.animation_detail_winter);
                     }
 
-                    if (cbTerrain.SelectedValue != null) oo.terrainId = (int)cbTerrain.SelectedValue;
-
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
@@ -1452,7 +1457,6 @@ namespace Client.UI.SceneEditGameWorld
                 tbAnimationDetailSummer.Text = o.animationDetailSummer.toString();
                 tbAnimationDetailAutumn.Text = o.animationDetailAutumn.toString();
                 tbAnimationDetailWinter.Text = o.animationDetailWinter.toString();
-                cbTerrain.SelectedValue = o.terrainId;
             }
         }
     }

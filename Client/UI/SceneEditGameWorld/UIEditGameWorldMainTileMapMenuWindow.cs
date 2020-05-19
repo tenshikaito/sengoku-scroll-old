@@ -74,13 +74,16 @@ namespace Client.UI.SceneEditGameWorld
 
             new Button().init(w.detail_tile_map, detailTileMap).setAutoSize().addTo(p);
 
-            var tc = new TabControl().init().addTo(panel);
+            var tc = new TabControl() { MinimumSize = new Size(360, 720) }.init().addTo(panel);
 
             var tp = new TabPage().init(w.terrain.text).addTo(tc);
 
-            lvTerrain = new ListView() { MinimumSize = new Size(360, 540) }.init().addTo(tp);
+            lvTerrain = new ListView()
+            {
+                Scrollable = true
+            }.init().addTo(tp);
 
-            lvTerrain.addColumn(w.name).autoResizeColumns(-3);
+            lvTerrain.addColumn(w.name).addColumn(w.terrain_image.text).autoResizeColumns(-3);
 
             lvTerrain.SelectedIndexChanged += (s, e) =>
             {
@@ -90,13 +93,24 @@ namespace Client.UI.SceneEditGameWorld
             };
         }
 
-        public void setTerrain(List<TerrainImage> data)
+        public void setTerrain(List<Terrain> data, Dictionary<int, TerrainImage> terrainImage)
         {
             lvTerrain.Items.Clear();
 
             lvTerrain.BeginUpdate();
 
-            lvTerrain.Items.AddRange(data.Select(o => new ListViewItem() { Tag = o.id, Text = o.name }).ToArray());
+            lvTerrain.Items.AddRange(data.Select(o =>
+            {
+                var lvi = new ListViewItem()
+                {
+                    Tag = o.id,
+                    Text = o.name
+                };
+
+                lvi.SubItems.Add(terrainImage.TryGetValue(o.imageId, out var ti) ? ti.name : w.symbol_none);
+
+                return lvi;
+            }).ToArray());
 
             lvTerrain.autoResizeColumns(-3);
 

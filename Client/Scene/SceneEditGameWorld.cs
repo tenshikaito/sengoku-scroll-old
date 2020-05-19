@@ -268,7 +268,9 @@ namespace Client.Scene
 
                 setDrawMode(DrawMode.pointer);
 
-                uiEditGameWorldMainTileMapMenuWindow.setTerrain(scene.gameWorld.masterData.terrainImage.Values.ToList());
+                uiEditGameWorldMainTileMapMenuWindow.setTerrain(
+                    scene.gameWorld.masterData.mainTileMapTerrain.Values.ToList(),
+                    scene.gameWorld.masterData.terrainImage);
             }
 
             public override void finish()
@@ -405,6 +407,8 @@ namespace Client.Scene
                     if (gameWorld.mainTileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
 
                     startPoint = e.Location;
+
+                    rectangle = new Rectangle(e.Location.X, e.Location.Y, 1, 1);
                 }
 
                 public override void mouseReleased(MouseEventArgs e)
@@ -764,6 +768,8 @@ namespace Client.Scene
                     if (gameWorld.mainTileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
 
                     startPoint = e.Location;
+
+                    rectangle = new Rectangle(e.Location.X, e.Location.Y, 1, 1);
                 }
 
                 public override void mouseReleased(MouseEventArgs e)

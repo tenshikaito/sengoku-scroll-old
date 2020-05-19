@@ -99,16 +99,21 @@ namespace Client.Graphic
             private List<TileAnimationFrame> tileAnimation;
             private int index;
 
+            public bool hasOne => tileAnimation.Count > 0;
+
             public string fileName => tileAnimation[index].fileName;
 
             public Point currentPoint => tileAnimation[index].vertex;
 
             public TileSpriteAnimation(List<TileAnimationFrame> ta)
             {
-                tileAnimation = ta;
+                tileAnimation = ta ?? new List<TileAnimationFrame>();
             }
 
-            public void update() => index = ++index % tileAnimation.Count;
+            public void update()
+            {
+                if (hasOne) index = ++index % tileAnimation.Count;
+            }
         }
 
         public abstract class MapSpritesInfo
@@ -117,7 +122,7 @@ namespace Client.Graphic
 
             protected GameWorld gameWorld;
             protected abstract TileMap tileMap { get; }
-            protected abstract Dictionary<int ,Terrain> terrain { get; }
+            protected abstract Dictionary<int, Terrain> terrain { get; }
 
             public MapSpritesInfo(GameWorld gw) => gameWorld = gw;
 
@@ -146,7 +151,7 @@ namespace Client.Graphic
 
             public void recoveryTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new TileMap.Size(1), o => checkTerrainBorder(o));
 
-            public abstract byte calculateTileMargin(MapPoint p);
+            public abstract byte calculateTileMargin(MapPoint p, bool isSurface = false);
         }
     }
 

@@ -8,6 +8,7 @@ namespace Library
     public class MainTileMap : TileMap
     {
         public MainMapTile[] tiles;
+        public Dictionary<int, byte> terrain;
 
         public MainMapTile? this[int index] => isOutOfBounds(index) ? (MainMapTile?)null : tiles[index];
 

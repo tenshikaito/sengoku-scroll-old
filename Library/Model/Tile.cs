@@ -20,10 +20,10 @@ namespace Library.Model
 
     public enum TileFunctionType : byte
     {
-        None = 0,
-        Agriculture = 1,
-        Industry = 2,
-        Business = 3,
-        Residence = 4
+        none = 0,
+        agriculture = 1,
+        industry = 2,
+        business = 3,
+        residence = 4
     }
 }

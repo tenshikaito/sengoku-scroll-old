@@ -18,10 +18,12 @@ namespace Client.Graphic
 
         private AutoTileSprite tileSprite;
 
+        protected Dictionary<int, TileSpriteAnimation> terrainSprite;
         protected Dictionary<int, TileSpriteAnimation> terrainSpriteSpring;
         protected Dictionary<int, TileSpriteAnimation> terrainSpriteSummer;
         protected Dictionary<int, TileSpriteAnimation> terrainSpriteAutumn;
         protected Dictionary<int, TileSpriteAnimation> terrainSpriteWinter;
+        protected Dictionary<int, TileSpriteAnimation> terrainSpriteSnow;
 
         public override int tileWidth => tileMapImageInfo.tileSize.Width;
 
@@ -53,6 +55,8 @@ namespace Client.Graphic
             if (now - lastUpdateTime >= nextFrameSpan)
             {
                 lastUpdateTime = now;
+
+                foreach (var o in this.terrainSprite.Values) o.update();
 
                 var terrainSprite = null as Dictionary<int, TileSpriteAnimation>;
 
@@ -94,27 +98,26 @@ namespace Client.Graphic
 
         private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, MainMapTile t)
         {
-            var s = null as TileSpriteAnimation;
+            var tt = gameWorld.masterData.mainTileMapTerrain[t.terrain];
+            var s = terrainSprite[tt.imageId];
 
             switch (gameWorld.gameDate.season)
             {
                 case GameDate.Season.spring:
-                    if (!terrainSpriteSpring.TryGetValue(t.terrain, out var s1)) return;
-                    s = s1;
+                    if (terrainSpriteSpring.TryGetValue(tt.imageId, out var s1)) s = s1;
                     break;
                 case GameDate.Season.summer:
-                    if (!terrainSpriteSummer.TryGetValue(t.terrain, out var s2)) return;
-                    s = s2;
+                    if (terrainSpriteSummer.TryGetValue(tt.imageId, out var s2)) s = s2;
                     break;
                 case GameDate.Season.autumn:
-                    if (!terrainSpriteAutumn.TryGetValue(t.terrain, out var s3)) return;
-                    s = s3;
+                    if (terrainSpriteAutumn.TryGetValue(tt.imageId, out var s3)) s = s3;
                     break;
                 case GameDate.Season.winter:
-                    if (!terrainSpriteWinter.TryGetValue(t.terrain, out var s4)) return;
-                    s = s4;
+                    if (terrainSpriteWinter.TryGetValue(tt.imageId, out var s4)) s = s4;
                     break;
             }
+
+            if (!s.hasOne) return;
 
             var img = gameWorld.getTileMapImage(s.fileName);
 
@@ -227,7 +230,7 @@ namespace Client.Graphic
         public class MainMapSpritesInfo : MapSpritesInfo
         {
             protected override TileMap tileMap => gameWorld.mainTileMap;
-            protected override Dictionary<int, Terrain> terrain => gameWorld.masterData.terrain;
+            protected override Dictionary<int, Terrain> terrain => gameWorld.masterData.mainTileMapTerrain;
 
             public MainTileMap mainTileMap => gameWorld.mainTileMap;
 
@@ -235,7 +238,7 @@ namespace Client.Graphic
             {
             }
 
-            public override byte calculateTileMargin(MapPoint p)
+            public override byte calculateTileMargin(MapPoint p, bool isSurface = false)
             {
                 if (tileMap.isOutOfBounds(p)) return 0;
 
@@ -243,37 +246,41 @@ namespace Client.Graphic
                 var y = p.y;
                 var x = p.x;
 
-                if (!gameWorld.masterData.terrainImage.TryGetValue(t.terrain, out var ti)) return 0;
+                var tid = t.terrain;
 
-                if (!terrain.TryGetValue(ti.terrainId, out var tt)) return 0;
+                if (isSurface && !mainTileMap.terrain.TryGetValue(mainTileMap.getIndex(p), out tid)) return 0;
+
+                if (!gameWorld.masterData.mainTileMapTerrain.TryGetValue(tid, out var tt)) return 0;
 
                 byte flag = 0;
 
-                calculateTileMargin(ref flag, x - 1, y - 1, tt, AutoTileCalculator.topLeft);
-                calculateTileMargin(ref flag, x, y - 1, tt, AutoTileCalculator.top);
-                calculateTileMargin(ref flag, x + 1, y - 1, tt, AutoTileCalculator.topRight);
-                calculateTileMargin(ref flag, x - 1, y, tt, AutoTileCalculator.left);
-                calculateTileMargin(ref flag, x + 1, y, tt, AutoTileCalculator.right);
-                calculateTileMargin(ref flag, x - 1, y + 1, tt, AutoTileCalculator.bottomLeft);
-                calculateTileMargin(ref flag, x, y + 1, tt, AutoTileCalculator.bottom);
-                calculateTileMargin(ref flag, x + 1, y + 1, tt, AutoTileCalculator.bottomRight);
+                calculateTileMargin(ref flag, x - 1, y - 1, tt, AutoTileCalculator.topLeft, isSurface);
+                calculateTileMargin(ref flag, x, y - 1, tt, AutoTileCalculator.top, isSurface);
+                calculateTileMargin(ref flag, x + 1, y - 1, tt, AutoTileCalculator.topRight, isSurface);
+                calculateTileMargin(ref flag, x - 1, y, tt, AutoTileCalculator.left, isSurface);
+                calculateTileMargin(ref flag, x + 1, y, tt, AutoTileCalculator.right, isSurface);
+                calculateTileMargin(ref flag, x - 1, y + 1, tt, AutoTileCalculator.bottomLeft, isSurface);
+                calculateTileMargin(ref flag, x, y + 1, tt, AutoTileCalculator.bottom, isSurface);
+                calculateTileMargin(ref flag, x + 1, y + 1, tt, AutoTileCalculator.bottomRight, isSurface);
 
                 return flag;
             }
 
-            protected void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction)
+            protected void calculateTileMargin(ref byte flag, int x, int y, Terrain t, byte direction, bool isSurface)
             {
                 var p = new MapPoint(x, y);
 
                 if (tileMap.isOutOfBounds(p)) return;
 
-                var tt = mainTileMap[p];
-                var ttt = (MainMapTile)tt;
+                var tt = (MainMapTile)mainTileMap[p];
 
-                if (terrain.TryGetValue(gameWorld.masterData.terrainImage[ttt.terrain].terrainId, out var tttt))
-                {
-                    if (t.isWater != tttt.isWater) flag |= direction;
-                }
+                var tid = tt.terrain;
+
+                if (isSurface && !mainTileMap.terrain.TryGetValue(mainTileMap.getIndex(p), out tid)) return;
+
+                if (!gameWorld.masterData.mainTileMapTerrain.TryGetValue(tid, out var ttt)) return;
+
+                if (t.imageId != ttt.imageId) flag |= direction;
             }
         }
     }
@@ -281,23 +288,27 @@ namespace Client.Graphic
     public class MainTileMapViewSprites : MainTileMapSprites
     {
         protected override TileMapImageInfo tileMapImageInfo => gameWorld.masterData.mainTileMapViewImageInfo;
-     
+
         public MainTileMapViewSprites(GameSystem gs, GameWorld gw, MainMapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
         {
             var ti = gameWorld.masterData.terrainImage;
             var list = ti.Values.ToList();
 
-            terrainSpriteSpring = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewSpring));
-            terrainSpriteSummer = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewSummer));
-            terrainSpriteAutumn = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewAutumn));
-            terrainSpriteWinter = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewWinter));
+            terrainSprite = ti.Where(o => o.Value.animationView != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationView));
+            terrainSpriteSpring = ti.Where(o => o.Value.animationViewSpring != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewSpring));
+            terrainSpriteSummer = ti.Where(o => o.Value.animationViewSummer != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewSummer));
+            terrainSpriteAutumn = ti.Where(o => o.Value.animationViewAutumn != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewAutumn));
+            terrainSpriteWinter = ti.Where(o => o.Value.animationViewWinter != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewWinter));
+            terrainSpriteSnow = ti.Where(o => o.Value.animationViewSnow != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationViewSnow));
 
             //strongholdSprite = mii.strongholdAnimation.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
 
-            list.ForEach(o => o.animationViewSpring.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
-            list.ForEach(o => o.animationViewSummer.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
-            list.ForEach(o => o.animationViewAutumn.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
-            list.ForEach(o => o.animationViewWinter.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationView?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewSpring?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewSummer?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewAutumn?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewWinter?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationViewSnow?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
 
             //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
         }
@@ -312,17 +323,21 @@ namespace Client.Graphic
             var ti = gameWorld.masterData.terrainImage;
             var list = ti.Values.ToList();
 
-            terrainSpriteSpring = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailSpring));
-            terrainSpriteSummer = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailSummer));
-            terrainSpriteAutumn = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailAutumn));
-            terrainSpriteWinter = ti.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailWinter));
+            terrainSprite = ti.Where(o => o.Value.animationDetail != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetail));
+            terrainSpriteSpring = ti.Where(o => o.Value.animationDetailSpring != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailSpring));
+            terrainSpriteSummer = ti.Where(o => o.Value.animationDetailSummer != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailSummer));
+            terrainSpriteAutumn = ti.Where(o => o.Value.animationDetailAutumn != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailAutumn));
+            terrainSpriteWinter = ti.Where(o => o.Value.animationDetailWinter != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailWinter));
+            terrainSpriteSnow = ti.Where(o => o.Value.animationDetailSnow != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetailSnow));
 
             //strongholdSprite = mii.strongholdAnimation.ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value));
 
-            list.ForEach(o => o.animationDetailSpring.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
-            list.ForEach(o => o.animationDetailSummer.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
-            list.ForEach(o => o.animationDetailAutumn.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
-            list.ForEach(o => o.animationDetailWinter.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationDetail?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationDetailSpring?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationDetailSummer?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationDetailAutumn?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationDetailWinter?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
+            list.ForEach(o => o.animationDetailSnow?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
 
             //mii.strongholdAnimation.Values.ToList().ForEach(o => gameWorld.getImage(o.fileName));
         }
