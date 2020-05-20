@@ -47,7 +47,7 @@ namespace Client
 
         public void sceneToWaiting()
         {
-            sceneManager.switchStatus(new SceneWaiting(this, wording.loading));
+            sceneManager.switchStatus(new SceneWaiting(this, $"{wording.loading} ..."));
         }
     }
 }

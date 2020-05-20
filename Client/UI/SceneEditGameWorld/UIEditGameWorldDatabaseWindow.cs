@@ -1196,14 +1196,18 @@ namespace Client.UI.SceneEditGameWorld
             private int? currentId;
 
             private TextBox tbName;
+            private TextBox tbAnimationView;
             private TextBox tbAnimationViewSpring;
             private TextBox tbAnimationViewSummer;
             private TextBox tbAnimationViewAutumn;
             private TextBox tbAnimationViewWinter;
+            private TextBox tbAnimationViewSnow;
+            private TextBox tbAnimationDetail;
             private TextBox tbAnimationDetailSpring;
             private TextBox tbAnimationDetailSummer;
             private TextBox tbAnimationDetailAutumn;
             private TextBox tbAnimationDetailWinter;
+            private TextBox tbAnimationDetailSnow;
 
             public TabPageTerrainImage(
                 UIEditGameWorldDatabaseWindow bw, Dictionary<int, TerrainImage> data, Dictionary<int, Terrain> terrain)
@@ -1254,6 +1258,9 @@ namespace Client.UI.SceneEditGameWorld
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
+                new Label().init(w.terrain_image.animation_view + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationView = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
+
                 new Label().init(w.terrain_image.animation_view_spring + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbAnimationViewSpring = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
@@ -1266,6 +1273,12 @@ namespace Client.UI.SceneEditGameWorld
                 new Label().init(w.terrain_image.animation_view_winter + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbAnimationViewWinter = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
+                new Label().init(w.terrain_image.animation_view_snow + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationViewSnow = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.terrain_image.animation_detail + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationDetail = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
+
                 new Label().init(w.terrain_image.animation_detail_spring + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbAnimationDetailSpring = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
@@ -1277,6 +1290,9 @@ namespace Client.UI.SceneEditGameWorld
 
                 new Label().init(w.terrain_image.animation_detail_winter + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbAnimationDetailWinter = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.terrain_image.animation_detail_snow + ":").setAutoSize().setRightCenter().addTo(p3);
+                tbAnimationDetailSnow = new TextBox() { Multiline = true, Width = width, Height = height }.refreshListViewOnClick(lv, refresh).addTo(p3);
 
                 new Label().init("").addTo(p3);
 
@@ -1358,6 +1374,15 @@ namespace Client.UI.SceneEditGameWorld
 
                     try
                     {
+                        oo.animationView = tbAnimationView.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_view_spring);
+                    }
+
+                    try
+                    {
                         oo.animationViewSpring = tbAnimationViewSpring.Text.toAnimationFrameList();
                     }
                     catch
@@ -1390,6 +1415,24 @@ namespace Client.UI.SceneEditGameWorld
                     catch
                     {
                         showDialog(w.terrain_image.animation_view_winter);
+                    }
+
+                    try
+                    {
+                        oo.animationViewSnow = tbAnimationViewSnow.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_view_snow);
+                    }
+
+                    try
+                    {
+                        oo.animationDetail = tbAnimationDetail.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_detail);
                     }
 
                     try
@@ -1428,6 +1471,15 @@ namespace Client.UI.SceneEditGameWorld
                         showDialog(w.terrain_image.animation_detail_winter);
                     }
 
+                    try
+                    {
+                        oo.animationDetailSnow = tbAnimationDetailSnow.Text.toAnimationFrameList();
+                    }
+                    catch
+                    {
+                        showDialog(w.terrain_image.animation_detail_snow);
+                    }
+
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
                     if (lvi != null)
@@ -1449,14 +1501,18 @@ namespace Client.UI.SceneEditGameWorld
                 var o = data[id];
 
                 tbName.Text = o.name;
+                tbAnimationView.Text = o.animationView.toString();
                 tbAnimationViewSpring.Text = o.animationViewSpring.toString();
                 tbAnimationViewSummer.Text = o.animationViewSummer.toString();
                 tbAnimationViewAutumn.Text = o.animationViewAutumn.toString();
                 tbAnimationViewWinter.Text = o.animationViewWinter.toString();
+                tbAnimationViewSnow.Text = o.animationViewSnow.toString();
+                tbAnimationDetail.Text = o.animationDetail.toString();
                 tbAnimationDetailSpring.Text = o.animationDetailSpring.toString();
                 tbAnimationDetailSummer.Text = o.animationDetailSummer.toString();
                 tbAnimationDetailAutumn.Text = o.animationDetailAutumn.toString();
                 tbAnimationDetailWinter.Text = o.animationDetailWinter.toString();
+                tbAnimationDetailSnow.Text = o.animationDetailSnow.toString();
             }
         }
     }

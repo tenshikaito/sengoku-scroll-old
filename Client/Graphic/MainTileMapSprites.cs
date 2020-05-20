@@ -98,7 +98,8 @@ namespace Client.Graphic
 
         private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, MainMapTile t)
         {
-            var tt = gameWorld.masterData.mainTileMapTerrain[t.terrain];
+            var md = gameWorld.masterData;
+            var tt = md.mainTileMapTerrain[t.terrain];
             var s = terrainSprite[tt.imageId];
 
             switch (gameWorld.gameDate.season)
@@ -136,6 +137,46 @@ namespace Client.Graphic
             ts.refresh(img, point, type);
 
             g.drawSprite(ts);
+
+            if (tileMap.terrain.TryGetValue(tileMap.getIndex(p), out var terrainId))
+            {
+                tt = md.mainTileMapTerrain[terrainId];
+                s = terrainSprite[tt.imageId];
+
+                switch (gameWorld.gameDate.season)
+                {
+                    case GameDate.Season.spring:
+                        if (terrainSpriteSpring.TryGetValue(tt.imageId, out var s1)) s = s1;
+                        break;
+                    case GameDate.Season.summer:
+                        if (terrainSpriteSummer.TryGetValue(tt.imageId, out var s2)) s = s2;
+                        break;
+                    case GameDate.Season.autumn:
+                        if (terrainSpriteAutumn.TryGetValue(tt.imageId, out var s3)) s = s3;
+                        break;
+                    case GameDate.Season.winter:
+                        if (terrainSpriteWinter.TryGetValue(tt.imageId, out var s4)) s = s4;
+                        break;
+                }
+
+                if (!s.hasOne) return;
+
+                img = gameWorld.getTileMapImage(s.fileName);
+
+                if (img == null) return;
+
+                point = s.currentPoint;
+
+                ts.position = new Point(x, y);
+
+                //viewMode.drawTerrain(this, ts, t);
+
+                type = mapSpritesInfo.checkTerrainBorder(p, true);
+
+                ts.refresh(img, point, type);
+
+                g.drawSprite(ts);
+            }
 
             //switch (t.terrain)
             //{
@@ -276,7 +317,11 @@ namespace Client.Graphic
 
                 var tid = tt.terrain;
 
-                if (isSurface && !mainTileMap.terrain.TryGetValue(mainTileMap.getIndex(p), out tid)) return;
+                if (isSurface && !mainTileMap.terrain.TryGetValue(mainTileMap.getIndex(p), out tid))
+                {
+                    flag |= direction;
+                    return;
+                }
 
                 if (!gameWorld.masterData.mainTileMapTerrain.TryGetValue(tid, out var ttt)) return;
 

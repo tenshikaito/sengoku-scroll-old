@@ -634,6 +634,8 @@ namespace Client
         {
             public string text => this[prefix];
 
+            public string animation_view => this[nameof(animation_view)];
+
             public string animation_view_spring => this[nameof(animation_view_spring)];
 
             public string animation_view_summer => this[nameof(animation_view_summer)];
@@ -642,6 +644,10 @@ namespace Client
 
             public string animation_view_winter => this[nameof(animation_view_winter)];
 
+            public string animation_view_snow => this[nameof(animation_view_snow)];
+
+            public string animation_detail => this[nameof(animation_detail)];
+
             public string animation_detail_spring => this[nameof(animation_detail_spring)];
 
             public string animation_detail_summer => this[nameof(animation_detail_summer)];
@@ -649,6 +655,8 @@ namespace Client
             public string animation_detail_autumn => this[nameof(animation_detail_autumn)];
 
             public string animation_detail_winter => this[nameof(animation_detail_winter)];
+
+            public string animation_detail_snow => this[nameof(animation_detail_snow)];
 
             public TerrainImage(Wording w, string prefix) : base(w, prefix)
             {

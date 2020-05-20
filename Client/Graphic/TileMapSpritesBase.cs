@@ -119,6 +119,7 @@ namespace Client.Graphic
         public abstract class MapSpritesInfo
         {
             private Dictionary<int, byte> terrainBorder = new Dictionary<int, byte>();
+            private Dictionary<int, byte> terrainSurfaceBorder = new Dictionary<int, byte>();
 
             protected GameWorld gameWorld;
             protected abstract TileMap tileMap { get; }
@@ -126,13 +127,15 @@ namespace Client.Graphic
 
             public MapSpritesInfo(GameWorld gw) => gameWorld = gw;
 
-            public byte checkTerrainBorder(MapPoint p)
+            public byte checkTerrainBorder(MapPoint p, bool isSurface = false)
             {
-                int index = tileMap.getIndex(p);
+                var index = tileMap.getIndex(p);
 
-                if (!terrainBorder.TryGetValue(index, out var type))
+                var tb = isSurface ? terrainSurfaceBorder : terrainBorder;
+
+                if (!tb.TryGetValue(index, out var type))
                 {
-                    terrainBorder[index] = calculateTileMargin(p);
+                    tb[index] = calculateTileMargin(p, isSurface);
                 }
 
                 return type;
@@ -145,11 +148,25 @@ namespace Client.Graphic
                 recoveryTileFlag(p);
             }
 
-            public void removeTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new TileMap.Size(1), o => terrainBorder.Remove(tileMap.getIndex(o)));
+            public void removeTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new TileMap.Size(1), o =>
+            {
+                var index = tileMap.getIndex(o);
 
-            public void removeTileFlag() => terrainBorder.Clear();
+                terrainBorder.Remove(index);
+                terrainSurfaceBorder.Remove(index);
+            });
 
-            public void recoveryTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new TileMap.Size(1), o => checkTerrainBorder(o));
+            public void removeTileFlag()
+            {
+                terrainBorder.Clear();
+                terrainSurfaceBorder.Clear();
+            }
+
+            public void recoveryTileFlag(MapPoint p) => tileMap.eachRangedRectangle(p, new TileMap.Size(1), o =>
+            {
+                checkTerrainBorder(o);
+                checkTerrainBorder(o, true);
+            });
 
             public abstract byte calculateTileMargin(MapPoint p, bool isSurface = false);
         }

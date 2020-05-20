@@ -384,7 +384,13 @@ namespace Client.Scene
                     {
                         case DrawContent.terrain:
 
-                            tileMap.setTerrain(p, (byte)scene.drawContentId);
+                            var tid = (byte)scene.drawContentId;
+
+                            var t = scene.gameWorld.masterData.mainTileMapTerrain[tid];
+
+                            tileMap.setTerrain(p, tid, t.isSurface);
+
+                            if (!t.isSurface) tileMap.terrain.Remove(tileMap.getIndex(p));
 
                             gameStatus.mainMapSpritesInfo.resetTileFlag(p);
 
@@ -440,11 +446,14 @@ namespace Client.Scene
 
                             var width = tr.x - tl.x;
                             var height = bl.y - tl.y;
-                            var t = (byte)scene.drawContentId;
+                            var tid = (byte)scene.drawContentId;
+                            var t = scene.gameWorld.masterData.mainTileMapTerrain[tid];
 
                             tm.eachRectangle(tl, new TileMap.Size(height, width), o =>
                             {
-                                tileMap.setTerrain(o, t);
+                                tileMap.setTerrain(o, tid, t.isSurface);
+
+                                if (!t.isSurface) tileMap.terrain.Remove(tileMap.getIndex(o));
 
                                 gameStatus.mainMapSpritesInfo.resetTileFlag(o);
                             });
@@ -529,11 +538,14 @@ namespace Client.Scene
                         }
                     }
 
-                    var terrainId = (byte)scene.drawContentId;
+                    var tid = (byte)scene.drawContentId;
+                    var tt = scene.gameWorld.masterData.mainTileMapTerrain[tid];
 
                     var list = markedPoints.ToList();
 
-                    list.ForEach(o => tileMap.setTerrain(o, terrainId));
+                    list.ForEach(o => tileMap.setTerrain(o, tid, tt.isSurface));
+
+                    if (!tt.isSurface) list.ForEach(o => tileMap.terrain.Remove(tileMap.getIndex(o)));
 
                     list.ForEach(gameStatus.mainMapSpritesInfo.resetTileFlag);
                 }

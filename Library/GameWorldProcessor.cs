@@ -719,7 +719,7 @@ namespace Library
                         {
                             new TileAnimationFrame()
                             {
-                                fileName = "view_terrain_wasteland.png",
+                                fileName = "view_terrain_wasteland_1.png",
                                 vertex = new Point(0, 0)
                             }
                         },
@@ -749,7 +749,7 @@ namespace Library
                         {
                             new TileAnimationFrame()
                             {
-                                fileName = "view_terrain_wasteland.png",
+                                fileName = "view_terrain_wasteland_2.png",
                                 vertex = new Point(0, 0)
                             }
                         },

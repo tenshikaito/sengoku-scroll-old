@@ -8,11 +8,11 @@ namespace Library
 {
     public class GameDate
     {
-        public TimeSpan timeSpan = TimeSpan.FromDays(1);
+        public TimeSpan timeSpan = TimeSpan.Zero;
 
-        public int year => timeSpan.Days % 360 + 1;
-        public int month => timeSpan.Days % 30 + 1;
-        public int day => timeSpan.Days;
+        public int year => timeSpan.Days / 360 + 1;
+        public int month => timeSpan.Days / 30 + 1;
+        public int day => timeSpan.Days % 30 + 1;
 
         public Season season
         {
@@ -37,7 +37,7 @@ namespace Library
             }
         }
 
-        public void addDay() => timeSpan += TimeSpan.FromDays(1);
+        public void addDay(int day = 1) => timeSpan += TimeSpan.FromDays(day);
 
         public enum Season
         {

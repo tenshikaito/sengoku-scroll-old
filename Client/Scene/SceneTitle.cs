@@ -87,7 +87,7 @@ namespace Client.Scene
                 {
                     var gw = new GameWorld(name)
                     {
-                        camera = new Camera(gameSystem.option.screenWidth, gameSystem.option.screenHeight)
+                        camera = new Camera(gameSystem.option.screenWidth, gameSystem.option.screenHeight),
                     };
 
                     var gwp = new GameWorldProcessor(name);
@@ -95,6 +95,8 @@ namespace Client.Scene
                     gwp.loadMapMasterData(gw);
 
                     gw.init();
+
+                    gw.gameDate.addDay(90);
 
                     dispatcher.invoke(() => gameSystem.sceneToEditGame(gw));
                 });

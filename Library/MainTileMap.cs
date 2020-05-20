@@ -29,6 +29,13 @@ namespace Library
             }
         }
 
-        public void setTerrain(MapPoint p, byte id) => tiles[getIndex(p)].terrain = id;
+        public void setTerrain(MapPoint p, byte id, bool isSurface = true)
+        {
+            var index = getIndex(p);
+
+            if (isSurface) terrain[index] = id;
+
+            else tiles[index].terrain = id;
+        }
     }
 }

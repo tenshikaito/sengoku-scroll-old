@@ -33,20 +33,18 @@ namespace Client.Graphic
             public override (int x, int y) calculate(
                 int vertexX, int vertexY, int tileWidth, int tileHeight, int width, int height, byte different)
             {
-                var x = vertexX + width;
-                var y = vertexY + height + tileHeight;
+                var x = vertexX;
+                var y = vertexY + tileHeight;
                 if ((different & (left | top)) == (left | top))
                 {
-                    x -= width;
-                    y -= height;
                 }
                 else if ((different & left) == left)
                 {
-                    x -= width;
+                    y += tileHeight;
                 }
                 else if ((different & top) == top)
                 {
-                    y -= height;
+                    x += tileWidth;
                 }
                 else if ((different & topLeft) == topLeft)
                 {
@@ -55,8 +53,8 @@ namespace Client.Graphic
                 }
                 else
                 {
-                    x = vertexX + tileWidth;
-                    y = vertexY + tileHeight * 2;
+                    x += tileWidth;
+                    y += tileHeight;
                 }
 
                 return (x, y);
@@ -68,20 +66,20 @@ namespace Client.Graphic
             public override (int x, int y) calculate(
                 int vertexX, int vertexY, int tileWidth, int tileHeight, int width, int height, byte different)
             {
-                var x = vertexX + tileWidth;
-                var y = vertexY + height + tileHeight;
+                var x = vertexX;
+                var y = vertexY + tileHeight;
                 if ((different & (top | right)) == (top | right))
                 {
-                    x += width;
-                    y -= height;
+                    x += tileWidth + width;
                 }
                 else if ((different & right) == right)
                 {
-                    x += width;
+                    x += tileWidth + width;
+                    y += tileHeight;
                 }
                 else if ((different & top) == top)
                 {
-                    y -= height;
+                    x += width;
                 }
                 else if ((different & topRight) == topRight)
                 {
@@ -90,8 +88,8 @@ namespace Client.Graphic
                 }
                 else
                 {
-                    x = vertexX + width;
-                    y = vertexY + tileHeight * 2;
+                    x += width;
+                    y += tileHeight;
                 }
 
                 return (x, y);
@@ -103,20 +101,20 @@ namespace Client.Graphic
             public override (int x, int y) calculate(
                 int vertexX, int vertexY, int tileWidth, int tileHeight, int width, int height, byte different)
             {
-                var x = vertexX + width;
-                var y = vertexY + tileHeight * 2;
+                var x = vertexX;
+                var y = vertexY + tileHeight;
                 if ((different & (bottom | left)) == (bottom | left))
                 {
-                    x -= width;
-                    y += height;
+                    y += tileHeight + height;
                 }
                 else if ((different & left) == left)
                 {
-                    x -= width;
+                    y += height;
                 }
                 else if ((different & bottom) == bottom)
                 {
-                    y += height;
+                    x += tileWidth;
+                    y += tileHeight + height;
                 }
                 else if ((different & bottomLeft) == bottomLeft)
                 {
@@ -125,8 +123,8 @@ namespace Client.Graphic
                 }
                 else
                 {
-                    x = vertexX + tileWidth;
-                    y = vertexY + height + tileHeight;
+                    x += tileWidth;
+                    y += height;
                 }
 
                 return (x, y);
@@ -138,20 +136,22 @@ namespace Client.Graphic
             public override (int x, int y) calculate(
                 int vertexX, int vertexY, int tileWidth, int tileHeight, int width, int height, byte different)
             {
-                var x = vertexX + tileWidth;
-                var y = vertexY + tileHeight * 2;
+                var x = vertexX;
+                var y = vertexY + tileHeight;
                 if ((different & (bottom | right)) == (bottom | right))
                 {
-                    x += width;
-                    y += height;
+                    x += tileWidth + width;
+                    y += tileHeight + height;
                 }
                 else if ((different & right) == right)
                 {
-                    x += width;
+                    x += tileWidth + width;
+                    y += height;
                 }
                 else if ((different & bottom) == bottom)
                 {
-                    y += height;
+                    x += width;
+                    y += tileHeight + height;
                 }
                 else if ((different & bottomRight) == bottomRight)
                 {
@@ -160,8 +160,8 @@ namespace Client.Graphic
                 }
                 else
                 {
-                    x = vertexX + width;
-                    y = vertexY + height + tileHeight;
+                    x += width;
+                    y += height;
                 }
 
                 return (x, y);
