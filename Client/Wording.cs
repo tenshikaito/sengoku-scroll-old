@@ -517,6 +517,8 @@ namespace Client
         {
             public string text => this[prefix];
 
+            public string is_surface => this[nameof(is_surface)];
+
             public string is_grass => this[nameof(is_grass)];
 
             public string is_hill => this[nameof(is_hill)];

@@ -385,18 +385,18 @@ namespace Library
                         {
                             new TileAnimationFrame()
                             {
-                                fileName = "detail_terrain_deep_water.png",
+                                fileName = "detail_terrain_deep_water_1.png",
                                 vertex = new Point(0, 0)
                             },
                             new TileAnimationFrame()
                             {
-                                fileName = "detail_terrain_deep_water.png",
-                                vertex = new Point(96, 0),
+                                fileName = "detail_terrain_deep_water_2.png",
+                                vertex = new Point(0, 0)
                             },
                             new TileAnimationFrame()
                             {
-                                fileName = "detail_terrain_deep_water.png",
-                                vertex = new Point(192, 0),
+                                fileName = "detail_terrain_deep_water_3.png",
+                                vertex = new Point(0, 0)
                             },
                         },
                         animationView = new List<TileAnimationFrame>()
@@ -829,9 +829,19 @@ namespace Library
                         {
                             new TileAnimationFrame()
                             {
-                                fileName = "detail_terrain_marsh.png",
+                                fileName = "detail_terrain_marsh_1.png",
                                 vertex = new Point(0, 0)
-                            }
+                            },
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_marsh_2.png",
+                                vertex = new Point(0, 0)
+                            },
+                            new TileAnimationFrame()
+                            {
+                                fileName = "detail_terrain_marsh_3.png",
+                                vertex = new Point(0, 0)
+                            },
                         },
                         animationView = new List<TileAnimationFrame>()
                         {

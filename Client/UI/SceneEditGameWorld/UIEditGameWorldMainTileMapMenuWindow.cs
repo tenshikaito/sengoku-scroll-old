@@ -83,7 +83,10 @@ namespace Client.UI.SceneEditGameWorld
                 Scrollable = true
             }.init().addTo(tp);
 
-            lvTerrain.addColumn(w.name).addColumn(w.terrain_image.text).autoResizeColumns(-3);
+            lvTerrain.addColumn(w.name)
+                .addColumn(w.terrain_image.text)
+                .addColumn(w.terrain.is_surface)
+                .autoResizeColumns(-3);
 
             lvTerrain.SelectedIndexChanged += (s, e) =>
             {
@@ -107,7 +110,8 @@ namespace Client.UI.SceneEditGameWorld
                     Text = o.name
                 };
 
-                lvi.SubItems.Add(terrainImage.TryGetValue(o.imageId, out var ti) ? ti.name : w.symbol_none);
+                lvi.addColumn(terrainImage.TryGetValue(o.imageId, out var ti) ? ti.name : w.symbol_none)
+                .addColumn(o.isSurface.getSymbol(w));
 
                 return lvi;
             }).ToArray());

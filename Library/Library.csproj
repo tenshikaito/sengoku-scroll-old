@@ -120,6 +120,15 @@
     <Content Include="resource\default\image\tilemap\detail_terrain_deep_water.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="resource\default\image\tilemap\detail_terrain_deep_water_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\detail_terrain_deep_water_2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\detail_terrain_deep_water_3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="resource\default\image\tilemap\detail_terrain_desert_1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -157,6 +166,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="resource\default\image\tilemap\detail_terrain_marsh.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\detail_terrain_marsh_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\detail_terrain_marsh_2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\default\image\tilemap\detail_terrain_marsh_3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="resource\default\image\tilemap\detail_terrain_mountain_1.png">
@@ -252,7 +270,9 @@
     <Content Include="resource\default\image\tilemap\view_terrain_snow.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="resource\default\image\tilemap\view_terrain_wasteland_1.png" />
+    <Content Include="resource\default\image\tilemap\view_terrain_wasteland_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="resource\default\image\tilemap\view_terrain_wasteland_2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
