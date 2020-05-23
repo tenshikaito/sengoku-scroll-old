@@ -16,6 +16,7 @@ namespace Client.Graphic
         private DetailMapSpritesInfo mapSpritesInfo;
 
         private AutoTileSprite tileSprite;
+        private SpriteRectangle selector;
 
         private Dictionary<int, TileSpriteAnimation> terrainSpriteSpring;
         private Dictionary<int, TileSpriteAnimation> terrainSpriteSummer;
@@ -50,6 +51,15 @@ namespace Client.Graphic
             list.ForEach(o => o.animationViewWinter?.ForEach(oo => gameWorld.getTileMapImage(oo.fileName)));
 
             tileSprite = new AutoTileSprite(this);
+
+            int size = 4;
+
+            selector = new SpriteRectangle()
+            {
+                color = Color.White,
+                width = size,
+                size = new Size(tileWidth - size, tileHeight - size)
+            };
 
             resize();
         }
@@ -109,65 +119,23 @@ namespace Client.Graphic
             ts.refresh(img, point, type);
 
             g.drawSprite(ts);
-
-            //switch (t.terrain)
-            //{
-            //    case 0:
-            //        g.fillRactangle(Color.Green, new Rectangle()
-            //        {
-            //            X = x,
-            //            Y = y,
-            //            Width = tileWidth,
-            //            Height = tileHeight,
-            //        });
-            //        break;
-            //    case 1:
-            //        g.fillRactangle(Color.Blue, new Rectangle()
-            //        {
-            //            X = x,
-            //            Y = y,
-            //            Width = tileWidth,
-            //            Height = tileHeight,
-            //        });
-            //        break;
-            //}
         }
 
         public void recoveryTileFlag(MapPoint p) => mapSpritesInfo.recoveryTileFlag(p);
 
         private void drawCurrentCharacter(GameGraphic g, int x, int y)
         {
-            g.fillRactangle(Color.Red, new Rectangle()
-            {
-                X = x,
-                Y = y,
-                Width = tileWidth,
-                Height = tileHeight,
-            });
         }
 
         private void drawStronghold(GameGraphic g, int x, int y, int strongholdId)
         {
-            //g.drawImage(tileObjects, new Point(x, y), new Rectangle()
-            //{
-            //    X = 48,
-            //    Y = 144,
-            //    Width = tileWidth,
-            //    Height = tileHeight
-            //});
         }
 
         private void drawCursor(GameGraphic g, int sx, int sy)
         {
-            int size = 4;
+            selector.position = new Point(sx, sy);
 
-            g.drawRactangle(Color.White, new Rectangle()
-            {
-                X = sx,
-                Y = sy,
-                Width = tileWidth - size,
-                Height = tileHeight - size
-            }, size);
+            g.drawRectangle(selector);
         }
 
         public class DetailMapSpritesInfo : MapSpritesInfo

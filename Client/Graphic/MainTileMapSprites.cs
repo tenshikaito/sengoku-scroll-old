@@ -17,6 +17,7 @@ namespace Client.Graphic
         private MainMapSpritesInfo mapSpritesInfo;
 
         private AutoTileSprite tileSprite;
+        private SpriteRectangle selector;
 
         protected Dictionary<int, TileSpriteAnimation> terrainSprite;
         protected Dictionary<int, TileSpriteAnimation> terrainSpriteSpring;
@@ -44,6 +45,15 @@ namespace Client.Graphic
             mapSpritesInfo = msi;
 
             tileSprite = new AutoTileSprite(this);
+
+            int size = 4;
+
+            selector = new SpriteRectangle()
+            {
+                color = Color.White,
+                width = size,
+                size = new Size(tileWidth - size, tileHeight - size)
+            };
 
             resize();
         }
@@ -177,39 +187,10 @@ namespace Client.Graphic
 
                 g.drawSprite(ts);
             }
-
-            //switch (t.terrain)
-            //{
-            //    case 0:
-            //        g.fillRactangle(Color.Green, new Rectangle()
-            //        {
-            //            X = x,
-            //            Y = y,
-            //            Width = tileWidth,
-            //            Height = tileHeight,
-            //        });
-            //        break;
-            //    case 1:
-            //        g.fillRactangle(Color.Blue, new Rectangle()
-            //        {
-            //            X = x,
-            //            Y = y,
-            //            Width = tileWidth,
-            //            Height = tileHeight,
-            //        });
-            //        break;
-            //}
         }
 
         private void drawCurrentCharacter(GameGraphic g, int x, int y)
         {
-            g.fillRactangle(Color.Red, new Rectangle()
-            {
-                X = x,
-                Y = y,
-                Width = tileWidth,
-                Height = tileHeight,
-            });
         }
 
         private Dictionary<int, TileSpriteAnimation> strongholdSprite = new Dictionary<int, TileSpriteAnimation>();
@@ -220,52 +201,20 @@ namespace Client.Graphic
 
             var p = s.currentPoint;
 
-            g.drawImage(gameWorld.getTileMapImage(s.fileName), x, y, new Rectangle()
-            {
-                X = p.X,
-                Y = p.Y,
-                Width = tileWidth,
-                Height = tileHeight
-            });
-            //if (mapImageInfo.strongholdAnimation.TryGetValue(strongholdId, out var p))
+            //g.drawImage(gameWorld.getTileMapImage(s.fileName), x, y, new Rectangle()
             //{
-            //    g.drawImage(tileObjects, new Rectangle()
-            //    {
-            //        X = x,
-            //        Y = y,
-            //        Width = tileWidth,
-            //        Height = tileHeight
-            //    }, new Rectangle()
-            //    {
-            //        X = p.X,
-            //        Y = p.Y,
-            //        Width = tileWidth,
-            //        Height = tileHeight
-            //    });
-            //}
-            //else
-            //{
-            //    g.fillRactangle(Color.Black, new Rectangle()
-            //    {
-            //        X = x,
-            //        Y = y,
-            //        Width = tileWidth,
-            //        Height = tileHeight,
-            //    });
-            //}
+            //    X = p.X,
+            //    Y = p.Y,
+            //    Width = tileWidth,
+            //    Height = tileHeight
+            //});
         }
 
         private void drawCursor(GameGraphic g, int sx, int sy)
         {
-            int size = 4;
+            selector.position = new Point(sx, sy);
 
-            g.drawRactangle(Color.White, new Rectangle()
-            {
-                X = sx,
-                Y = sy,
-                Width = tileWidth - size,
-                Height = tileHeight - size
-            }, size);
+            g.drawRectangle(selector);
         }
 
         public class MainMapSpritesInfo : MapSpritesInfo

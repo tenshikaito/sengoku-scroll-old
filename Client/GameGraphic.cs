@@ -51,21 +51,11 @@ namespace Client
 
         public Font getDefaultFont() => getFont(defaultFontName, defaultFontSize);
 
-        public void drawRactangle(Color c, Rectangle r, float width = 1)
+        public void drawRectangle(SpriteRectangle s)
         {
-            g.DrawRectangle(getPen(c, width), r);
+            if (s.isFill) g.FillRectangle(getSolidBrush(s.color), new RectangleF(s.position, s.size));
+            else g.DrawRectangle(getPen(s.color, s.width), new Rectangle(s.position, s.size));
         }
-
-        public void fillRactangle(Color c, Rectangle r)
-        {
-            g.FillRectangle(getSolidBrush(c), r);
-        }
-
-        public void drawImage(Image img, Point tr, Rectangle sr) => g.DrawImage(img, tr.X, tr.Y, sr, GraphicsUnit.Pixel);
-
-        public void drawImage(Image img, int x, int y, Rectangle sr) => g.DrawImage(img, x, y, sr, GraphicsUnit.Pixel);
-
-        public void drawImage(Image img, Rectangle tr, Rectangle sr) => g.DrawImage(img, tr, sr, GraphicsUnit.Pixel);
 
         public SizeF measureDefaultText(SpriteText s) => g.MeasureString(s.text, s.font);
 
@@ -83,7 +73,7 @@ namespace Client
         {
             var sr = s.sourceRectangle ?? new Rectangle(0, 0, s.bitmap.Width, s.bitmap.Height);
 
-            drawImage(s.bitmap, new Rectangle(s.displayPosition, sr.Size), sr);
+            g.DrawImage(s.bitmap, new Rectangle(s.displayPosition, sr.Size), sr, GraphicsUnit.Pixel);
         }
     }
 }

@@ -11,8 +11,6 @@ namespace Client.Graphic
     {
         public string text;
 
-        public float interval;
-
         public Font font;
 
         public float fontSize;

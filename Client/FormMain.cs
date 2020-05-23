@@ -1,4 +1,5 @@
-﻿using Client.Helper;
+﻿using Client.Graphic;
+using Client.Helper;
 using Client.Scene;
 using Library;
 using Library.Helper;
@@ -26,6 +27,8 @@ namespace Client
         private GameObject gameRoot;
 
         private Option option;
+
+        private SpriteRectangle background;
 
         public FormMain()
         {
@@ -59,28 +62,15 @@ namespace Client
                 gameGraphic = gameGraphic
             };
 
+            background = new SpriteRectangle()
+            {
+                color = Color.Black,
+                isFill = true,
+                size = ClientSize
+            };
+
             gameSystem.init();
             gameSystem.sceneToTitle();
-            //gameSystem.initGame();
-            //gameSystem.sceneToMainMap();
-
-            //var gw = new GameWorld("test")
-            //{
-            //    gameWorldMasterData = new GameWorldMasterData()
-            //    {
-            //        terrain = new Dictionary<int, Terrain>(),
-            //        region = new Dictionary<int, Region>(),
-            //        culture = new Dictionary<int, Culture>(),
-            //        religion = new Dictionary<int, Religion>(),
-            //        road = new Dictionary<int, Road>(),
-            //        strongholdType = new Dictionary<int, Stronghold.Type>(),
-            //        MainTileMapImageInfo = new Dictionary<int, MainTileMapImageInfo>(),
-            //        detailTileMapImageInfo = new Dictionary<int, DetailTileMapImageInfo>(),
-            //        detailTileMapInfo = new Dictionary<int, DetailTileMapInfo>()
-            //    }
-            //};
-
-            //new UI.UIEditGameWorldDatabaseWindow(gameSystem, gw).Show();
 
             refreshBuffer();
         }
@@ -250,7 +240,7 @@ namespace Client
         {
             var now = DateTime.Now;
 
-            gameGraphic.fillRactangle(Color.Black, ClientRectangle);
+            gameGraphic.drawRectangle(background);
 
             gameRoot.onDraw();
 

@@ -213,6 +213,8 @@ namespace Client.Scene
             private ZoomableTileMapSprites<MainTileMapSprites> zoomableTileMapSprites;
             private MainTileMapSprites.MainMapSpritesInfo mainMapSpritesInfo;
 
+            private UITileInfoPanel uiTileInfoPanel;
+
             private UIEditGameWorldMainTileMapMenuWindow uiEditGameWorldMainTileMapMenuWindow;
             private UIEditGameWorldDetailTileMapListDialog uiEditGameWorldDetailTileMapListDialog;
 
@@ -232,6 +234,10 @@ namespace Client.Scene
                 zoomableTileMapSprites = new ZoomableTileMapSprites<MainTileMapSprites>();
 
                 addChild(zoomableTileMapSprites);
+
+                uiTileInfoPanel = new UITileInfoPanel(s.gameSystem, s.gameWorld, new Point(30, s.formMain.Height - 108));
+
+                addChild(uiTileInfoPanel);
 
                 loadMap();
 
@@ -402,10 +408,15 @@ namespace Client.Scene
             public class DrawTileRectangleStatus : Status
             {
                 public Point? startPoint;
-                public Rectangle rectangle;
+                public SpriteRectangle selector;
 
                 public DrawTileRectangleStatus(MainTileMapStatus s) : base(s)
                 {
+                    selector = new SpriteRectangle()
+                    {
+                        color = Color.White,
+                        width = 1,
+                    };
                 }
 
                 public override void mousePressed(MouseEventArgs e)
@@ -414,7 +425,8 @@ namespace Client.Scene
 
                     startPoint = e.Location;
 
-                    rectangle = new Rectangle(e.Location.X, e.Location.Y, 1, 1);
+                    selector.position = e.Location;
+                    selector.size = new Size(1, 1);
                 }
 
                 public override void mouseReleased(MouseEventArgs e)
@@ -427,9 +439,9 @@ namespace Client.Scene
                     {
                         case DrawContent.terrain:
 
-                            var tlp = rectangle.Location;
-                            var trp = new Point(rectangle.X + rectangle.Width, rectangle.Y);
-                            var blp = new Point(rectangle.X, rectangle.Y + rectangle.Height);
+                            var tlp = selector.position;
+                            var trp = new Point(selector.position.X + selector.size.Width, selector.position.Y);
+                            var blp = new Point(selector.position.X, selector.position.Y + selector.size.Height);
 
                             var tl = gameStatus.tileMap.getTileLocation(tlp);
                             var tr = gameStatus.tileMap.getTileLocation(trp);
@@ -461,7 +473,7 @@ namespace Client.Scene
                             break;
                     }
 
-                    rectangle = Rectangle.Empty;
+                    selector.size = Size.Empty;
                 }
 
                 public override void mouseDragging(MouseEventArgs e, Point p)
@@ -470,14 +482,15 @@ namespace Client.Scene
 
                     var sp = startPoint.Value;
 
-                    rectangle = new Rectangle(sp.X, sp.Y, e.X - sp.X, e.Y - sp.Y);
+                    selector.position = sp;
+                    selector.size = new Size(e.X - sp.X, e.Y - sp.Y);
                 }
 
                 public override void draw()
                 {
                     if (startPoint == null) return;
 
-                    gameSystem.gameGraphic.drawRactangle(Color.White, rectangle);
+                    gameSystem.gameGraphic.drawRectangle(selector);
                 }
             }
 
@@ -500,7 +513,12 @@ namespace Client.Scene
 
                     if (t == null) return;
 
+                    var tid = (byte)scene.drawContentId;
+                    var tt = scene.gameWorld.masterData.mainTileMapTerrain[tid];
+
                     selectedTerrainId = t.Value.terrain;
+
+                    if (tt.isSurface && !tileMap.terrain.TryGetValue(tileMap.getIndex(p), out selectedTerrainId)) return;
 
                     markedPoints.Clear();
                     foundPoints.Clear();
@@ -523,7 +541,9 @@ namespace Client.Scene
 
                         foundPoints.Add(p);
 
-                        if (tileMap[p].Value.terrain == selectedTerrainId)
+                        if (tt.isSurface
+                            ? (tileMap.terrain.TryGetValue(tileMap.getIndex(p), out var ttid) && ttid == selectedTerrainId)
+                            : tileMap[p].Value.terrain == selectedTerrainId)
                         {
                             markedPoints.Add(p);
 
@@ -537,9 +557,6 @@ namespace Client.Scene
                             points.Pop();
                         }
                     }
-
-                    var tid = (byte)scene.drawContentId;
-                    var tt = scene.gameWorld.masterData.mainTileMapTerrain[tid];
 
                     var list = markedPoints.ToList();
 
@@ -769,10 +786,15 @@ namespace Client.Scene
             public class DrawTileRectangleStatus : Status
             {
                 public Point? startPoint;
-                public Rectangle rectangle;
+                public SpriteRectangle selector;
 
                 public DrawTileRectangleStatus(DetailTileMapStatus s) : base(s)
                 {
+                    selector = new SpriteRectangle()
+                    {
+                        color = Color.White,
+                        width = 1,
+                    };
                 }
 
                 public override void mousePressed(MouseEventArgs e)
@@ -781,7 +803,8 @@ namespace Client.Scene
 
                     startPoint = e.Location;
 
-                    rectangle = new Rectangle(e.Location.X, e.Location.Y, 1, 1);
+                    selector.position = e.Location;
+                    selector.size = new Size(1, 1);
                 }
 
                 public override void mouseReleased(MouseEventArgs e)
@@ -794,9 +817,9 @@ namespace Client.Scene
                     {
                         case DrawContent.terrain:
 
-                            var tlp = rectangle.Location;
-                            var trp = new Point(rectangle.X + rectangle.Width, rectangle.Y);
-                            var blp = new Point(rectangle.X, rectangle.Y + rectangle.Height);
+                            var tlp = selector.position;
+                            var trp = new Point(selector.position.X + selector.size.Width, selector.position.Y);
+                            var blp = new Point(selector.position.X, selector.position.Y + selector.size.Height);
 
                             var tl = gameStatus.tileMap.getTileLocation(tlp);
                             var tr = gameStatus.tileMap.getTileLocation(trp);
@@ -825,7 +848,7 @@ namespace Client.Scene
                             break;
                     }
 
-                    rectangle = Rectangle.Empty;
+                    selector.size = Size.Empty;
                 }
 
                 public override void mouseDragging(MouseEventArgs e, Point p)
@@ -834,14 +857,15 @@ namespace Client.Scene
 
                     var sp = startPoint.Value;
 
-                    rectangle = new Rectangle(sp.X, sp.Y, e.X - sp.X, e.Y - sp.Y);
+                    selector.position = sp;
+                    selector.size = new Size(e.X - sp.X, e.Y - sp.Y);
                 }
 
                 public override void draw()
                 {
                     if (startPoint == null) return;
 
-                    gameSystem.gameGraphic.drawRactangle(Color.White, rectangle);
+                    gameSystem.gameGraphic.drawRectangle(selector);
                 }
             }
 

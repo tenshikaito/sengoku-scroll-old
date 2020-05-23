@@ -89,6 +89,7 @@
     <Compile Include="Graphic\MainTileMapSprites.cs" />
     <Compile Include="Graphic\Sprite.cs" />
     <Compile Include="Graphic\SpriteBase.cs" />
+    <Compile Include="Graphic\SpriteRectangle.cs" />
     <Compile Include="Graphic\SpriteText.cs" />
     <Compile Include="Graphic\TileMapSpritesBase.cs" />
     <Compile Include="Graphic\ZoomableTileMapSprites.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="UI\SceneTitle\UIMainMenuWindow.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UI\UITileInfoPanel.cs" />
     <Compile Include="UI\UIWindow.cs">
       <SubType>Form</SubType>
     </Compile>
