@@ -116,7 +116,13 @@ namespace Client.UI.SceneEditGameWorld
 
             private TextBox tbName;
             private ComboBox cbImage;
+            private CheckBox cbIsSurface;
             private CheckBox cbIsGrass;
+            private CheckBox cbIsForest;
+            private CheckBox cbIsWaste;
+            private CheckBox cbIsDesert;
+            private CheckBox cbIsMarsh;
+            private CheckBox cbIsRock;
             private CheckBox cbIsHill;
             private CheckBox cbIsMountain;
             private CheckBox cbIsHabour;
@@ -140,7 +146,14 @@ namespace Client.UI.SceneEditGameWorld
 
                 lv.addColumn(w.id)
                     .addColumn(w.name)
+                    .addColumn(w.terrain_image.text)
+                    .addColumn(w.terrain.is_surface)
                     .addColumn(w.terrain.is_grass)
+                    .addColumn(w.terrain.is_forest)
+                    .addColumn(w.terrain.is_waste)
+                    .addColumn(w.terrain.is_desert)
+                    .addColumn(w.terrain.is_marsh)
+                    .addColumn(w.terrain.is_rock)
                     .addColumn(w.terrain.is_hill)
                     .addColumn(w.terrain.is_mountain)
                     .addColumn(w.terrain.is_habour)
@@ -178,11 +191,29 @@ namespace Client.UI.SceneEditGameWorld
                 new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
                 tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.terrain.text + ":").setAutoSize().setRightCenter().addTo(p3);
+                new Label().init(w.terrain_image.text + ":").setAutoSize().setRightCenter().addTo(p3);
                 cbImage = new ComboBox().initDropDownList<int>().addTo(p3);
+
+                new Label().init(w.terrain.is_surface + ":").setAutoSize().setRightCenter().addTo(p3);
+                cbIsSurface = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
 
                 new Label().init(w.terrain.is_grass + ":").setAutoSize().setRightCenter().addTo(p3);
                 cbIsGrass = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.terrain.is_forest + ":").setAutoSize().setRightCenter().addTo(p3);
+                cbIsForest = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.terrain.is_waste + ":").setAutoSize().setRightCenter().addTo(p3);
+                cbIsWaste = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.terrain.is_desert + ":").setAutoSize().setRightCenter().addTo(p3);
+                cbIsDesert = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.terrain.is_marsh + ":").setAutoSize().setRightCenter().addTo(p3);
+                cbIsMarsh = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
+
+                new Label().init(w.terrain.is_rock + ":").setAutoSize().setRightCenter().addTo(p3);
+                cbIsRock = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
 
                 new Label().init(w.terrain.is_hill + ":").setAutoSize().setRightCenter().addTo(p3);
                 cbIsHill = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
@@ -221,7 +252,7 @@ namespace Client.UI.SceneEditGameWorld
 
                 var oo = new Terrain()
                 {
-                    id = (int)max,
+                    id = max,
                     name = w.terrain.text,
                 };
 
@@ -253,7 +284,14 @@ namespace Client.UI.SceneEditGameWorld
                 lvi.Text = o.id.ToString();
 
                 return lvi.addColumn(o.name)
+                    .addColumn(terrainImage.TryGetValue(o.imageId, out var ti) ? ti.name : w.symbol_none)
+                    .addColumn(o.isSurface.getSymbol(w))
                     .addColumn(o.isGrass.getSymbol(w))
+                    .addColumn(o.isForest.getSymbol(w))
+                    .addColumn(o.isWaste.getSymbol(w))
+                    .addColumn(o.isDesert.getSymbol(w))
+                    .addColumn(o.isMarsh.getSymbol(w))
+                    .addColumn(o.isRock.getSymbol(w))
                     .addColumn(o.isHill.getSymbol(w))
                     .addColumn(o.isMountain.getSymbol(w))
                     .addColumn(o.isHarbour.getSymbol(w))
@@ -269,15 +307,22 @@ namespace Client.UI.SceneEditGameWorld
                     var oo = data[(int)currentId];
 
                     oo.name = tbName.Text;
+
+                    if (cbImage.SelectedValue != null) oo.imageId = (int)cbImage.SelectedValue;
+
+                    oo.isSurface = cbIsSurface.Checked;
                     oo.isGrass = cbIsGrass.Checked;
+                    oo.isForest = cbIsForest.Checked;
+                    oo.isWaste = cbIsWaste.Checked;
+                    oo.isDesert = cbIsDesert.Checked;
+                    oo.isMarsh = cbIsMarsh.Checked;
+                    oo.isRock = cbIsRock.Checked;
                     oo.isHill = cbIsHill.Checked;
                     oo.isMountain = cbIsMountain.Checked;
                     oo.isHarbour = cbIsHabour.Checked;
                     oo.isWater = cbIsWater.Checked;
                     oo.isFreshWater = cbIsFreshWater.Checked;
                     oo.isDeepWater = cbIsDeepWater.Checked;
-
-                    if (cbImage.SelectedValue != null) oo.imageId = (int)cbImage.SelectedValue;
 
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
@@ -299,7 +344,13 @@ namespace Client.UI.SceneEditGameWorld
 
                 tbName.Text = o.name;
                 cbImage.SelectedValue = o.imageId;
+                cbIsSurface.Checked = o.isSurface;
                 cbIsGrass.Checked = o.isGrass;
+                cbIsForest.Checked = o.isForest;
+                cbIsWaste.Checked = o.isWaste;
+                cbIsDesert.Checked = o.isDesert;
+                cbIsMarsh.Checked = o.isMarsh;
+                cbIsRock.Checked = o.isRock;
                 cbIsHill.Checked = o.isHill;
                 cbIsMountain.Checked = o.isMountain;
                 cbIsHabour.Checked = o.isHarbour;
@@ -1160,7 +1211,7 @@ namespace Client.UI.SceneEditGameWorld
                     if (cbTerrain.SelectedValue != null) oo.terrainId = (int)cbTerrain.SelectedValue;
 
                     var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
-                    
+
                     if (lvi != null)
                     {
                         lvi.SubItems.Clear();
@@ -1221,8 +1272,7 @@ namespace Client.UI.SceneEditGameWorld
                 var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
                 lv.addColumn(w.id)
-                    .addColumn(w.name)
-                    .addColumn(w.terrain_image.text);
+                    .addColumn(w.name);
 
                 lv.Click += (s, e) =>
                 {

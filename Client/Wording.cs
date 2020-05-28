@@ -521,6 +521,16 @@ namespace Client
 
             public string is_grass => this[nameof(is_grass)];
 
+            public string is_forest => this[nameof(is_forest)];
+
+            public string is_waste => this[nameof(is_waste)];
+
+            public string is_desert => this[nameof(is_desert)];
+
+            public string is_marsh => this[nameof(is_marsh)];
+
+            public string is_rock => this[nameof(is_rock)];
+
             public string is_hill => this[nameof(is_hill)];
 
             public string is_mountain => this[nameof(is_mountain)];

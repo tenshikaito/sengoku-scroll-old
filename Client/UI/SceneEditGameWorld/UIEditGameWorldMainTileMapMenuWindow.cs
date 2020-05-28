@@ -74,7 +74,7 @@ namespace Client.UI.SceneEditGameWorld
 
             new Button().init(w.detail_tile_map, detailTileMap).setAutoSize().addTo(p);
 
-            var tc = new TabControl() { MinimumSize = new Size(360, 720) }.init().addTo(panel);
+            var tc = new TabControl() { MinimumSize = new Size(360, 540) }.init().addTo(panel);
 
             var tp = new TabPage().init(w.terrain.text).addTo(tc);
 

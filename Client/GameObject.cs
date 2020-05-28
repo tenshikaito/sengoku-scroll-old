@@ -53,11 +53,11 @@ namespace Client
 
         public override void Dispose()
         {
-            base.Dispose();
-
             status = null;
 
             status?.Dispose();
+
+            base.Dispose();
         }
 
         public void onUpdate()

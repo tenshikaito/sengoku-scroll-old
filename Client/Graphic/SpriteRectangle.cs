@@ -13,6 +13,8 @@ namespace Client.Graphic
         public float width = 1;
         public bool isFill;
 
+        public Rectangle rectangle => new Rectangle(displayPosition, size);
+
         public SpriteRectangle()
         {
         }

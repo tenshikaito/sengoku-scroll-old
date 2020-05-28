@@ -37,5 +37,14 @@ namespace Library
 
             else tiles[index].terrain = id;
         }
+
+        public (MainMapTile? mt, byte? tid) getTerrain(MapPoint p)
+        {
+            var t = this[p];
+
+            var tt = terrain.TryGetValue(getIndex(p), out var value) ? (byte?)value : null;
+
+            return (t, tt);
+        }
     }
 }

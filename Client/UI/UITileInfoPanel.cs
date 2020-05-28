@@ -11,17 +11,15 @@ namespace Client.UI
     public class UITileInfoPanel : GameObject
     {
         private GameSystem gameSystem;
-        private GameWorld gameWorld;
 
         private SpriteRectangle background;
-        private SpriteText terrainName;
-        private SpriteText regionName;
-        private SpriteText strongholdName;
+        private SpriteText tileName1;
+        private SpriteText tileName2;
+        private SpriteText tileName3;
 
-        public UITileInfoPanel(GameSystem gs, GameWorld gw, Point position)
+        public UITileInfoPanel(GameSystem gs, Point position)
         {
             gameSystem = gs;
-            gameWorld = gw;
 
             var g = gs.gameGraphic;
 
@@ -33,39 +31,39 @@ namespace Client.UI
                 isFill = true
             };
 
-            terrainName = new SpriteText()
+            tileName1 = new SpriteText()
             {
                 position = new Point(position.X + 16, position.Y + 8),
                 color = Color.White,
                 font = g.getDefaultFont(),
                 fontSize = g.defaultFontSize,
-                text = "terrainName"
+                text = nameof(tileName1)
             };
 
-            regionName = new SpriteText()
+            tileName2 = new SpriteText()
             {
                 position = new Point(position.X + 144, position.Y + 8),
                 color = Color.White,
                 font = g.getDefaultFont(),
                 fontSize = g.defaultFontSize,
-                text = "regionName"
+                text = nameof(tileName2)
             };
 
-            strongholdName = new SpriteText()
+            tileName3 = new SpriteText()
             {
                 position = new Point(position.X + 272, position.Y + 8),
                 color = Color.White,
                 font = g.getDefaultFont(),
                 fontSize = g.defaultFontSize,
-                text = "strongholdName"
+                text = nameof(tileName3)
             };
         }
 
-        public void setText(string terrainName, string regionName, string strongholdName)
+        public void setText(string tileName1, string tileName2, string tileName3)
         {
-            this.terrainName.text = terrainName;
-            this.regionName.text = regionName;
-            this.strongholdName.text = strongholdName;
+            this.tileName1.text = tileName1 ?? string.Empty;
+            this.tileName2.text = tileName2 ?? string.Empty;
+            this.tileName3.text = tileName3 ?? string.Empty;
         }
 
         public override void draw()
@@ -73,9 +71,9 @@ namespace Client.UI
             var g = gameSystem.gameGraphic;
 
             g.drawRectangle(background);
-            g.drawText(terrainName);
-            g.drawText(regionName);
-            g.drawText(strongholdName);
+            g.drawText(tileName1);
+            g.drawText(tileName2);
+            g.drawText(tileName3);
         }
     }
 }
