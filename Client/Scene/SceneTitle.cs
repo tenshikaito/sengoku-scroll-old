@@ -92,7 +92,7 @@ namespace Client.Scene
 
                     var gwp = new GameWorldProcessor(name);
 
-                    gwp.loadMapMasterData(gw);
+                    gwp.map.loadMasterData(gw);
 
                     gw.init();
 
@@ -117,7 +117,7 @@ namespace Client.Scene
 
                 try
                 {
-                    gwp.deleteMapMasterData();
+                    gwp.map.deleteDirectory();
                 }
                 catch (Exception e)
                 {
@@ -159,7 +159,7 @@ namespace Client.Scene
 
             var gwp = new GameWorldProcessor(name);
 
-            if (!gwp.createMapDirectory(width, height))
+            if (!gwp.map.createDirectory(width, height))
             {
                 MessageBox.Show("create_failed");
                 return;

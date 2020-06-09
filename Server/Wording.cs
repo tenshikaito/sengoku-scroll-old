@@ -13,10 +13,16 @@ namespace Server
         public string start => "启动";
         
         public string stop => "停止";
-        
+
         public string publish => "部署";
 
+        public string delete => "删除";
+
         public string name => "名称";
+
+        public string game_world => "游戏";
+
+        public string console => "控制台";
 
         public string ok => "确定";
 

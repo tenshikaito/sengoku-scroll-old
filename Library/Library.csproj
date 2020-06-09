@@ -49,9 +49,11 @@
     <Compile Include="BaseObject.cs" />
     <Compile Include="GameData.cs" />
     <Compile Include="GameDate.cs" />
+    <Compile Include="GameOption.cs" />
     <Compile Include="GameWorldMap.cs" />
     <Compile Include="GameResourceProcessor.cs" />
     <Compile Include="GameWorldProcessor.cs" />
+    <Compile Include="Helper\ExampleHelper.cs" />
     <Compile Include="Helper\NetworkHelper.cs" />
     <Compile Include="Helper\UIExtensionHelper.cs" />
     <Compile Include="MasterData.cs" />
@@ -61,7 +63,7 @@
     <Compile Include="Model\Army.cs" />
     <Compile Include="Model\AskJobApply.cs" />
     <Compile Include="Model\Building.cs" />
-    <Compile Include="Model\Character.cs" />
+    <Compile Include="Model\Player.cs" />
     <Compile Include="Model\Climate.cs" />
     <Compile Include="Model\Culture.cs" />
     <Compile Include="Model\Direction4.cs" />
@@ -76,7 +78,6 @@
     <Compile Include="TileMap.cs" />
     <Compile Include="Model\Holding.cs" />
     <Compile Include="Model\Item.cs" />
-    <Compile Include="Model\Player.cs" />
     <Compile Include="Model\Point.cs" />
     <Compile Include="Model\Policy.cs" />
     <Compile Include="Model\Region.cs" />
@@ -280,6 +281,7 @@
   <ItemGroup>
     <Folder Include="audio\bgm\" />
     <Folder Include="audio\se\" />
+    <Folder Include="Entity\" />
     <Folder Include="resource\default\audio\bgm\" />
     <Folder Include="resource\default\audio\se\" />
   </ItemGroup>

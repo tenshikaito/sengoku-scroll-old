@@ -18,6 +18,8 @@ namespace Server
     {
         private Dictionary<string, TcpClient> connectedGameClients = new Dictionary<string, TcpClient>();
         private Encoding encoding = Encoding.UTF8;
+        private int dataBufferSize = 10240;
+        private int socketBufferSize = 4096;
 
         private TcpListener tcpListener;
 
@@ -53,8 +55,8 @@ namespace Server
             clientConnected?.Invoke(tc);
 
             var ns = tc.GetStream();
-            var list = new List<byte>(10240);
-            var buffer = new byte[4096];
+            var list = new List<byte>(dataBufferSize);
+            var buffer = new byte[socketBufferSize];
 
             _ = accept();
 

@@ -80,7 +80,6 @@
     </Compile>
     <Compile Include="GameGraphic.cs" />
     <Compile Include="GameObject.cs" />
-    <Compile Include="GameOption.cs" />
     <Compile Include="GameSystem.cs" />
     <Compile Include="GameWorld.cs" />
     <Compile Include="Graphic\AutoTileCalculator.cs" />

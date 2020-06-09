@@ -16,7 +16,8 @@ namespace Server
 {
     public class Game : IDisposable
     {
-        private ReaderWriterLockSlim @lock = new ReaderWriterLockSlim();
+        private Dictionary<int, GamePlayer> players = new Dictionary<int, GamePlayer>();
+        private ManualResetEvent @lock = new ManualResetEvent(false);
         private bool isRunning = false;
 
         private Option option;
@@ -64,9 +65,13 @@ namespace Server
 
         public void start()
         {
-            var gwp = new GameWorldProcessor(gameWorldName);
+            var gw = new GameWorld(gameWorldName);
 
-            gameWorldMap = gwp.loadMapMasterData(new GameWorldMap());
+            gw.init();
+
+            var gwp = gw.gameWorldProcessor;
+
+            gameWorldMap = gwp.game.loadGameData(gwp.game.loadMasterData(gw));
 
             isRunning = true;
 
@@ -90,6 +95,8 @@ namespace Server
         public void Dispose()
         {
             stop();
+
+            gameServer?.Dispose();
         }
     }
 }

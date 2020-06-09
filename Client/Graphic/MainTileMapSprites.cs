@@ -88,9 +88,9 @@ namespace Client.Graphic
         {
             if (map.isOutOfBounds(p)) return;
 
-            var tile = (MainMapTile)tileMap[p];
+            var tile = tileMap[p];
 
-            drawTerrain(g, p, sx, sy, tile);
+            drawTerrain(g, p, sx, sy, tile, false, false);
 
             if (!isEditor)
             {
@@ -106,10 +106,10 @@ namespace Client.Graphic
             if (p == cursorPosition) drawCursor(g, sx, sy);
         }
 
-        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, MainMapTile t)
+        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, MainMapTile t, bool isSurface, bool isSurfaceDone)
         {
             var md = gameWorld.masterData;
-            var tt = md.mainTileMapTerrain[t.terrain];
+            var tt = md.mainTileMapTerrain[isSurface ? t.terrainSurface.Value : t.terrain];
             var s = terrainSprite[tt.imageId];
 
             switch (gameWorld.gameDate.season)
@@ -142,50 +142,15 @@ namespace Client.Graphic
 
             //viewMode.drawTerrain(this, ts, t);
 
-            var type = mapSpritesInfo.checkTerrainBorder(p);
+            var type = mapSpritesInfo.checkTerrainBorder(p, isSurface);
 
             ts.refresh(img, point, type);
 
             g.drawSprite(ts);
 
-            if (tileMap.terrain.TryGetValue(tileMap.getIndex(p), out var terrainId))
+            if (t.terrainSurface != null && !isSurfaceDone)
             {
-                tt = md.mainTileMapTerrain[terrainId];
-                s = terrainSprite[tt.imageId];
-
-                switch (gameWorld.gameDate.season)
-                {
-                    case GameDate.Season.spring:
-                        if (terrainSpriteSpring.TryGetValue(tt.imageId, out var s1)) s = s1;
-                        break;
-                    case GameDate.Season.summer:
-                        if (terrainSpriteSummer.TryGetValue(tt.imageId, out var s2)) s = s2;
-                        break;
-                    case GameDate.Season.autumn:
-                        if (terrainSpriteAutumn.TryGetValue(tt.imageId, out var s3)) s = s3;
-                        break;
-                    case GameDate.Season.winter:
-                        if (terrainSpriteWinter.TryGetValue(tt.imageId, out var s4)) s = s4;
-                        break;
-                }
-
-                if (!s.hasOne) return;
-
-                img = gameWorld.getTileMapImage(s.fileName);
-
-                if (img == null) return;
-
-                point = s.currentPoint;
-
-                ts.position = new Point(x, y);
-
-                //viewMode.drawTerrain(this, ts, t);
-
-                type = mapSpritesInfo.checkTerrainBorder(p, true);
-
-                ts.refresh(img, point, type);
-
-                g.drawSprite(ts);
+                drawTerrain(g, p, x, y, t, true, true);
             }
         }
 
@@ -232,13 +197,17 @@ namespace Client.Graphic
             {
                 if (tileMap.isOutOfBounds(p)) return 0;
 
-                var t = (MainMapTile)mainTileMap[p];
+                var t = mainTileMap[p];
                 var y = p.y;
                 var x = p.x;
 
                 var tid = t.terrain;
 
-                if (isSurface && !mainTileMap.terrain.TryGetValue(mainTileMap.getIndex(p), out tid)) return 0;
+                if (isSurface)
+                {
+                    if (t.terrainSurface == null) return 0;
+                    else tid = t.terrainSurface.Value;
+                }
 
                 if (!gameWorld.masterData.mainTileMapTerrain.TryGetValue(tid, out var tt)) return 0;
 
@@ -262,14 +231,21 @@ namespace Client.Graphic
 
                 if (tileMap.isOutOfBounds(p)) return;
 
-                var tt = (MainMapTile)mainTileMap[p];
+                var tt = mainTileMap[p];
 
                 var tid = tt.terrain;
 
-                if (isSurface && !mainTileMap.terrain.TryGetValue(mainTileMap.getIndex(p), out tid))
+                if (isSurface)
                 {
-                    flag |= direction;
-                    return;
+                    if (tt.terrainSurface == null)
+                    {
+                        flag |= direction;
+                        return;
+                    }
+                    else
+                    {
+                        tid = tt.terrainSurface.Value;
+                    }
                 }
 
                 if (!gameWorld.masterData.mainTileMapTerrain.TryGetValue(tid, out var ttt)) return;

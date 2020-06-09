@@ -179,7 +179,7 @@ namespace Client.Graphic
                 if (tileMap.isOutOfBounds(p)) return;
 
                 var tt = detailTileMap[p];
-                if (!gameWorld.masterData.detailTileMapTerrain.TryGetValue(tt.Value.terrain, out var ttt)) return;
+                if (!gameWorld.masterData.detailTileMapTerrain.TryGetValue(tt.terrain, out var ttt)) return;
 
                 if (t.imageId != ttt.imageId) flag |= direction;
             }

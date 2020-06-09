@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Client
+namespace Server
 {
     public class GameWorld : GameWorldMap
     {
@@ -12,12 +12,6 @@ namespace Client
         public string resourcePackageName { get; set; }
 
         public GameOption gameOption = new GameOption();
-
-        public Player currentCharacter;
-
-        public Camera camera;
-
-        public Cache cache = new Cache();
 
         public GameWorldProcessor gameWorldProcessor { get; private set; }
         public GameResourceProcessor gameResourceProcessor { get; private set; }
@@ -27,10 +21,12 @@ namespace Client
             this.name = name;
         }
 
-        public void init()
+        public GameWorld init()
         {
             gameWorldProcessor = new GameWorldProcessor(name);
             gameResourceProcessor = new GameResourceProcessor(resourcePackageName);
+
+            return this;
         }
     }
 }

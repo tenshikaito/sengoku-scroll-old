@@ -81,6 +81,7 @@ namespace Client
             Height = option.screenHeight;
             Text = option.title;
             Icon = new Icon("Icon.ico");
+            MaximizeBox = false;
 
             dispatcher = new Dispatcher();
 

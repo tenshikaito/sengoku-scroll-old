@@ -7,6 +7,7 @@ namespace Library.Model
     public struct MainMapTile
     {
         public byte terrain;
+        public byte? terrainSurface;
         /// <summary>地区</summary>
         public byte region;
     }

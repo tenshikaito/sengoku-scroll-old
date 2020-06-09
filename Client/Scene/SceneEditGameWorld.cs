@@ -154,7 +154,7 @@ namespace Client.Scene
 
         private void save()
         {
-            gameWorld.gameWorldProcessor.saveMapMasterData(gameWorld);
+            gameWorld.gameWorldProcessor.map.saveMasterData(gameWorld);
         }
 
         private void onDetailTileMapSelected(int id)
@@ -167,7 +167,7 @@ namespace Client.Scene
 
                 var itm = gameWorld.masterData.detailTileMapInfo[id];
 
-                var tm = gwp.loadDetailTileMap(id, itm.size.column, itm.size.row);
+                var tm = gwp.map.loadDetailTileMap(id, itm.size.column, itm.size.row);
 
                 detailTileMapStatus.setTileMap(id, tm);
 
@@ -301,10 +301,10 @@ namespace Client.Scene
                     return;
                 }
 
-                var t = tm.getTerrain(cursorPos);
+                var t = tm[cursorPos];
                 var mt = gw.masterData.mainTileMapTerrain;
 
-                mt.TryGetValue(t.tid != null ? t.tid.Value : t.mt.Value.terrain, out var tt); ;
+                mt.TryGetValue(t.terrainSurface ?? t.terrain, out var tt); ;
 
                 uiTileInfoPanel.setText(tt.name, null, null);
             }
@@ -418,7 +418,7 @@ namespace Client.Scene
 
                             tileMap.setTerrain(p, tid, t.isSurface);
 
-                            if (!t.isSurface) tileMap.terrain.Remove(tileMap.getIndex(p));
+                            if (!t.isSurface) tileMap.terrainSurface.Remove(tileMap.getIndex(p));
 
                             gameStatus.mainMapSpritesInfo.resetTileFlag(p);
 
@@ -487,7 +487,7 @@ namespace Client.Scene
                             {
                                 tileMap.setTerrain(o, tid, t.isSurface);
 
-                                if (!t.isSurface) tileMap.terrain.Remove(tileMap.getIndex(o));
+                                if (!t.isSurface) tileMap.terrainSurface.Remove(tileMap.getIndex(o));
 
                                 gameStatus.mainMapSpritesInfo.resetTileFlag(o);
                             });
@@ -521,8 +521,8 @@ namespace Client.Scene
                 private Stack<MapPoint> points = new Stack<MapPoint>();
                 private HashSet<MapPoint> foundPoints = new HashSet<MapPoint>();
                 private HashSet<MapPoint> markedPoints = new HashSet<MapPoint>();
-                private byte selectedTerrainId1;
-                private byte? selectedTerrainId2;
+                private byte selectedTerrainId;
+                private byte? selectedTerrainSurfaceId;
 
                 public DrawTileFillStatus(MainTileMapStatus s) : base(s)
                 {
@@ -532,15 +532,15 @@ namespace Client.Scene
                 {
                     var p = scene.mainTileMapStatus.tileMap.getTileLocation(e);
 
-                    var t = tileMap[p];
+                    if (tileMap.isOutOfBounds(p)) return;
 
-                    if (t == null) return;
+                    var t = tileMap[p];
 
                     var tdid = (byte)scene.drawContentId;
                     var td = scene.gameWorld.masterData.mainTileMapTerrain[tdid];
 
-                    selectedTerrainId1 = t.Value.terrain;
-                    selectedTerrainId2 = tileMap.terrain.TryGetValue(tileMap.getIndex(p), out var value) ? value : (byte?)null;
+                    selectedTerrainId = t.terrain;
+                    selectedTerrainSurfaceId = t.terrainSurface;
 
                     markedPoints.Clear();
                     foundPoints.Clear();
@@ -563,8 +563,10 @@ namespace Client.Scene
 
                         foundPoints.Add(p);
 
-                        if (tileMap[p].Value.terrain == selectedTerrainId1
-                            && (tileMap.terrain.TryGetValue(tileMap.getIndex(p), out value) ? value : (byte?)null) == selectedTerrainId2)
+                        t = tileMap[p];
+
+                        if (t.terrain == selectedTerrainId
+                            && t.terrainSurface == selectedTerrainSurfaceId)
                         {
                             markedPoints.Add(p);
 
@@ -583,7 +585,7 @@ namespace Client.Scene
 
                     list.ForEach(o => tileMap.setTerrain(o, tdid, td.isSurface));
 
-                    if (!td.isSurface) list.ForEach(o => tileMap.terrain.Remove(tileMap.getIndex(o)));
+                    if (!td.isSurface) list.ForEach(o => tileMap.terrainSurface.Remove(tileMap.getIndex(o)));
 
                     list.ForEach(gameStatus.mainMapSpritesInfo.resetTileFlag);
                 }
@@ -712,7 +714,7 @@ namespace Client.Scene
                 {
                     var gwp = scene.gameWorld.gameWorldProcessor;
 
-                    gwp.saveDetailTileMap(currentTileMapId, detailMapSpritesInfo.detailTileMap);
+                    gwp.map.saveDetailTileMap(currentTileMapId, detailMapSpritesInfo.detailTileMap);
 
                     new UIDialog(scene.gameSystem, "alert", "saved.", scene.formMain).Show(scene.formMain);
                 }
@@ -905,11 +907,11 @@ namespace Client.Scene
                 {
                     var p = scene.mainTileMapStatus.tileMap.getTileLocation(e);
 
+                    if (tileMap.isOutOfBounds(p)) return;
+
                     var t = tileMap[p];
 
-                    if (t == null) return;
-
-                    selectedTerrainId = t.Value.terrain;
+                    selectedTerrainId = t.terrain;
 
                     markedPoints.Clear();
                     foundPoints.Clear();
@@ -932,7 +934,7 @@ namespace Client.Scene
 
                         foundPoints.Add(p);
 
-                        if (tileMap[p].Value.terrain == selectedTerrainId)
+                        if (tileMap[p].terrain == selectedTerrainId)
                         {
                             markedPoints.Add(p);
 

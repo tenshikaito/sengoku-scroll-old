@@ -21,7 +21,10 @@ namespace Server
         private Button btnStart;
         private Button btnStop;
         private Button btnPublish;
+        private Button btnDelete;
         private ListView lvGameWorld;
+        private TextBox tbConsole;
+        private TextBox tbConsoleInput;
 
         private GameSystem gameSystem;
         private Game game;
@@ -83,14 +86,36 @@ namespace Server
             btnStart = new Button().init(w.start, onStartButtonClicked).addTo(p);
             btnStop = new Button() { Enabled = false }.init(w.stop, onStopButtonClicked).addTo(p);
             btnPublish = new Button().init(w.publish, onPublishButtonClicked).addTo(p);
+            btnDelete = new Button().init(w.delete, onDeleteButtonClicked).addTo(p);
+
+            var tc = new TabControl()
+            {
+                Height = 480,
+            }.init().addTo(panel);
+
+            var tp = new TabPage().init(w.game_world).addTo(tc);
 
             lvGameWorld = new ListView()
             {
-                Height = 480,
                 Scrollable = true,
-            }.init().addColumn(wording.name).addTo(panel);
+            }.init().addColumn(w.name).addTo(tp);
 
             lvGameWorld.autoResizeColumns();
+
+            tp = new TabPage().init(w.console).addTo(tc);
+
+            tbConsole = new TextBox()
+            {
+                Dock = DockStyle.Fill,
+                Multiline = true,
+                ReadOnly = true
+            }.addTo(tp);
+
+            tbConsoleInput = new TextBox()
+            {
+                Dock = DockStyle.Bottom,
+                Enabled = false
+            }.addTo(tp);
         }
 
         private void initSystem()
@@ -123,6 +148,9 @@ namespace Server
             btnStart.Enabled = false;
             btnStop.Enabled = true;
             btnPublish.Enabled = false;
+            btnDelete.Enabled = false;
+            lvGameWorld.Enabled = false;
+            tbConsoleInput.Enabled = true;
         }
 
         private void onStopButtonClicked()
@@ -134,6 +162,9 @@ namespace Server
             btnStart.Enabled = true;
             btnStop.Enabled = false;
             btnPublish.Enabled = true;
+            btnDelete.Enabled = true;
+            lvGameWorld.Enabled = true;
+            tbConsoleInput.Enabled = false;
         }
 
         private void onPublishButtonClicked()
@@ -142,7 +173,6 @@ namespace Server
 
             var publish = new Action<string>(name =>
             {
-
                 GameWorldProcessor.publishMap(name);
 
                 loadGameWorldList();
@@ -172,6 +202,20 @@ namespace Server
             };
 
             dialog.ShowDialog(this);
+        }
+
+        private void onDeleteButtonClicked()
+        {
+            var lvi = lvGameWorld.FocusedItem;
+
+            if (lvi == null) return;
+
+            if (MessageBox.Show("delete?", "confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                new GameWorldProcessor((string)lvi.Tag).game.deleteDirectory();
+                
+                lvGameWorld.Items.Remove(lvi);
+            }
         }
 
         private void loadGameWorldList()

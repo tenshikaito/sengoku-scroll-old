@@ -10,7 +10,12 @@ namespace Server
 {
     public class GamePlayer
     {
-        public Player player;
+        public int id;
+
+        public string code;
+
+        public string username;
+
         public GameClient gameClient;
     }
 }
