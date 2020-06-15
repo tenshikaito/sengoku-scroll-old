@@ -14,24 +14,19 @@ namespace Library.Helper
     {
         public static GameData getGameData() => new GameData()
         {
-            force = new IncreasedIdDictionary<Force>() { map = new Dictionary<int, Force>() },
-            province = new IncreasedIdDictionary<Province> { map = new Dictionary<int, Province>() },
-            stronghold = new IncreasedIdDictionary<Stronghold> { map = new Dictionary<int, Stronghold>() }
+            force = new IncreasedIdDictionary<Force>().init(),
+            province = new IncreasedIdDictionary<Province>().init(),
+            stronghold = new IncreasedIdDictionary<Stronghold>().init(),
         };
 
         public static MainTileMap getMainTileMap(int width, int height) => new MainTileMap(new TileMap.Size(width, height))
         {
             terrain = new byte[width * height],
             region = new byte[width * height],
-            terrainSurface = new Dictionary<int, byte>()
-        };
-
-        public static MainTileMapData getMainTileMapData() => new MainTileMapData()
-        {
-            territory = new Dictionary<int, int>(),
+            terrainSurface = new Dictionary<int, byte>(),
             road = new Dictionary<int, int>(),
-            stronghold = new Dictionary<int, int>(),
-            unit = new Dictionary<int, int>(),
+            territory = new Dictionary<int, int>(),
+            stronghold = new Dictionary<int, int>()
         };
 
         public static MasterData getMasterData() => new MasterData()

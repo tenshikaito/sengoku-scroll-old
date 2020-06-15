@@ -54,6 +54,7 @@
     <Compile Include="GameResourceProcessor.cs" />
     <Compile Include="GameWorldProcessor.cs" />
     <Compile Include="Helper\ExampleHelper.cs" />
+    <Compile Include="Helper\FileHelper.cs" />
     <Compile Include="Helper\NetworkHelper.cs" />
     <Compile Include="Helper\UIExtensionHelper.cs" />
     <Compile Include="MasterData.cs" />
@@ -281,7 +282,6 @@
   <ItemGroup>
     <Folder Include="audio\bgm\" />
     <Folder Include="audio\se\" />
-    <Folder Include="Entity\" />
     <Folder Include="resource\default\audio\bgm\" />
     <Folder Include="resource\default\audio\se\" />
   </ItemGroup>

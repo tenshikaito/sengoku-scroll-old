@@ -16,6 +16,8 @@ namespace Server
 
         public string username;
 
+        public Player player;
+
         public GameClient gameClient;
     }
 }

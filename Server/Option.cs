@@ -12,6 +12,6 @@ namespace Server
 
         public int port = 7789;
 
-        public int saveMinuteInterval = 3;
+        public int autoSaveMinuteInterval = 3;
     }
 }

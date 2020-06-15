@@ -93,7 +93,10 @@
     <Compile Include="Graphic\TileMapSpritesBase.cs" />
     <Compile Include="Graphic\ZoomableTileMapSprites.cs" />
     <Compile Include="Helper\CommonHelper.cs" />
+    <Compile Include="Helper\FileHelper.cs" />
     <Compile Include="IInputEventListener.cs" />
+    <Compile Include="Model\ServerInfo.cs" />
+    <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -112,13 +115,19 @@
     <Compile Include="UI\SceneEditGameWorld\UIEditGameWorldMainTileMapMenuWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\SceneTitle\UIGameWorldMenuWindow.cs">
+    <Compile Include="UI\SceneTitle\UIUserDetailDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\SceneTitle\UIManageServerDialog.cs">
+    <Compile Include="UI\SceneTitle\UIGameServerDetailDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SceneTitle\UIUserDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\SceneTitle\UIStartGameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\UIEditableDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\UISaveableConfirmDialog.cs">
@@ -127,7 +136,7 @@
     <Compile Include="UI\UIConfirmDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\SceneTitle\UICreateGameWorldDialog.cs">
+    <Compile Include="UI\SceneTitle\UIGameWorldDetailDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\UIDialog.cs">
@@ -139,7 +148,7 @@
     <Compile Include="UI\SceneEditGameWorld\UIEditGameWorldMenuWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\SceneTitle\UIEditGameWorldDialog.cs">
+    <Compile Include="UI\SceneTitle\UIEditGameDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\SceneTitle\UIMainMenuWindow.cs">
@@ -159,6 +168,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="user.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="option.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

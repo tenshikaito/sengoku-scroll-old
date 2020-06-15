@@ -1,6 +1,7 @@
 ﻿using Library;
 using Library.Helper;
 using Library.Network;
+using Server.Command;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,16 +15,19 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-    public class Game : IDisposable
+    public class Game
     {
-        private Dictionary<int, GamePlayer> players = new Dictionary<int, GamePlayer>();
-        private ManualResetEvent @lock = new ManualResetEvent(false);
+        public ReaderWriterLockSlim @lock = new ReaderWriterLockSlim();
+
+        public GameWorld gameWorld;
+
+        private IncreasedIdDictionary<GamePlayer> connectedPlayer = new IncreasedIdDictionary<GamePlayer>();
+        private Dictionary<int, GamePlayer> onlinePlayer = new Dictionary<int, GamePlayer>();
+
         private bool isRunning = false;
 
         private Option option;
         private GameServer gameServer;
-
-        public GameWorldMap gameWorldMap;
 
         public string gameWorldName { get; }
 
@@ -41,17 +45,37 @@ namespace Server
             };
         }
 
-        private void onClientConnected(TcpClient tc)
+        private void onClientConnected(GameClient gc)
         {
-            throw new NotImplementedException();
+            lock (connectedPlayer)
+            {
+                var p = new GamePlayer()
+                {
+                    id = connectedPlayer.getNextId()
+                };
+
+                connectedPlayer[p.id] = p;
+            }
         }
 
-        private void onClientDisconnected(TcpClient tc)
+        private void onClientDisconnected(GameClient gc)
         {
-            throw new NotImplementedException();
+            lock (connectedPlayer)
+            {
+                var p = connectedPlayer.map.Values.FirstOrDefault(o => o.gameClient.ip == gc.ip);
+
+                if (p != null) connectedPlayer.map.Remove(p.id);
+            }
+
+            lock (onlinePlayer)
+            {
+                var p = onlinePlayer.Values.FirstOrDefault(o => o.gameClient.ip == gc.ip);
+
+                if (p != null) onlinePlayer.Remove(p.id);
+            }
         }
 
-        private void onDataReceived(TcpClient tc, string data)
+        private void onDataReceived(GameClient gc, string data)
         {
             throw new NotImplementedException();
         }
@@ -71,7 +95,7 @@ namespace Server
 
             var gwp = gw.gameWorldProcessor;
 
-            gameWorldMap = gwp.game.loadGameData(gwp.game.loadMasterData(gw));
+            gameWorld = gwp.game.loadGameData(gwp.game.loadMasterData(gw));
 
             isRunning = true;
 
@@ -80,7 +104,7 @@ namespace Server
 
         private void processData(GameClient gc, string data)
         {
-            Console.WriteLine(gc.getIp() + ":" + data);
+            Console.WriteLine(gc.ip + ":" + data);
         }
 
         public void stop()
@@ -90,13 +114,6 @@ namespace Server
             isRunning = false;
 
             gameServer.stop();
-        }
-
-        public void Dispose()
-        {
-            stop();
-
-            gameServer?.Dispose();
         }
     }
 }

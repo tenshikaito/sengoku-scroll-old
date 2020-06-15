@@ -37,7 +37,12 @@ namespace Library
             }
         }
 
-        public void addDay(int day = 1) => timeSpan += TimeSpan.FromDays(day);
+        public GameDate addDay(int day = 1)
+        {
+            timeSpan += TimeSpan.FromDays(day);
+
+            return this;
+        }
 
         public enum Season
         {

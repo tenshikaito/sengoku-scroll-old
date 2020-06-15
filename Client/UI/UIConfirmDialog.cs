@@ -22,13 +22,13 @@ namespace Client.UI
             btnCancel.Click += (s, e) => cancelButtonClicked?.Invoke();
         }
 
-        public UIConfirmDialog(GameSystem gs, string title, string text, Form owner = null) : this(gs)
+        public UIConfirmDialog(GameSystem gs, string title, string text) : this(gs)
         {
             this.setCommandWindow(title).addMessage<UIConfirmDialog>(text);
 
-            if (owner != null) Owner = owner;
-
             addConfirmButtons();
+
+            cancelButtonClicked = Close;
         }
 
         public UIConfirmDialog addConfirmButtons(string okButtonText = null, string cancelButtonText = null)

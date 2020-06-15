@@ -8,25 +8,12 @@ namespace Server
 {
     public class GameWorld : GameWorldMap
     {
-        public string name { get; }
-        public string resourcePackageName { get; set; }
+        public IncreasedIdDictionary<GamePlayer> player = new IncreasedIdDictionary<GamePlayer>();
 
         public GameOption gameOption = new GameOption();
 
-        public GameWorldProcessor gameWorldProcessor { get; private set; }
-        public GameResourceProcessor gameResourceProcessor { get; private set; }
-
-        public GameWorld(string name)
+        public GameWorld(string name) : base(name)
         {
-            this.name = name;
-        }
-
-        public GameWorld init()
-        {
-            gameWorldProcessor = new GameWorldProcessor(name);
-            gameResourceProcessor = new GameResourceProcessor(resourcePackageName);
-
-            return this;
         }
     }
 }

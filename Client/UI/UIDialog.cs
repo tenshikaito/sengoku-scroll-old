@@ -21,11 +21,9 @@ namespace Client.UI
             btnOk.Click += (s, e) => okButtonClicked?.Invoke();
         }
 
-        public UIDialog(GameSystem gs, string title, string text, Form owner = null) : this(gs)
+        public UIDialog(GameSystem gs, string title, string text) : this(gs)
         {
             this.setCommandWindow(title).addMessage<UIDialog>(text);
-
-            if (owner != null) Owner = owner;
 
             addConfirmButton();
 

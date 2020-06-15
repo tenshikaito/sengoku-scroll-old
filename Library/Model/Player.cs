@@ -12,6 +12,7 @@ namespace Library.Model
         public static readonly List<Skill.Type> skillList = Enum.GetValues(typeof(Skill.Type)).Cast<Skill.Type>().ToList();
 
         public string name { get; set; }
+        public string code { get; set; }
         public int type { get; set; }
         public int force { get; set; }
 

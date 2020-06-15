@@ -14,9 +14,8 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-    public class GameServer : IDisposable
+    public class GameServer
     {
-        private Dictionary<string, TcpClient> connectedGameClients = new Dictionary<string, TcpClient>();
         private Encoding encoding = Encoding.UTF8;
         private int dataBufferSize = 10240;
         private int socketBufferSize = 4096;
@@ -24,9 +23,9 @@ namespace Server
         private TcpListener tcpListener;
 
         public bool isRunning { get; private set; } = false;
-        public Action<TcpClient> clientConnected;
-        public Action<TcpClient> clientDisconnected;
-        public Action<TcpClient, string> dataReceived;
+        public Action<GameClient> clientConnected;
+        public Action<GameClient> clientDisconnected;
+        public Action<GameClient, string> dataReceived;
 
         public GameServer bind(int port)
         {
@@ -50,68 +49,17 @@ namespace Server
 
             if (!isRunning) return;
 
-            connectedGameClients[tc.getIp()] = tc;
+            var gc = new GameClient(tc, encoding, dataBufferSize, socketBufferSize)
+            {
+                dataReceived = (otc, s) => dataReceived?.Invoke(otc, s),
+                clientDisconnected = otc => clientDisconnected?.Invoke(otc)
+            };
 
-            clientConnected?.Invoke(tc);
-
-            var ns = tc.GetStream();
-            var list = new List<byte>(dataBufferSize);
-            var buffer = new byte[socketBufferSize];
+            clientConnected?.Invoke(gc);
 
             _ = accept();
 
-            _ = receive(tc, ns, list, buffer);
-        }
-
-        private async Task receive(TcpClient tc, NetworkStream ns, List<byte> list, byte[] buffer)
-        {
-            var length = await ns.ReadAsync(buffer, 0, buffer.Length);
-
-            if (length > 0)
-            {
-                list.AddRange(buffer.Take(length));
-
-                if (isRunning) _ = receive(tc, ns, list, buffer);
-            }
-            else
-            {
-                disconnect(tc, false);
-
-                clientDisconnected?.Invoke(tc);
-            }
-
-            processData(tc, list);
-        }
-
-        private void processData(TcpClient tc, List<byte> list)
-        {
-            if (list.Count < 4) return;
-
-            var length = BitConverter.ToInt32(list.Take(4).ToArray(), 0);
-
-            if (list.Count - 4 >= length)
-            {
-                list.RemoveRange(0, 4);
-
-                var data = list.Take(length).ToArray();
-
-                list.RemoveRange(0, length);
-
-                var s = encoding.GetString(data);
-
-                dataReceived?.Invoke(tc, s);
-                
-                processData(tc, list);
-            }
-        }
-
-        public void disconnect(TcpClient tc, bool isAutoDisconnect = true)
-        {
-            var ip = tc.getIp();
-
-            connectedGameClients.Remove(ip);
-
-            if (isAutoDisconnect) tc.Close();
+            gc.start();
         }
 
         public void stop()
@@ -121,11 +69,6 @@ namespace Server
             isRunning = false;
 
             tcpListener.Stop();
-        }
-
-        public void Dispose()
-        {
-            stop();
         }
     }
 }

@@ -9,7 +9,14 @@ namespace Library
     {
         public byte[] terrain;
         public byte[] region;
+
         public Dictionary<int, byte> terrainSurface;
+
+        public Dictionary<int, int> territory;
+        public Dictionary<int, int> road;
+
+        public Dictionary<int, int> stronghold;
+        public Dictionary<int, int> unit;
 
         public MainMapTile this[int index] => new MainMapTile()
         {

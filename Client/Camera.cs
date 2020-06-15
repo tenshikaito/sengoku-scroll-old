@@ -23,8 +23,15 @@ namespace Client
 
         public Camera(int width, int height)
         {
+            setSize(width, height);
+        }
+
+        public Camera setSize(int width, int height)
+        {
             this.width = width;
             this.height = height;
+
+            return this;
         }
 
         public Point translateWorldToScreen(Point p)

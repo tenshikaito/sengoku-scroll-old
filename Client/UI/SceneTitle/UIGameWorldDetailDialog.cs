@@ -8,13 +8,15 @@ using System.Windows.Forms;
 
 namespace Client.UI.SceneTitle
 {
-    public class UICreateGameWorldDialog : UIConfirmDialog
+    public class UIGameWorldDetailDialog : UIConfirmDialog
     {
         private TextBox tbName;
         private TextBox tbWidth;
         private TextBox tbHeight;
 
-        public UICreateGameWorldDialog(GameSystem gs, Action<string, string, string> okButtonClicked) : base(gs)
+        public (string name, string width, string height) value => (tbName.Text, tbWidth.Text, tbHeight.Text);
+
+        public UIGameWorldDetailDialog(GameSystem gs) : base(gs)
         {
             this.setCommandWindow(w.add);
 
@@ -27,18 +29,15 @@ namespace Client.UI.SceneTitle
 
             tbName = new TextBox() { Text = "test" }.addTo(p);
 
-            new Label() { Text = w.scene_title.game_world_width }.setRightCenter().setAutoSize().addTo(p);
+            new Label() { Text = w.width }.setRightCenter().setAutoSize().addTo(p);
 
             tbWidth = new TextBox() { Text = "100" }.addTo(p);
 
-            new Label() { Text = w.scene_title.game_world_height }.setRightCenter().setAutoSize().addTo(p);
+            new Label() { Text = w.height }.setRightCenter().setAutoSize().addTo(p);
 
             tbHeight = new TextBox() { Text = "100" }.addTo(p);
 
             addConfirmButtons();
-
-            btnOk.Click += (s, e) => okButtonClicked(tbName.Text, tbWidth.Text, tbHeight.Text);
         }
-
     }
 }

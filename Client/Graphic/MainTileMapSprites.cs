@@ -1,5 +1,6 @@
 ﻿using Client.Helper;
 using Library;
+using Library.Helper;
 using Library.Model;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using static Library.MainTileMapData;
 
 namespace Client.Graphic
 {
@@ -94,12 +94,12 @@ namespace Client.Graphic
 
             if (!isEditor)
             {
-                var playerLocation = gameWorld.currentCharacter.location;
+                var playerLocation = gameWorld.currentPlayer.location;
 
                 if (playerLocation.x == fx && playerLocation.y == fy) drawCurrentCharacter(g, sx, sy);
             }
 
-            var strongholdId = mainTileMapData.stronghold.getId(tileMap, p);
+            var strongholdId = tileMap.stronghold.getId(tileMap, p);
 
             if (strongholdId != null) drawStronghold(g, sx, sy, (int)strongholdId);
 

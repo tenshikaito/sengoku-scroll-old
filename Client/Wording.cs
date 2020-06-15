@@ -373,14 +373,6 @@ namespace Client
         //public Word illegal_input => this[nameof(illegal_input)];
         //public Word illegal_select => this[nameof(illegal_select)];
 
-        //public Word SE_SELECT => "SE_SELECT.wav";
-        //public Word SE_BUTTON_CLICK => "SE_BUTTON_CLICK.wav";
-        //public Word SE_CANCEL => "SE_CANCEL.wav";
-        //public Word SE_J_HAPPEN => "SE_J_HAPPEN.wav";
-        //public Word SE_J_HAPPEN2 => "SE_J_HAPPEN2.wav";
-        //public Word SE_J_UNHAPPY => "SE_J_UNHAPPY.wav";
-        //public Word SE_J_UNHAPPY2 => "SE_J_UNHAPPY2.wav";
-
         //public string internal_error => nameof(internal_error);
         //public string invalid_state => nameof(invalid_state);
         //public string illegal_permission => nameof(illegal_permission);
@@ -402,13 +394,15 @@ namespace Client
 
         public string edit => this[nameof(edit)];
 
-        public string delete => this[nameof(delete)];
+        public string remove => this[nameof(remove)];
 
         public string ok => this[nameof(ok)];
 
         public string cancel => this[nameof(cancel)];
 
         public string apply => this[nameof(apply)];
+
+        public string refresh => this[nameof(refresh)];
 
         public string detail => this[nameof(detail)];
 
@@ -420,6 +414,8 @@ namespace Client
 
         public string height => this[nameof(height)];
 
+        public string user => this[nameof(user)];
+
         public string main_tile_map => this[nameof(main_tile_map)];
 
         public string detail_tile_map => this[nameof(detail_tile_map)];
@@ -429,6 +425,8 @@ namespace Client
         public string stronghold => this[nameof(stronghold)];
 
         public string loading => this[nameof(loading)];
+
+        public string status => this[nameof(status)];
 
         public string ip => this[nameof(ip)];
 
@@ -681,14 +679,12 @@ namespace Client
         public class SceneTitle : Part
         {
             public string start => this[nameof(start)];
+
             public string start_game => this[nameof(start_game)];
+
             public string edit_game => this[nameof(edit_game)];
 
-            public string game_world_width => this[nameof(game_world_width)];
-            public string game_world_height => this[nameof(game_world_height)];
-
-            public string select_game_world { get; internal set; }
-            public string manage_game_world { get; internal set; }
+            public string select_user => this[nameof(select_user)];
 
             public SceneTitle(Wording w, string prefix) : base(w, prefix)
             {

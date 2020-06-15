@@ -716,11 +716,11 @@ namespace Client.Scene
 
                     gwp.map.saveDetailTileMap(currentTileMapId, detailMapSpritesInfo.detailTileMap);
 
-                    new UIDialog(scene.gameSystem, "alert", "saved.", scene.formMain).Show(scene.formMain);
+                    new UIDialog(scene.gameSystem, "alert", "saved.").Show(scene.formMain);
                 }
                 catch (Exception e)
                 {
-                    new UIDialog(scene.gameSystem, "alert", "error: " + e.Message, scene.formMain).Show(scene.formMain);
+                    new UIDialog(scene.gameSystem, "alert", "error: " + e.Message).Show(scene.formMain);
                 }
 
             }

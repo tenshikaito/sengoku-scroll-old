@@ -8,18 +8,33 @@ namespace Library
 {
     public class GameWorldMap
     {
-        public MasterData masterData = new MasterData();
+        public string name { get; }
+        public string resourcePackageName { get; set; }
 
-        public GameData gameData = new GameData();
+        public GameDate gameDate;
 
-        public GameDate gameDate = new GameDate();
+        public MasterData masterData;
+
+        public GameData gameData;
 
         public MainTileMap mainTileMap;
-
-        public MainTileMapData mainTileMapData;
 
         //public DetailTileMap detailTileMap;
 
         //public DetailTileMapData detailTileMapData;
+
+        public GameWorldProcessor gameWorldProcessor { get; private set; }
+        public GameResourceProcessor gameResourceProcessor { get; private set; }
+
+        public GameWorldMap(string name)
+        {
+            this.name = name;
+        }
+
+        public void init()
+        {
+            gameWorldProcessor = new GameWorldProcessor(name);
+            gameResourceProcessor = new GameResourceProcessor(resourcePackageName);
+        }
     }
 }

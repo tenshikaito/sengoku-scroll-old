@@ -92,7 +92,7 @@ namespace Client.UI.SceneEditGameWorld
                 }.addTo(pl);
 
                 new Button().init(w.add, () => btnAddClick(lv)).addTo(p2);
-                new Button().init(w.delete, () =>
+                new Button().init(w.remove, () =>
                 {
                     if (lv.FocusedItem == null) return;
 

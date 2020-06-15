@@ -76,7 +76,7 @@ namespace Client.Graphic
 
             if (!isEditor)
             {
-                var playerLocation = gameWorld.currentCharacter.location;
+                var playerLocation = gameWorld.currentPlayer.location;
 
                 if (playerLocation.x == fx && playerLocation.y == fy) drawCurrentCharacter(g, sx, sy);
             }

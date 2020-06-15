@@ -12,8 +12,6 @@ namespace Client
 
         public string title = "SengokuScroll";
 
-        public int scrollSpeed = 10;
-
         public int port = 7789;
     }
 }

@@ -9,6 +9,11 @@ namespace Library
     {
         public DetailMapTile[] tiles;
 
+        public int id;
+
+        public Dictionary<int, int> road;
+        public Dictionary<int, TileFunctionType> tileFunctionType;
+
         public DetailMapTile this[int index] => tiles[index];
 
         public DetailMapTile this[MapPoint p] => this[getIndex(p)];

@@ -83,6 +83,8 @@ namespace Library.Helper
         public static Form hideCommandButton(this Form f)
         {
             f.ControlBox = false;
+            f.MinimizeBox = false;
+            f.MaximizeBox = false;
 
             return f;
         }

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Region = Library.Model.Region;
+using static Library.Helper.FileHelper;
 
 namespace Library
 {
@@ -18,14 +19,12 @@ namespace Library
         private const string MapDirName = "map";
         private const string GameDirName = "game";
 
-        private const string MainMapName = "/main_map_.dat";
-        private const string MainMapDataName = "/main_map_data.dat";
-        private const string DetailMapName = "/detail_map_{0}.dat";
-        private const string DetailMapDataName = "/detail_map_data_{0}.dat";
+        private const string MainMapName = "/main_map.dat";
+        private const string DetailMapName = "/detail_map.dat";
+        private const string DetailMapDataName = "/detail_map_data.dat";
         private const string MasterDataName = "/master_data.dat";
+        private const string GameDateName = "/game_date.dat";
         private const string GameDataName = "/game_data.dat";
-
-        public static readonly Encoding encoding = Encoding.UTF8;
 
         public Data map { get; }
 
@@ -91,16 +90,14 @@ namespace Library
 
                 var tm = ExampleHelper.getMainTileMap(width, height);
 
-                var tmd = ExampleHelper.getMainTileMapData();
-
                 var gd = ExampleHelper.getGameData();
 
-                saveMasterData(new GameWorldMap()
+                saveMasterData(new GameWorldMap(gameWorldName)
                 {
+                    gameDate = new GameDate().addDay(60),
                     masterData = md,
                     gameData = gd,
                     mainTileMap = tm,
-                    mainTileMapData = tmd
                 });
 
                 return true;
@@ -115,9 +112,9 @@ namespace Library
             {
                 var path = fullPath;
 
-                gw.mainTileMap = File.ReadAllText(path + MainMapName, encoding).fromJson<MainTileMap>();
-                gw.mainTileMapData = File.ReadAllText(path + MainMapDataName, encoding).fromJson<MainTileMapData>();
-                gw.masterData = File.ReadAllText(path + MasterDataName, encoding).fromJson<MasterData>();
+                gw.mainTileMap = load<MainTileMap>(path + MainMapName);
+                gw.gameDate = load<GameDate>(path + GameDateName);
+                gw.masterData = load<MasterData>(path + MasterDataName);
 
                 return gw;
             }
@@ -126,16 +123,16 @@ namespace Library
             {
                 var path = fullPath;
 
-                File.WriteAllText(path + MainMapName, gw.mainTileMap.toJson(), encoding);
-                File.WriteAllText(path + MainMapDataName, gw.mainTileMapData.toJson(), encoding);
-                File.WriteAllText(path + MasterDataName, gw.masterData.toJson(), encoding);
+                save(path + MainMapName, gw.mainTileMap);
+                save(path + GameDateName, gw.gameDate);
+                save(path + MasterDataName, gw.masterData);
             }
 
             public T loadGameData<T>(T gw) where T : GameWorldMap
             {
                 loadMasterData(gw);
 
-                gw.gameData = File.ReadAllText(fullPath + MainMapName, encoding).fromJson<GameData>();
+                gw.gameData = load<GameData>(fullPath + MainMapName);
 
                 return gw;
             }
@@ -146,14 +143,14 @@ namespace Library
 
                 if (!File.Exists(path)) return new DetailTileMap(new TileMap.Size(height, width)) { tiles = new DetailMapTile[width * height] };
                 
-                return File.ReadAllText(path, encoding).fromJson<DetailTileMap>();
+                return load<DetailTileMap>(path);
             }
 
             public void saveDetailTileMap(int id, DetailTileMap tm)
             {
                 var path = fullPath + string.Format(DetailMapDataName, id);
 
-                File.WriteAllText(path, tm.toJson(), encoding);
+                save(path, tm);
             }
         }
     }

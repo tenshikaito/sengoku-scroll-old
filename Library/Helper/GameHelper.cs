@@ -10,6 +10,15 @@ namespace Library.Helper
 {
     public static class GameHelper
     {
+        public static T? getId<T>(this Dictionary<int, T> map, TileMap tm, MapPoint p) where T : struct
+        {
+            if (tm.isOutOfBounds(p)) return null;
+
+            if (map.TryGetValue(tm.getIndex(p), out var value)) return value;
+
+            return null;
+        }
+
         public static List<TileAnimationFrame> toAnimationFrameList(this string text)
             => string.IsNullOrWhiteSpace(text)
             ? null

@@ -29,7 +29,6 @@ namespace Client.Graphic
         protected bool isEditor;
 
         protected GameOption gameOption => gameWorld.gameOption;
-        protected MainTileMapData mainTileMapData => gameWorld.mainTileMapData;
         protected abstract TileMap map { get; }
 
         protected Camera camera => gameWorld.camera;

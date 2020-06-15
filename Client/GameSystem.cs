@@ -1,5 +1,7 @@
-﻿using Client.Scene;
+﻿using Client.Model;
+using Client.Scene;
 using Library;
+using Library.Helper;
 using Library.Model;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,9 @@ namespace Client
     public class GameSystem
     {
         public FormMain formMain;
+
+        public List<UserInfo> user;
+        public UserInfo currentUser;
 
         public Option option;
         public Wording wording;
@@ -27,7 +32,9 @@ namespace Client
 
         public void init()
         {
-            var lines = File.ReadAllLines("charset/system.dat", Encoding.UTF8).Union(File.ReadAllLines("charset/zh-tw.dat", Encoding.UTF8));
+            user = FileHelper.loadUser<List<UserInfo>>();
+
+            var lines = FileHelper.loadLines("charset/system.dat").Union(FileHelper.loadLines("charset/zh-tw.dat"));
 
             wording = new Wording("zh-tw", lines.Where(o => !o.StartsWith("#") && !string.IsNullOrWhiteSpace(o)).Select(o =>
             {
@@ -36,18 +43,14 @@ namespace Client
             }).ToDictionary(o => o.Key, o => o.Value));
 
             camera = new Camera(screenWidth, screenHeight);
+
+            formMain.Resize += (s, e) => camera.setSize(formMain.Width, formMain.Height);
         }
 
         public void sceneToTitle() => sceneManager.switchStatus(new SceneTitle(this));
 
-        public void sceneToEditGame(GameWorld gw)
-        {
-            sceneManager.switchStatus(new SceneEditGameWorld(this, gw));
-        }
+        public void sceneToEditGame(GameWorld gw) => sceneManager.switchStatus(new SceneEditGameWorld(this, gw));
 
-        public void sceneToWaiting()
-        {
-            sceneManager.switchStatus(new SceneWaiting(this, $"{wording.loading} ..."));
-        }
+        public void sceneToWaiting() => sceneManager.switchStatus(new SceneWaiting(this, $"{wording.loading} ..."));
     }
 }
