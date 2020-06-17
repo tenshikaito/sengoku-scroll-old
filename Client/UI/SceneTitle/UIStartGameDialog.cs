@@ -20,7 +20,7 @@ namespace Client.UI.SceneTitle
 
             listView.addColumn(w.name).addColumn(w.ip).addColumn(w.status);
 
-            addButton(w.refresh, refreshButtonClicked);
+            addButton(w.refresh, () => refreshButtonClicked?.Invoke());
 
             addConfirmButtons();
         }
@@ -30,5 +30,18 @@ namespace Client.UI.SceneTitle
             Tag = o.code,
             Text = o.name
         }.addColumn(o.ip + ":" + o.port).addColumn(w.symbol_none)).ToArray());
+
+        public void refresh(Dictionary<string, int?> map)
+        {
+            listView.Items.Cast<ListViewItem>().ToList().ForEach(o =>
+            {
+                var code = (string)o.Tag;
+
+                if (map.TryGetValue(code, out var value))
+                {
+                    o.SubItems[2].Text = value == null ? w.disconnected : value + "ms";
+                }
+            });
+        }
     }
 }

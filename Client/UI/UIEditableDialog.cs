@@ -54,14 +54,14 @@ namespace Client.UI
                 removeButtonClicked?.Invoke((string)o.Tag);
             }).addTo(p);
 
-            listView.autoResizeColumns(3);
+            listView.autoResizeColumns();
         }
 
         protected Button addButton(string text, Action onButtonClicked)
         {
             ++pButtons.RowCount;
 
-            return new Button().init(text, () => onButtonClicked?.Invoke()).addTo(pButtons);
+            return new Button().init(text, onButtonClicked).addTo(pButtons);
         }
 
         public void setData(List<string> list) => setData(list.Select(o => new ListViewItem() { Tag = o, Text = o }).ToArray());
@@ -71,7 +71,7 @@ namespace Client.UI
             listView.BeginUpdate();
             listView.Items.Clear();
             listView.Items.AddRange(list);
-            listView.autoResizeColumns(3);
+            listView.autoResizeColumns();
             listView.selectFirstRow();
             listView.EndUpdate();
         }

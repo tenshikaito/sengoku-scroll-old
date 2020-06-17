@@ -47,7 +47,7 @@ namespace Client
             formMain.Resize += (s, e) => camera.setSize(formMain.Width, formMain.Height);
         }
 
-        public void sceneToTitle() => sceneManager.switchStatus(new SceneTitle(this));
+        public void sceneToTitle(bool isLogined) => sceneManager.switchStatus(new SceneTitle(this, isLogined));
 
         public void sceneToEditGame(GameWorld gw) => sceneManager.switchStatus(new SceneEditGameWorld(this, gw));
 

@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="Cache.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Command\TestServerCommand.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>

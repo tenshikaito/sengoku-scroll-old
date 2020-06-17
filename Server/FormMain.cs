@@ -38,6 +38,11 @@ namespace Server
             initSystem();
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            lvGameWorld.autoResizeColumns();
+        }
+
         private void loadOption()
         {
             option = new Option();
@@ -100,7 +105,7 @@ namespace Server
                 Scrollable = true,
             }.init().addColumn(w.name).addTo(tp);
 
-            lvGameWorld.autoResizeColumns();
+            lvGameWorld.DoubleClick += (s, e) => btnStart.PerformClick();
 
             tp = new TabPage().init(w.console).addTo(tc);
 
@@ -225,6 +230,8 @@ namespace Server
             lvGameWorld.Items.Clear();
 
             lvGameWorld.Items.AddRange(list.Select(o => new ListViewItem() { Text = o, Tag = o }).ToArray());
+
+            lvGameWorld.selectFirstRow();
         }
 
         protected override void OnResize(EventArgs e)

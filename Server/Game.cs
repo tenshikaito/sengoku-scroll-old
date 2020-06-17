@@ -24,6 +24,12 @@ namespace Server
         private IncreasedIdDictionary<GamePlayer> connectedPlayer = new IncreasedIdDictionary<GamePlayer>();
         private Dictionary<int, GamePlayer> onlinePlayer = new Dictionary<int, GamePlayer>();
 
+        private ConcurrentQueue<KeyValuePair<GameClient, string>> messages = new ConcurrentQueue<KeyValuePair<GameClient, string>>();
+
+        private AutoResetEvent messageLock = new AutoResetEvent(false);
+
+        private GameCommandProcessor gameCommandProcessor;
+
         private bool isRunning = false;
 
         private Option option;
@@ -36,6 +42,9 @@ namespace Server
             this.gameWorldName = gameWorldName;
 
             option = o;
+
+            gameCommandProcessor = new GameCommandProcessor(this);
+            connectedPlayer.init();
 
             gameServer = new GameServer()
             {
@@ -58,7 +67,63 @@ namespace Server
             }
         }
 
-        private void onClientDisconnected(GameClient gc)
+        private void onClientDisconnected(GameClient gc) => disconnect(gc);
+
+        private void onDataReceived(GameClient gc, string data)
+        {
+            messages.Enqueue(new KeyValuePair<GameClient, string>(gc, data));
+
+            messageLock.Set();
+        }
+
+        public Game bind(int port)
+        {
+            gameServer.bind(port);
+
+            return this;
+        }
+
+        public void start()
+        {
+            isRunning = true;
+
+            var gw = new GameWorld(gameWorldName);
+
+            gw.init();
+
+            var gwp = gw.gameWorldProcessor;
+
+            gameWorld = gwp.game.loadGameData(gwp.game.loadMasterData(gw));
+
+            Task.Run(processMessage);
+
+            gameServer.bind(option.port).start();
+        }
+
+        private void processMessage()
+        {
+            while (isRunning)
+            {
+                messageLock.WaitOne();
+
+                messages.TryDequeue(out var msg);
+
+                try
+                {
+                    var cmd = msg.Value.fromCommandString();
+
+                    gameCommandProcessor.execute(msg.Key, cmd.name, cmd.data);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                if (messages.IsEmpty) messageLock.Reset();
+            }
+        }
+
+        public void disconnect(GameClient gc)
         {
             lock (connectedPlayer)
             {
@@ -73,38 +138,6 @@ namespace Server
 
                 if (p != null) onlinePlayer.Remove(p.id);
             }
-        }
-
-        private void onDataReceived(GameClient gc, string data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Game bind(int port)
-        {
-            gameServer.bind(port);
-
-            return this;
-        }
-
-        public void start()
-        {
-            var gw = new GameWorld(gameWorldName);
-
-            gw.init();
-
-            var gwp = gw.gameWorldProcessor;
-
-            gameWorld = gwp.game.loadGameData(gwp.game.loadMasterData(gw));
-
-            isRunning = true;
-
-            gameServer.bind(option.port).start();
-        }
-
-        private void processData(GameClient gc, string data)
-        {
-            Console.WriteLine(gc.ip + ":" + data);
         }
 
         public void stop()

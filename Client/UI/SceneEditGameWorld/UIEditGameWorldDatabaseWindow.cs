@@ -46,9 +46,15 @@ namespace Client.UI.SceneEditGameWorld
             addSaveableConfirmButtons();
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            tabControl.TabPages.Cast<TabPageBase>().ToList().ForEach(o => o.onLoad());
+        }
+
         private class TabPageBase : TabPage
         {
             protected UIEditGameWorldDatabaseWindow window;
+            protected ListView listView;
 
             protected Wording w => window.w;
 
@@ -79,7 +85,7 @@ namespace Client.UI.SceneEditGameWorld
                     Dock = DockStyle.Fill,
                 }.addColumnStyle(80).addColumnStyle(20).addTo(gb);
 
-                var lv = new ListView()
+                var lv = listView = new ListView()
                 {
                     Dock = DockStyle.Fill,
 
@@ -102,6 +108,11 @@ namespace Client.UI.SceneEditGameWorld
                 new Label().addTo(p2);
 
                 return (sc, pl, lv);
+            }
+
+            public void onLoad()
+            {
+                listView?.autoResizeColumns();
             }
         }
     }
@@ -234,8 +245,6 @@ namespace Client.UI.SceneEditGameWorld
                 cbIsDeepWater = new CheckBox().init().refreshListViewOnClick(lv, refresh).addTo(p3);
 
                 initData(lv);
-
-                lv.autoResizeColumns();
 
                 refresh();
             }

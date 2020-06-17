@@ -1,4 +1,4 @@
-﻿using Client.Helper;
+﻿using Client.Command;
 using Client.Model;
 using Client.UI;
 using Client.UI.SceneTitle;
@@ -11,6 +11,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using FileHelper = Client.Helper.FileHelper;
 
 namespace Client.Scene
 {
@@ -27,13 +28,17 @@ namespace Client.Scene
         private UIGameServerDetailDialog uiGameServerDetailDialog;
         private UIGameWorldDetailDialog uiGameWorldDetailDialog;
 
-        public SceneTitle(GameSystem gs) : base(gs)
+        private bool isLogined;
+
+        public SceneTitle(GameSystem gs, bool isLogined = false) : base(gs)
         {
+            this.isLogined = isLogined;
         }
 
         public override void start()
         {
-            showUserDialog();
+            if (isLogined) showMainDialog();
+            else showUserDialog();
         }
 
         public override void finish()
@@ -224,6 +229,19 @@ namespace Client.Scene
             };
 
             loadGameServerList();
+
+            testServer();
+        }
+
+        private void testServer()
+        {
+            var servers = gameSystem.currentUser.servers;
+
+            var map = new Dictionary<string, int?>();
+
+            uiStartGameDialog.setData(servers);
+
+            servers.ForEach(o => _ = new TestServerCommand().send(o, map, dispatcher, uiStartGameDialog));
         }
 
         private void onStartGameAddButtonClicked()
@@ -322,7 +340,7 @@ namespace Client.Scene
 
         private void onStartGameRefreshButtonClicked()
         {
-
+            testServer();
         }
 
         private void onStartGameOkButtonClicked()

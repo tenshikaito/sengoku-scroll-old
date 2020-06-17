@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Library.Network
+namespace Library
 {
     public class GameClient
     {
@@ -28,11 +28,14 @@ namespace Library.Network
             receiveDataBytes = new List<byte>(dataBufferSize);
             sendDataBytes = new List<byte>(dataBufferSize);
             buffer = new byte[socketBufferSize];
-
-            networkStream = tc.GetStream();
         }
 
-        public void start() => _ = receive();
+        public void start()
+        {
+            networkStream = tcpClient.GetStream();
+
+            _ = receive();
+        }
 
         private async Task receive()
         {
@@ -92,11 +95,14 @@ namespace Library.Network
 
             sendDataBytes.AddRange(buffer);
 
-            await ns.WriteAsync(sendDataBytes.ToArray(), 0, data.Length);
+            await ns.WriteAsync(sendDataBytes.ToArray(), 0, sendDataBytes.Count);
+
+            await ns.FlushAsync();
         }
 
         public void disconnect()
         {
+            networkStream.Close();
             tcpClient.Close();
         }
 

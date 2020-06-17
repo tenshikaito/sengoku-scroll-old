@@ -10,17 +10,12 @@ namespace Server.Command
 {
     public class LoadGameCommand : CommandBase
     {
-        private GamePlayer gamePlayer;
-
-        public LoadGameCommand(Game g, GamePlayer gp) : base(g)
+        public LoadGameCommand(Game g) : base(g)
         {
-            gamePlayer = gp;
         }
 
-        public override void execute()
+        public override async Task execute(GameClient gc, string data)
         {
-            @lock.EnterReadLock();
-
             var gw = game.gameWorld;
 
             var ngw = new GameWorldMap(game.gameWorldName)
@@ -30,12 +25,6 @@ namespace Server.Command
                 gameData = gw.gameData,
                 mainTileMap = gw.mainTileMap,
             };
-
-            var data = ngw.toJson();
-
-            _ = gamePlayer.gameClient.write(data);
-
-            @lock.ExitReadLock();
         }
     }
 }

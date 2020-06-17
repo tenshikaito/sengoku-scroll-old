@@ -434,6 +434,8 @@ namespace Client
 
         public string connect => this[nameof(connect)];
 
+        public string disconnected => this[nameof(disconnected)];
+
         public string close => this[nameof(close)];
 
         public string symbol_selected => this[nameof(symbol_selected)];

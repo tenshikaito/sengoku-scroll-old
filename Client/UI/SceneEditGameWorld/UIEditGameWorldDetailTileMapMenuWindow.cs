@@ -83,7 +83,7 @@ namespace Client.UI.SceneEditGameWorld
 
             lvTerrain = new ListView() { MinimumSize = new Size(360, 540) }.init().addTo(tp);
 
-            lvTerrain.addColumn(w.name).autoResizeColumns(-3);
+            lvTerrain.addColumn(w.name).autoResizeColumns();
 
             lvTerrain.SelectedIndexChanged += (s, e) =>
             {
@@ -101,7 +101,7 @@ namespace Client.UI.SceneEditGameWorld
 
             lvTerrain.Items.AddRange(data.Select(o => new ListViewItem() { Tag = o.id, Text = o.name }).ToArray());
 
-            lvTerrain.autoResizeColumns(-3);
+            lvTerrain.autoResizeColumns();
 
             lvTerrain.EndUpdate();
         }

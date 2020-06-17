@@ -1,4 +1,5 @@
 ﻿using Library.Model;
+using Library.Network;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,6 +11,15 @@ namespace Library.Helper
 {
     public static class GameHelper
     {
+        public static string toCommandString(this BaseData gc, string name) => $"{name}:{gc.toJson()}";
+
+        public static (string name, string data) fromCommandString(this string text)
+        {
+            var arr = text.Split(':');
+
+            return (arr[0], text.Substring(text.IndexOf(':') + 1));
+        }
+
         public static T? getId<T>(this Dictionary<int, T> map, TileMap tm, MapPoint p) where T : struct
         {
             if (tm.isOutOfBounds(p)) return null;

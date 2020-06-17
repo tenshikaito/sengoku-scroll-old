@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Library;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,13 +12,8 @@ namespace Server.Command
     {
         protected Game game;
 
-        protected ReaderWriterLockSlim @lock => game.@lock;
+        public CommandBase(Game g) => game = g;
 
-        public CommandBase(Game g)
-        {
-            game = g;
-        }
-
-        public abstract void execute();
+        public abstract Task execute(GameClient gc, string data);
     }
 }

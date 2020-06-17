@@ -70,7 +70,7 @@ namespace Client
             };
 
             gameSystem.init();
-            gameSystem.sceneToTitle();
+            gameSystem.sceneToTitle(false);
 
             refreshBuffer();
         }

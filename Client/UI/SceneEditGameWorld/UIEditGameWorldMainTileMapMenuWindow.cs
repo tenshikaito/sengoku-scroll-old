@@ -86,7 +86,7 @@ namespace Client.UI.SceneEditGameWorld
             lvTerrain.addColumn(w.name)
                 .addColumn(w.terrain_image.text)
                 .addColumn(w.terrain.is_surface)
-                .autoResizeColumns(-3);
+                .autoResizeColumns();
 
             lvTerrain.SelectedIndexChanged += (s, e) =>
             {
@@ -116,7 +116,7 @@ namespace Client.UI.SceneEditGameWorld
                 return lvi;
             }).ToArray());
 
-            lvTerrain.autoResizeColumns(-3);
+            lvTerrain.autoResizeColumns();
 
             lvTerrain.EndUpdate();
         }

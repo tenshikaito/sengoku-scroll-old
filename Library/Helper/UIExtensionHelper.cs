@@ -198,11 +198,13 @@ namespace Library.Helper
             return lv;
         }
 
-        public static ListView autoResizeColumns(this ListView lv, int offset = 0)
+        public static ListView autoResizeColumns(this ListView lv, int offset = 5)
         {
             lv.BeginUpdate();
 
-            lv.Columns.Cast<ColumnHeader>().ToList().ForEach(o =>
+            var list = lv.Columns.Cast<ColumnHeader>().ToList();
+
+            list.ForEach(o =>
             {
                 o.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
 
@@ -210,8 +212,17 @@ namespace Library.Helper
 
                 o.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
 
-                if (widthHeader > o.Width) o.Width = widthHeader - offset;
+                if (widthHeader > o.Width) o.Width = widthHeader;
             });
+
+            var last = list.LastOrDefault();
+
+            if (last != null)
+            {
+                var sumWidth = list.Sum(o => o.Width);
+
+                if (sumWidth < lv.Width) last.Width += lv.Width - sumWidth - offset;
+            }
 
             lv.EndUpdate();
 
