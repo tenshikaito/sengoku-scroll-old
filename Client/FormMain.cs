@@ -21,7 +21,7 @@ namespace Client
     public class FormMain : Form
     {
         public Dispatcher dispatcher;
-        
+
         private GameSystem gameSystem;
 
         private GameObject gameRoot;

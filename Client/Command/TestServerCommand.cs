@@ -5,6 +5,7 @@ using Library.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using static Client.FormMain;
@@ -13,7 +14,7 @@ namespace Client.Command
 {
     public class TestServerCommand
     {
-        public async Task send(ServerInfo o, Dictionary<string, int?> map, Dispatcher dispatcher, UIStartGameDialog uiStartGameDialog)
+        public async Task send(ServerInfo o, IDictionary<string, int?> map, Dispatcher dispatcher, UIStartGameDialog uiStartGameDialog)
         {
             try
             {
@@ -36,7 +37,7 @@ namespace Client.Command
                     dispatcher.invoke(() => uiStartGameDialog.refresh(map));
                 });
             }
-            catch
+            catch(SocketException)
             {
                 map[o.code] = null;
 

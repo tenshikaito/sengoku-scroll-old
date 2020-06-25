@@ -18,6 +18,6 @@ namespace Server
             map[nameof(TestServerCommand)] = new TestServerCommand(g);
         }
 
-        public void execute(GameClient gc, string name, string data) => map[name].execute(gc, data);
+        public async Task execute(GameClient gc, string name, string data) => await map[name].execute(gc, data);
     }
 }

@@ -4,6 +4,7 @@ using Client.UI;
 using Client.UI.SceneTitle;
 using Library;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -237,11 +238,24 @@ namespace Client.Scene
         {
             var servers = gameSystem.currentUser.servers;
 
-            var map = new Dictionary<string, int?>();
+            var map = new ConcurrentDictionary<string, int?>();
 
             uiStartGameDialog.setData(servers);
 
-            servers.ForEach(o => _ = new TestServerCommand().send(o, map, dispatcher, uiStartGameDialog));
+            servers.ForEach(o =>
+            {
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        new TestServerCommand().send(o, map, dispatcher, uiStartGameDialog).Wait();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
+                });
+            });
         }
 
         private void onStartGameAddButtonClicked()

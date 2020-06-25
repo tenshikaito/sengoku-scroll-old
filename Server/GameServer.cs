@@ -16,13 +16,9 @@ namespace Server
 {
     public class GameServer
     {
-        private Encoding encoding = Encoding.UTF8;
-        private int dataBufferSize = 10240;
-        private int socketBufferSize = 4096;
-
         private TcpListener tcpListener;
+        private volatile bool isRunning = false;
 
-        public bool isRunning { get; private set; } = false;
         public Action<GameClient> clientConnected;
         public Action<GameClient> clientDisconnected;
         public Action<GameClient, string> dataReceived;
@@ -49,11 +45,10 @@ namespace Server
 
             if (!isRunning) return;
 
-            var gc = new GameClient(tc, encoding, dataBufferSize, socketBufferSize)
-            {
-                dataReceived = (otc, s) => dataReceived?.Invoke(otc, s),
-                clientDisconnected = otc => clientDisconnected?.Invoke(otc)
-            };
+            var gc = NetworkHelper.getGameClient(tc);
+
+            gc.dataReceived = (otc, s) => dataReceived?.Invoke(otc, s);
+            gc.clientDisconnected = otc => clientDisconnected?.Invoke(otc);
 
             clientConnected?.Invoke(gc);
 

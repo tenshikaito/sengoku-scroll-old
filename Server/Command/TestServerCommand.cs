@@ -19,7 +19,14 @@ namespace Server.Command
         {
             var d = data.fromJson<TestServerData>();
 
-            await gc.write(nameof(TestServerCommand), d);
+            try
+            {
+                await gc.write(nameof(TestServerCommand), d);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
 
             gc.disconnect();
 

@@ -26,7 +26,7 @@ namespace Server
 
         private ConcurrentQueue<KeyValuePair<GameClient, string>> messages = new ConcurrentQueue<KeyValuePair<GameClient, string>>();
 
-        private AutoResetEvent messageLock = new AutoResetEvent(false);
+        private ManualResetEventSlim messageLock = new ManualResetEventSlim(false);
 
         private GameCommandProcessor gameCommandProcessor;
 
@@ -44,6 +44,7 @@ namespace Server
             option = o;
 
             gameCommandProcessor = new GameCommandProcessor(this);
+
             connectedPlayer.init();
 
             gameServer = new GameServer()
@@ -60,7 +61,8 @@ namespace Server
             {
                 var p = new GamePlayer()
                 {
-                    id = connectedPlayer.getNextId()
+                    id = connectedPlayer.getNextId(),
+                    gameClient = gc,
                 };
 
                 connectedPlayer[p.id] = p;
@@ -104,19 +106,26 @@ namespace Server
         {
             while (isRunning)
             {
-                messageLock.WaitOne();
+                messageLock.Wait();
 
-                messages.TryDequeue(out var msg);
+                if (!isRunning) break;
+
+                if (!messages.TryDequeue(out var msg))
+                {
+                    messageLock.Reset();
+
+                    continue;
+                }
 
                 try
                 {
                     var cmd = msg.Value.fromCommandString();
 
-                    gameCommandProcessor.execute(msg.Key, cmd.name, cmd.data);
+                    gameCommandProcessor.execute(msg.Key, cmd.name, cmd.data).Wait();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    throw;
+                    Console.WriteLine(e.ToString());
                 }
 
                 if (messages.IsEmpty) messageLock.Reset();
@@ -127,14 +136,14 @@ namespace Server
         {
             lock (connectedPlayer)
             {
-                var p = connectedPlayer.map.Values.FirstOrDefault(o => o.gameClient.ip == gc.ip);
+                var p = connectedPlayer.map.Values.FirstOrDefault(o => o.gameClient == gc);
 
                 if (p != null) connectedPlayer.map.Remove(p.id);
             }
 
             lock (onlinePlayer)
             {
-                var p = onlinePlayer.Values.FirstOrDefault(o => o.gameClient.ip == gc.ip);
+                var p = onlinePlayer.Values.FirstOrDefault(o => o.gameClient == gc);
 
                 if (p != null) onlinePlayer.Remove(p.id);
             }
@@ -146,6 +155,7 @@ namespace Server
 
             isRunning = false;
 
+            messageLock.Set();
             gameServer.stop();
         }
     }

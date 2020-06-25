@@ -31,7 +31,7 @@ namespace Client.UI.SceneTitle
             Text = o.name
         }.addColumn(o.ip + ":" + o.port).addColumn(w.symbol_none)).ToArray());
 
-        public void refresh(Dictionary<string, int?> map)
+        public void refresh(IDictionary<string, int?> map)
         {
             listView.Items.Cast<ListViewItem>().ToList().ForEach(o =>
             {

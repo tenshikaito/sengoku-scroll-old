@@ -37,6 +37,11 @@ namespace Library
             _ = receive();
         }
 
+        public async Task connect(string ip, int port)
+        {
+            await tcpClient.ConnectAsync(ip, port);
+        }
+
         private async Task receive()
         {
             var length = await networkStream.ReadAsync(buffer, 0, buffer.Length);
@@ -59,23 +64,11 @@ namespace Library
 
         private void processData()
         {
-            var list = receiveDataBytes;
+            var r = NetworkHelper.splitDataStream(receiveDataBytes);
 
-            if (list.Count < 4) return;
-
-            var length = BitConverter.ToInt32(list.Take(4).ToArray(), 0);
-
-            if (list.Count - 4 >= length)
+            if (r.hasResult)
             {
-                list.RemoveRange(0, 4);
-
-                var data = list.Take(length).ToArray();
-
-                list.RemoveRange(0, length);
-
-                var s = encoding.GetString(data);
-
-                dataReceived?.Invoke(this, s);
+                dataReceived?.Invoke(this, r.data);
 
                 processData();
             }
@@ -87,15 +80,9 @@ namespace Library
 
             var ns = networkStream;
 
-            var buffer = BitConverter.GetBytes(data.Length);
+            var r = NetworkHelper.combineDataStream(sendDataBytes, data);
 
-            sendDataBytes.AddRange(buffer);
-
-            buffer = encoding.GetBytes(data);
-
-            sendDataBytes.AddRange(buffer);
-
-            await ns.WriteAsync(sendDataBytes.ToArray(), 0, sendDataBytes.Count);
+            await ns.WriteAsync(r, 0, r.Length);
 
             await ns.FlushAsync();
         }
