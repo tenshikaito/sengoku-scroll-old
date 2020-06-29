@@ -78,7 +78,7 @@ namespace Library
                 this.gameWorldName = gameWorldName;
             }
 
-            public bool createDirectory(int width, int height)
+            public async Task<bool> createDirectory(int width, int height)
             {
                 var path = fullPath;
 
@@ -92,7 +92,7 @@ namespace Library
 
                 var gd = ExampleHelper.getGameData();
 
-                saveMasterData(new GameWorldMap(gameWorldName)
+                await saveMasterData(new GameWorldMap(gameWorldName)
                 {
                     gameDate = new GameDate().addDay(60),
                     masterData = md,
@@ -108,49 +108,49 @@ namespace Library
 
             public void deleteDirectory() => Directory.Delete(fullPath, true);
 
-            public T loadMasterData<T>(T gw) where T : GameWorldMap
+            public async Task<T> loadMasterData<T>(T gw) where T : GameWorldMap
             {
                 var path = fullPath;
 
-                gw.mainTileMap = load<MainTileMap>(path + MainMapName);
-                gw.gameDate = load<GameDate>(path + GameDateName);
-                gw.masterData = load<MasterData>(path + MasterDataName);
+                gw.mainTileMap = await load<MainTileMap>(path + MainMapName);
+                gw.gameDate = await load<GameDate>(path + GameDateName);
+                gw.masterData = await load<MasterData>(path + MasterDataName);
 
                 return gw;
             }
 
-            public void saveMasterData(GameWorldMap gw)
+            public async Task saveMasterData(GameWorldMap gw)
             {
                 var path = fullPath;
 
-                save(path + MainMapName, gw.mainTileMap);
-                save(path + GameDateName, gw.gameDate);
-                save(path + MasterDataName, gw.masterData);
+                await save(path + MainMapName, gw.mainTileMap);
+                await save(path + GameDateName, gw.gameDate);
+                await save(path + MasterDataName, gw.masterData);
             }
 
-            public T loadGameData<T>(T gw) where T : GameWorldMap
+            public async Task<T> loadGameData<T>(T gw) where T : GameWorldMap
             {
-                loadMasterData(gw);
+                await loadMasterData(gw);
 
-                gw.gameData = load<GameData>(fullPath + MainMapName);
+                gw.gameData = await load<GameData>(fullPath + MainMapName);
 
                 return gw;
             }
 
-            public DetailTileMap loadDetailTileMap(int id, int width, int height)
+            public async Task<DetailTileMap> loadDetailTileMap(int id, int width, int height)
             {
                 var path = fullPath + string.Format(DetailMapDataName, id);
 
                 if (!File.Exists(path)) return new DetailTileMap(new TileMap.Size(height, width)) { tiles = new DetailMapTile[width * height] };
-                
-                return load<DetailTileMap>(path);
+
+                return await load<DetailTileMap>(path);
             }
 
-            public void saveDetailTileMap(int id, DetailTileMap tm)
+            public async Task saveDetailTileMap(int id, DetailTileMap tm)
             {
                 var path = fullPath + string.Format(DetailMapDataName, id);
 
-                save(path, tm);
+                await save(path, tm);
             }
         }
     }

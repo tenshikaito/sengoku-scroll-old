@@ -15,20 +15,20 @@ namespace Library.Helper
 
         private static string userPath { get; } = Directory.GetCurrentDirectory() + "/user.dat";
 
-        public static string[] loadLines(string path) => File.ReadAllLines(path, encoding);
+        public static async Task<string[]> loadLines(string path) => await File.ReadAllLinesAsync(path, encoding);
 
-        public static string load(string path) => File.ReadAllText(path, encoding);
+        public static async Task<string> load(string path) => await File.ReadAllTextAsync(path, encoding);
 
-        public static T load<T>(string path) => load(path).fromJson<T>();
+        public static async Task<T> load<T>(string path) => (await load(path)).fromJson<T>();
 
-        public static void save(string path, object o, bool isIndented = false) => File.WriteAllText(path, o.toJson(isIndented), encoding);
+        public static async Task save(string path, object o, bool isIndented = false) => await File.WriteAllTextAsync(path, o.toJson(isIndented), encoding);
 
-        public static T loadOption<T>() => load<T>(optionPath);
+        public static async Task<T> loadOption<T>() => await load<T>(optionPath);
 
-        public static void saveOption(object o) => save(optionPath, o, true);
+        public static async Task saveOption(object o) => await save(optionPath, o, true);
 
-        public static T loadUser<T>() => load<T>(userPath);
+        public static async Task<T> loadUser<T>() => await load<T>(userPath);
 
-        public static void saveUser(object o) => save(userPath, o, true);
+        public static async Task saveUser(object o) => await save(userPath, o, true);
     }
 }

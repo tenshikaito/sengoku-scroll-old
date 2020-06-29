@@ -2,6 +2,7 @@
 using Library.Network;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -17,7 +18,7 @@ namespace Library.Helper
         public static string getIp(this TcpClient tc) => tc.Client.RemoteEndPoint.ToString();
 
         public static GameClient getGameClient(TcpClient tc = null, int dataBufferSize = 10240, int socketBufferSize = 4096)
-            => new GameClient(tc ?? new TcpClient(), encoding, dataBufferSize, socketBufferSize);
+            => new GameClient(tc ?? new TcpClient(), dataBufferSize, socketBufferSize);
 
         public static async Task write(this GameClient gc, string name, BaseData bd) => await gc.write(bd.toCommandString(name));
 

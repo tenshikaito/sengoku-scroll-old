@@ -3,6 +3,7 @@ using Library.Helper;
 using Library.Network;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,15 +23,15 @@ namespace Server.Command
             try
             {
                 await gc.write(nameof(TestServerCommand), d);
+
+                gc.disconnect();
+
+                //game.disconnect(gc);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString());
             }
-
-            gc.disconnect();
-
-            game.disconnect(gc);
         }
     }
 }

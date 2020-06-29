@@ -5,6 +5,7 @@ using Server.Command;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -85,7 +86,7 @@ namespace Server
             return this;
         }
 
-        public void start()
+        public async void start()
         {
             isRunning = true;
 
@@ -95,14 +96,14 @@ namespace Server
 
             var gwp = gw.gameWorldProcessor;
 
-            gameWorld = gwp.game.loadGameData(gwp.game.loadMasterData(gw));
+            gameWorld = await gwp.game.loadGameData(await gwp.game.loadMasterData(gw));
 
-            Task.Run(processMessage);
+            _ = Task.Run(processMessage);
 
             gameServer.bind(option.port).start();
         }
 
-        private void processMessage()
+        private async void processMessage()
         {
             while (isRunning)
             {
@@ -121,11 +122,11 @@ namespace Server
                 {
                     var cmd = msg.Value.fromCommandString();
 
-                    gameCommandProcessor.execute(msg.Key, cmd.name, cmd.data).Wait();
+                    await gameCommandProcessor.execute(msg.Key, cmd.name, cmd.data);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.ToString());
+                    Debug.WriteLine(e.ToString());
                 }
 
                 if (messages.IsEmpty) messageLock.Reset();

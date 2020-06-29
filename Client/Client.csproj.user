@@ -1,6 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectView>ShowAllFiles</ProjectView>
-  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneEditGameWorld\UIEditGameWorldDatabaseWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneEditGameWorld\UIEditGameWorldDetailTileMapListDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneEditGameWorld\UIEditGameWorldDetailTileMapMenuWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneEditGameWorld\UIEditGameWorldMainTileMapMenuWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneEditGameWorld\UIEditGameWorldMenuWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneTitle\UIEditGameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneTitle\UIGameServerDetailDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneTitle\UIGameWorldDetailDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneTitle\UIMainMenuWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneTitle\UIStartGameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneTitle\UIUserDetailDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneTitle\UIUserDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\UIConfirmDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\UIDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\UIEditableDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\UISaveableConfirmDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\UIWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

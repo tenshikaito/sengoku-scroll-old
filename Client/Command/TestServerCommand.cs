@@ -34,14 +34,16 @@ namespace Client.Command
 
                     gc.disconnect();
 
-                    dispatcher.invoke(() => uiStartGameDialog.refresh(map));
+                    uiStartGameDialog.refresh(map);
                 });
             }
             catch(SocketException)
             {
                 map[o.code] = null;
 
-                dispatcher.invoke(() => uiStartGameDialog.refresh(map));
+                uiStartGameDialog.refresh(map);
+
+                throw;
             }
         }
     }

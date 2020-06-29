@@ -44,7 +44,7 @@ namespace Client
             option = new Option();
         }
 
-        private void initSystem()
+        private async void initSystem()
         {
             gameRoot = new GameObject();
 
@@ -69,7 +69,7 @@ namespace Client
                 size = ClientSize
             };
 
-            gameSystem.init();
+            await gameSystem.init();
             gameSystem.sceneToTitle(false);
 
             refreshBuffer();

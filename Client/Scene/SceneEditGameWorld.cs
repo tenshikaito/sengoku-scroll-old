@@ -113,11 +113,11 @@ namespace Client.Scene
             gameWorld.masterData = uiEditGameWorldDatabaseWindow.gameWorldMasterData;
         }
 
-        private void onSaveButtonClicked()
+        private async void onSaveButtonClicked()
         {
             try
             {
-                save();
+                await save();
 
                 new UIDialog(gameSystem, "message", "data saved.").ShowDialog(formMain);
             }
@@ -152,29 +152,26 @@ namespace Client.Scene
             dialog.ShowDialog(formMain);
         }
 
-        private void save()
+        private async Task save()
         {
-            gameWorld.gameWorldProcessor.map.saveMasterData(gameWorld);
+            await gameWorld.gameWorldProcessor.map.saveMasterData(gameWorld);
         }
 
-        private void onDetailTileMapSelected(int id)
+        private async void onDetailTileMapSelected(int id)
         {
             switchStatus(waitingStatus);
 
-            Task.Run(() =>
-            {
-                var gwp = gameWorld.gameWorldProcessor;
+            var gwp = gameWorld.gameWorldProcessor;
 
-                var itm = gameWorld.masterData.detailTileMapInfo[id];
+            var itm = gameWorld.masterData.detailTileMapInfo[id];
 
-                var tm = gwp.map.loadDetailTileMap(id, itm.size.column, itm.size.row);
+            var tm = await gwp.map.loadDetailTileMap(id, itm.size.column, itm.size.row);
 
-                detailTileMapStatus.setTileMap(id, tm);
+            detailTileMapStatus.setTileMap(id, tm);
 
-                detailTileMapStatus.resetFlag();
+            detailTileMapStatus.resetFlag();
 
-                dispatcher.invoke(() => switchStatus(detailTileMapStatus));
-            });
+            switchStatus(detailTileMapStatus);
         }
 
         public enum DrawMode
@@ -708,13 +705,13 @@ namespace Client.Scene
 
             private void addStatus(Status s) => addChild(currentStatus = s);
 
-            private void onSaveButtonClicked()
+            private async void onSaveButtonClicked()
             {
                 try
                 {
                     var gwp = scene.gameWorld.gameWorldProcessor;
 
-                    gwp.map.saveDetailTileMap(currentTileMapId, detailMapSpritesInfo.detailTileMap);
+                    await gwp.map.saveDetailTileMap(currentTileMapId, detailMapSpritesInfo.detailTileMap);
 
                     new UIDialog(scene.gameSystem, "alert", "saved.").Show(scene.formMain);
                 }

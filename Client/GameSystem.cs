@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Client
 {
@@ -30,11 +31,11 @@ namespace Client
         public int screenWidth => option.screenWidth;
         public int screenHeight => option.screenHeight;
 
-        public void init()
+        public async Task init()
         {
-            user = FileHelper.loadUser<List<UserInfo>>();
+            user = await FileHelper.loadUser<List<UserInfo>>();
 
-            var lines = FileHelper.loadLines("charset/system.dat").Union(FileHelper.loadLines("charset/zh-tw.dat"));
+            var lines = (await FileHelper.loadLines("charset/system.dat")).Union(await FileHelper.loadLines("charset/zh-tw.dat"));
 
             wording = new Wording("zh-tw", lines.Where(o => !o.StartsWith("#") && !string.IsNullOrWhiteSpace(o)).Select(o =>
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,12 +25,12 @@ namespace Server
 
         private static void onApplicationException(object sender, ThreadExceptionEventArgs e)
         {
-            Console.WriteLine(e.Exception.ToString());
+            Debug.WriteLine(e.Exception.ToString());
         }
 
         private static void onException(object sender, UnhandledExceptionEventArgs e)
         {
-            Console.WriteLine(e.ExceptionObject.ToString());
+            Debug.WriteLine(e.ExceptionObject.ToString());
         }
     }
 }

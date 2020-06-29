@@ -1,6 +1,8 @@
 ﻿using Library.Helper;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -15,16 +17,16 @@ namespace Library
         public Action<GameClient> clientDisconnected;
         public Action<GameClient, string> dataReceived;
 
-        private Encoding encoding;
         private List<byte> receiveDataBytes;
         private List<byte> sendDataBytes;
         private byte[] buffer;
 
-        public GameClient(TcpClient tc, Encoding e, int dataBufferSize = 10240, int socketBufferSize = 4096)
+        public string ip => tcpClient.getIp();
+
+        public GameClient(TcpClient tc, int dataBufferSize = 10240, int socketBufferSize = 4096)
         {
             tcpClient = tc;
 
-            encoding = e;
             receiveDataBytes = new List<byte>(dataBufferSize);
             sendDataBytes = new List<byte>(dataBufferSize);
             buffer = new byte[socketBufferSize];
@@ -44,22 +46,29 @@ namespace Library
 
         private async Task receive()
         {
-            var length = await networkStream.ReadAsync(buffer, 0, buffer.Length);
-
-            if (length > 0)
+            try
             {
-                receiveDataBytes.AddRange(buffer.Take(length));
+                var length = await networkStream.ReadAsync(buffer, 0, buffer.Length);
 
-                _ = receive();
+                if (length > 0)
+                {
+                    receiveDataBytes.AddRange(buffer.Take(length));
+
+                    processData();
+
+                    _ = receive();
+                }
+                else
+                {
+                    clientDisconnected?.Invoke(this);
+
+                    disconnect();
+                }
             }
-            else
+            catch (IOException e)
             {
-                clientDisconnected?.Invoke(this);
-
-                disconnect();
+                Debug.WriteLine(e.ToString());
             }
-
-            processData();
         }
 
         private void processData()
@@ -92,8 +101,6 @@ namespace Library
             networkStream.Close();
             tcpClient.Close();
         }
-
-        public string ip => tcpClient.getIp();
 
         public static implicit operator TcpClient(GameClient gc) => gc.tcpClient;
 

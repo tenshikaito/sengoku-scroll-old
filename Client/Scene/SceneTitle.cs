@@ -6,6 +6,7 @@ using Library;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -234,7 +235,7 @@ namespace Client.Scene
             testServer();
         }
 
-        private void testServer()
+        private async void testServer()
         {
             var servers = gameSystem.currentUser.servers;
 
@@ -242,20 +243,16 @@ namespace Client.Scene
 
             uiStartGameDialog.setData(servers);
 
-            servers.ForEach(o =>
+            var tasks = servers.Select(o => new TestServerCommand().send(o, map, dispatcher, uiStartGameDialog));
+
+            try
             {
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        new TestServerCommand().send(o, map, dispatcher, uiStartGameDialog).Wait();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.ToString());
-                    }
-                });
-            });
+                await Task.WhenAll(tasks);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+            }
         }
 
         private void onStartGameAddButtonClicked()
@@ -414,11 +411,11 @@ namespace Client.Scene
             uiGameWorldDetailDialog = new UIGameWorldDetailDialog(gameSystem)
             {
                 Visible = true,
-                okButtonClicked = () =>
+                okButtonClicked = async () =>
                 {
                     var (name, width, height) = uiGameWorldDetailDialog.value;
 
-                    onCreateGameWorld(name, width, height);
+                    await onCreateGameWorld(name, width, height);
 
                     uiEditGameDialog.Visible = true;
                 },
@@ -434,7 +431,7 @@ namespace Client.Scene
         {
             var dialog = new UIConfirmDialog(gameSystem, "confirm", "edit game world?");
 
-            dialog.okButtonClicked = () =>
+            dialog.okButtonClicked = async () =>
             {
                 dialog.Close();
 
@@ -442,19 +439,16 @@ namespace Client.Scene
 
                 gameSystem.sceneToWaiting();
 
-                Task.Run(() =>
+                var gw = new GameWorld(name)
                 {
-                    var gw = new GameWorld(name)
-                    {
-                        camera = new Camera(gameSystem.option.screenWidth, gameSystem.option.screenHeight),
-                    };
+                    camera = new Camera(gameSystem.option.screenWidth, gameSystem.option.screenHeight),
+                };
 
-                    gw.init();
+                gw.init();
 
-                    gw.gameWorldProcessor.map.loadMasterData(gw);
+                await gw.gameWorldProcessor.map.loadMasterData(gw);
 
-                    dispatcher.invoke(() => gameSystem.sceneToEditGame(gw));
-                });
+                gameSystem.sceneToEditGame(gw);
             };
 
             dialog.ShowDialog(formMain);
@@ -486,7 +480,7 @@ namespace Client.Scene
             dialog.ShowDialog(formMain);
         }
 
-        private void onCreateGameWorld(string name, string txtWidth, string txtHeight)
+        private async Task onCreateGameWorld(string name, string txtWidth, string txtHeight)
         {
             name = name.Trim();
 
@@ -514,7 +508,7 @@ namespace Client.Scene
 
             var gwp = new GameWorldProcessor(name);
 
-            if (!gwp.map.createDirectory(width, height))
+            if (!await gwp.map.createDirectory(width, height))
             {
                 MessageBox.Show("create_failed");
                 return;

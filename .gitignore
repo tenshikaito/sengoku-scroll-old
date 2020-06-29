@@ -6,3 +6,4 @@
 /Server/bin
 /.vs
 /bin/Debug
+/bin/netcoreapp3.1
