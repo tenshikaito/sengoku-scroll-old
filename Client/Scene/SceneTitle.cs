@@ -82,7 +82,7 @@ namespace Client.Scene
             uiUserDetailDialog = new UIUserDetailDialog(gameSystem)
             {
                 Text = gameSystem.wording.add,
-                okButtonClicked = () =>
+                okButtonClicked = async () =>
                 {
                     var name = uiUserDetailDialog.name;
 
@@ -95,7 +95,7 @@ namespace Client.Scene
                         servers = new List<ServerInfo>()
                     });
 
-                    FileHelper.saveUserInfo(gameSystem.user);
+                    await FileHelper.saveUserInfo(gameSystem.user);
 
                     uiUserDialog.setData(gameSystem.user.Select(o => o.name).ToList());
 
@@ -120,11 +120,11 @@ namespace Client.Scene
 
             var dialog = new UIConfirmDialog(gameSystem, "confirm", $"remove user {name} ?");
 
-            dialog.okButtonClicked = () =>
+            dialog.okButtonClicked = async () =>
             {
                 gameSystem.user.RemoveAll(o => o.name == name);
 
-                FileHelper.saveUserInfo(gameSystem.user);
+                await FileHelper.saveUserInfo(gameSystem.user);
 
                 uiUserDialog.setData(gameSystem.user.Select(o => o.name).ToList());
 
@@ -141,7 +141,7 @@ namespace Client.Scene
             uiUserDetailDialog = new UIUserDetailDialog(gameSystem)
             {
                 Text = gameSystem.wording.edit,
-                okButtonClicked = () =>
+                okButtonClicked = async () =>
                 {
                     var newName = uiUserDetailDialog.name;
 
@@ -149,7 +149,7 @@ namespace Client.Scene
 
                     gameSystem.user.SingleOrDefault(o => o.name == oldName).name = newName;
 
-                    FileHelper.saveUserInfo(gameSystem.user);
+                    await FileHelper.saveUserInfo(gameSystem.user);
 
                     uiUserDialog.setData(gameSystem.user.Select(o => o.name).ToList());
 
@@ -235,7 +235,7 @@ namespace Client.Scene
             testServer();
         }
 
-        private async void testServer()
+        private void testServer()
         {
             var servers = gameSystem.currentUser.servers;
 
@@ -243,16 +243,19 @@ namespace Client.Scene
 
             uiStartGameDialog.setData(servers);
 
-            var tasks = servers.Select(o => new TestServerCommand().send(o, map, dispatcher, uiStartGameDialog));
+            Task.Run(async () =>
+            {
+                try
+                {
+                    var tasks = servers.Select(o => new TestServerCommand().send(o, map, uiStartGameDialog, dispatcher));
 
-            try
-            {
-                await Task.WhenAll(tasks);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.ToString());
-            }
+                    await Task.WhenAll(tasks);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.ToString());
+                }
+            });
         }
 
         private void onStartGameAddButtonClicked()
@@ -262,7 +265,7 @@ namespace Client.Scene
             uiGameServerDetailDialog = new UIGameServerDetailDialog(gameSystem)
             {
                 Visible = true,
-                okButtonClicked = () =>
+                okButtonClicked = async () =>
                 {
                     var (txtName, txtIp, txtPort) = uiGameServerDetailDialog.value;
 
@@ -276,7 +279,7 @@ namespace Client.Scene
                         port = port
                     });
 
-                    FileHelper.saveUserInfo(gameSystem.user);
+                    await FileHelper.saveUserInfo(gameSystem.user);
 
                     loadGameServerList();
 
@@ -300,7 +303,7 @@ namespace Client.Scene
             uiGameServerDetailDialog = new UIGameServerDetailDialog(gameSystem)
             {
                 Visible = true,
-                okButtonClicked = () =>
+                okButtonClicked = async () =>
                 {
                     var (txtName, txtIp, txtPort) = uiGameServerDetailDialog.value;
 
@@ -312,7 +315,7 @@ namespace Client.Scene
                     si.ip = txtIp;
                     si.port = port;
 
-                    FileHelper.saveUserInfo(gameSystem.user);
+                    await FileHelper.saveUserInfo(gameSystem.user);
 
                     loadGameServerList();
 
@@ -335,11 +338,11 @@ namespace Client.Scene
 
             var dialog = new UIConfirmDialog(gameSystem, "confirm", $"remove {name} ?");
 
-            dialog.okButtonClicked = () =>
+            dialog.okButtonClicked = async () =>
             {
                 gameSystem.currentUser.servers.RemoveAll(o => o.code == code);
 
-                FileHelper.saveUserInfo(gameSystem.user);
+                await FileHelper.saveUserInfo(gameSystem.user);
 
                 loadGameServerList();
 
@@ -431,7 +434,7 @@ namespace Client.Scene
         {
             var dialog = new UIConfirmDialog(gameSystem, "confirm", "edit game world?");
 
-            dialog.okButtonClicked = async () =>
+            dialog.okButtonClicked = () =>
             {
                 dialog.Close();
 
@@ -439,16 +442,19 @@ namespace Client.Scene
 
                 gameSystem.sceneToWaiting();
 
-                var gw = new GameWorld(name)
+                Task.Run(async () =>
                 {
-                    camera = new Camera(gameSystem.option.screenWidth, gameSystem.option.screenHeight),
-                };
+                    var gw = new GameWorld(name)
+                    {
+                        camera = new Camera(gameSystem.option.screenWidth, gameSystem.option.screenHeight),
+                    };
 
-                gw.init();
+                    gw.init();
 
-                await gw.gameWorldProcessor.map.loadMasterData(gw);
+                    await gw.gameWorldProcessor.map.loadMasterData(gw);
 
-                gameSystem.sceneToEditGame(gw);
+                    dispatcher.invoke(() => gameSystem.sceneToEditGame(gw));
+                });
             };
 
             dialog.ShowDialog(formMain);

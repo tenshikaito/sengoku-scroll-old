@@ -26,7 +26,7 @@ namespace Server.Command
 
                 gc.disconnect();
 
-                //game.disconnect(gc);
+                game.disconnect(gc);
             }
             catch (Exception e)
             {

@@ -78,7 +78,7 @@ namespace Library
                 this.gameWorldName = gameWorldName;
             }
 
-            public async Task<bool> createDirectory(int width, int height)
+            public async ValueTask<bool> createDirectory(int width, int height)
             {
                 var path = fullPath;
 

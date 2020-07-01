@@ -1,8 +1,10 @@
 ﻿using Library.Helper;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -17,71 +19,80 @@ namespace Library
         public Action<GameClient> clientDisconnected;
         public Action<GameClient, string> dataReceived;
 
-        private List<byte> receiveDataBytes;
+        private Pipe pipe;
+        private int dataBufferSize;
         private List<byte> sendDataBytes;
-        private byte[] buffer;
+
+        public bool isRunning { get; private set; }
 
         public string ip => tcpClient.getIp();
 
-        public GameClient(TcpClient tc, int dataBufferSize = 10240, int socketBufferSize = 4096)
+        public GameClient(TcpClient tc, int dataBufferSize = 10240)
         {
             tcpClient = tc;
-
-            receiveDataBytes = new List<byte>(dataBufferSize);
             sendDataBytes = new List<byte>(dataBufferSize);
-            buffer = new byte[socketBufferSize];
+
+            this.dataBufferSize = dataBufferSize;
         }
 
         public void start()
         {
+            isRunning = true;
+
             networkStream = tcpClient.GetStream();
 
-            _ = receive();
-        }
+            pipe = new Pipe();
 
-        public async Task connect(string ip, int port)
-        {
-            await tcpClient.ConnectAsync(ip, port);
+            _ = receive();
         }
 
         private async Task receive()
         {
             try
             {
-                var length = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+                var p = pipe;
+                var w = p.Writer;
+                var r = p.Reader;
 
-                if (length > 0)
+                while (true)
                 {
-                    receiveDataBytes.AddRange(buffer.Take(length));
+                    var m = w.GetMemory(dataBufferSize);
 
-                    processData();
+                    var length = await networkStream.ReadAsync(m);
 
-                    _ = receive();
+                    if (length == 0) break;
+
+                    w.Advance(length);
+
+                    await w.FlushAsync();
+
+                    var rr = await r.ReadAsync();
+                    var buffer = rr.Buffer;
+
+                    while (true)
+                    {
+                        var rrr = NetworkHelper.splitDataStream(ref buffer);
+
+                        if (rrr.hasResult) dataReceived?.Invoke(this, rrr.data);
+                        else break;
+                    }
+
+                    r.AdvanceTo(buffer.Start, buffer.End);
                 }
-                else
-                {
-                    clientDisconnected?.Invoke(this);
 
-                    disconnect();
-                }
+                await w.CompleteAsync();
+                await r.CompleteAsync();
             }
             catch (IOException e)
             {
                 Debug.WriteLine(e.ToString());
+
+                disconnect();
+
+                clientDisconnected?.Invoke(this);
             }
         }
 
-        private void processData()
-        {
-            var r = NetworkHelper.splitDataStream(receiveDataBytes);
-
-            if (r.hasResult)
-            {
-                dataReceived?.Invoke(this, r.data);
-
-                processData();
-            }
-        }
 
         public async Task write(string data)
         {
@@ -91,7 +102,7 @@ namespace Library
 
             var r = NetworkHelper.combineDataStream(sendDataBytes, data);
 
-            await ns.WriteAsync(r, 0, r.Length);
+            await ns.WriteAsync(r);
 
             await ns.FlushAsync();
         }
@@ -101,9 +112,5 @@ namespace Library
             networkStream.Close();
             tcpClient.Close();
         }
-
-        public static implicit operator TcpClient(GameClient gc) => gc.tcpClient;
-
-        public static implicit operator NetworkStream(GameClient gc) => gc.networkStream;
     }
 }

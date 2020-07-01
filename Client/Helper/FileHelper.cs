@@ -13,8 +13,8 @@ namespace Client.Helper
     {
         private static string userPath { get; } = Directory.GetCurrentDirectory() + "/user.dat";
 
-        public static void saveUserInfo(IEnumerable<UserInfo> user) => File.WriteAllText(userPath, user.toJson());
+        public static async Task saveUserInfo(IEnumerable<UserInfo> user) => await File.WriteAllTextAsync(userPath, user.toJson());
 
-        public static List<UserInfo> loadUserInfo() => File.ReadAllText(userPath).fromJson<List<UserInfo>>();
+        public static async Task<List<UserInfo>> loadUserInfo() => (await File.ReadAllTextAsync(userPath)).fromJson<List<UserInfo>>();
     }
 }

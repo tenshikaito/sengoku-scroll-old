@@ -14,34 +14,30 @@ namespace Client.Command
 {
     public class TestServerCommand
     {
-        public async Task send(ServerInfo o, IDictionary<string, int?> map, Dispatcher dispatcher, UIStartGameDialog uiStartGameDialog)
+        public async Task send(ServerInfo o, IDictionary<string, int?> map, UIStartGameDialog uiStartGameDialog, Dispatcher dispatcher)
         {
             try
             {
-                var gc = NetworkHelper.getGameClient();
-
-                await gc.send(o.ip, o.port, new TestServerData()
+                var data = await NetworkHelper.fetch(o.ip, o.port, new TestServerData()
                 {
                     serverCode = o.code,
                     timeStamp = DateTime.Now
-                }.toCommandString(nameof(TestServerCommand)), (ogc, data) =>
-                {
-                    var (name, s) = data.fromCommandString();
+                }.toCommandString(nameof(TestServerCommand)));
 
-                    var c = s.fromJson<TestServerData>();
+                var (name, s) = data.fromCommandString();
 
-                    map[c.serverCode] = (int)(DateTime.Now - c.timeStamp).TotalMilliseconds;
+                var c = s.fromJson<TestServerData>();
 
-                    gc.disconnect();
+                map[c.serverCode] = (int)(DateTime.Now - c.timeStamp).TotalMilliseconds;
 
-                    uiStartGameDialog.refresh(map);
-                });
+                dispatcher.invoke(()=> uiStartGameDialog.refresh(map));
             }
-            catch(SocketException)
+            catch(SocketException e)
+            when(e.SocketErrorCode == SocketError.ConnectionRefused)
             {
                 map[o.code] = null;
 
-                uiStartGameDialog.refresh(map);
+                dispatcher.invoke(() => uiStartGameDialog.refresh(map));
 
                 throw;
             }
