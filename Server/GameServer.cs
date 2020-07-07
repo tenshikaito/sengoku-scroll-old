@@ -20,8 +20,6 @@ namespace Server
         private volatile bool isRunning = false;
 
         public Action<GameClient> clientConnected;
-        public Action<GameClient> clientDisconnected;
-        public Action<GameClient, string> dataReceived;
 
         public GameServer bind(int port)
         {
@@ -41,20 +39,16 @@ namespace Server
 
         private async Task accept()
         {
-            var tc = await tcpListener.AcceptTcpClientAsync();
+            while (isRunning)
+            {
+                var tc = await tcpListener.AcceptTcpClientAsync();
 
-            if (!isRunning) return;
+                if (!isRunning) return;
 
-            var gc = NetworkHelper.getGameClient(tc);
+                var gc = NetworkHelper.getGameClient(tc);
 
-            gc.dataReceived = (otc, s) => dataReceived?.Invoke(otc, s);
-            gc.clientDisconnected = otc => clientDisconnected?.Invoke(otc);
-
-            clientConnected?.Invoke(gc);
-
-            _ = accept();
-
-            gc.start();
+                clientConnected?.Invoke(gc);
+            }
         }
 
         public void stop()

@@ -14,13 +14,13 @@ namespace Library
 {
     public class GameClient
     {
+        public int id;
         public TcpClient tcpClient;
         public NetworkStream networkStream;
         public Action<GameClient> clientDisconnected;
         public Action<GameClient, string> dataReceived;
 
         private Pipe pipe;
-        private int dataBufferSize;
         private List<byte> sendDataBytes;
 
         public bool isRunning { get; private set; }
@@ -30,58 +30,23 @@ namespace Library
         public GameClient(TcpClient tc, int dataBufferSize = 10240)
         {
             tcpClient = tc;
+
             sendDataBytes = new List<byte>(dataBufferSize);
-
-            this.dataBufferSize = dataBufferSize;
-        }
-
-        public void start()
-        {
-            isRunning = true;
-
             networkStream = tcpClient.GetStream();
-
             pipe = new Pipe();
-
-            _ = receive();
         }
 
-        private async Task receive()
+        public async Task<(bool hasResult, string data)> read(bool isLoop = false)
         {
             try
             {
-                var p = pipe;
-                var w = p.Writer;
-                var r = p.Reader;
-
-                while (true)
+                do
                 {
-                    var m = w.GetMemory(dataBufferSize);
+                    var data = await NetworkHelper.read(networkStream, pipe, false);
 
-                    var length = await networkStream.ReadAsync(m);
-
-                    if (length == 0) break;
-
-                    w.Advance(length);
-
-                    await w.FlushAsync();
-
-                    var rr = await r.ReadAsync();
-                    var buffer = rr.Buffer;
-
-                    while (true)
-                    {
-                        var rrr = NetworkHelper.splitDataStream(ref buffer);
-
-                        if (rrr.hasResult) dataReceived?.Invoke(this, rrr.data);
-                        else break;
-                    }
-
-                    r.AdvanceTo(buffer.Start, buffer.End);
+                    return (true, data);
                 }
-
-                await w.CompleteAsync();
-                await r.CompleteAsync();
+                while (isLoop);
             }
             catch (IOException e)
             {
@@ -91,8 +56,9 @@ namespace Library
 
                 clientDisconnected?.Invoke(this);
             }
-        }
 
+            return (false, null);
+        }
 
         public async Task write(string data)
         {
@@ -109,6 +75,9 @@ namespace Library
 
         public void disconnect()
         {
+            pipe.Reader.Complete();
+            pipe.Writer.Complete();
+
             networkStream.Close();
             tcpClient.Close();
         }

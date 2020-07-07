@@ -22,14 +22,15 @@ namespace Server
 
         public GameWorld gameWorld;
 
-        private IncreasedIdDictionary<GamePlayer> connectedPlayer = new IncreasedIdDictionary<GamePlayer>();
+        private HashSet<GameClient> connectedClient = new HashSet<GameClient>();
         private Dictionary<int, GamePlayer> onlinePlayer = new Dictionary<int, GamePlayer>();
 
         private ConcurrentQueue<KeyValuePair<GameClient, string>> messages = new ConcurrentQueue<KeyValuePair<GameClient, string>>();
 
         private ManualResetEventSlim messageLock = new ManualResetEventSlim(false);
 
-        private GameCommandProcessor gameCommandProcessor;
+        private CommandProcessor serverCommandProcessor;
+        private CommandProcessor gameCommandProcessor;
 
         private bool isRunning = false;
 
@@ -44,30 +45,41 @@ namespace Server
 
             option = o;
 
-            gameCommandProcessor = new GameCommandProcessor(this);
-
-            connectedPlayer.init();
+            serverCommandProcessor = new CommandProcessor(serverCommandMap);
+            gameCommandProcessor = new CommandProcessor(gameCommandMap);
 
             gameServer = new GameServer()
             {
                 clientConnected = onClientConnected,
-                clientDisconnected = onClientDisconnected,
-                dataReceived = onDataReceived
             };
         }
 
+        private Dictionary<string, CommandBase> serverCommandMap => new Dictionary<string, CommandBase>()
+        {
+            { nameof(TestServerCommand), new TestServerCommand(this) }
+        };
+
+        private Dictionary<string, CommandBase> gameCommandMap => new Dictionary<string, CommandBase>()
+        {
+        };
+
         private void onClientConnected(GameClient gc)
         {
-            lock (connectedPlayer)
+            lock (connectedClient)
             {
-                var p = new GamePlayer()
-                {
-                    id = connectedPlayer.getNextId(),
-                    gameClient = gc,
-                };
-
-                connectedPlayer[p.id] = p;
+                connectedClient.Add(gc);
             }
+
+            Task.Run(async () =>
+            {
+                var (hasResult, data) = await gc.read();
+
+                var cmd = data.fromCommandString();
+
+                var r = await serverCommandProcessor.execute(gc, cmd.name, cmd.data);
+
+                if (!r) disconnect(gc);
+            });
         }
 
         private void onClientDisconnected(GameClient gc) => disconnect(gc);
@@ -135,11 +147,9 @@ namespace Server
 
         public void disconnect(GameClient gc)
         {
-            lock (connectedPlayer)
+            lock (connectedClient)
             {
-                var p = connectedPlayer.map.Values.FirstOrDefault(o => o.gameClient == gc);
-
-                if (p != null) connectedPlayer.map.Remove(p.id);
+                connectedClient.Remove(gc);
             }
 
             lock (onlinePlayer)

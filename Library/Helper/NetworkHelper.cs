@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Library.Helper
@@ -66,6 +67,43 @@ namespace Library.Helper
             return (true, s);
         }
 
+        public static async Task<string> read(NetworkStream ns, Pipe p = null, bool isOnce = true)
+        {
+            p = p ?? new Pipe();
+
+            var w = p.Writer;
+            var r = p.Reader;
+
+            while (true)
+            {
+                var m = w.GetMemory(dataBufferSize);
+
+                var length = await ns.ReadAsync(m);
+
+                if (length == 0) return null;
+
+                w.Advance(length);
+
+                await w.FlushAsync();
+
+                var rr = await r.ReadAsync();
+                var buffer = rr.Buffer;
+
+                var rrr = splitDataStream(ref buffer);
+
+                if (rrr.hasResult)
+                {
+                    if (isOnce)
+                    {
+                        await w.CompleteAsync();
+                        await r.CompleteAsync();
+                    }
+
+                    return rrr.data;
+                }
+            }
+        }
+
         public static byte[] combineDataStream(List<byte> sendDataBytes, string data)
         {
             var buffer = BitConverter.GetBytes(data.Length);
@@ -93,34 +131,7 @@ namespace Library.Helper
 
                     await ns.FlushAsync();
 
-                    var p = new Pipe();
-                    var w = p.Writer;
-                    var r = p.Reader;
-
-                    while (true)
-                    {
-                        var m = w.GetMemory(dataBufferSize);
-
-                        var length = await ns.ReadAsync(m);
-
-                        if (length == 0) return null;
-
-                        w.Advance(length);
-
-                        await w.FlushAsync();
-
-                        var rr = await r.ReadAsync();
-                        var buffer = rr.Buffer;
-
-                        var rrr = splitDataStream(ref buffer);
-
-                        if (rrr.hasResult)
-                        {
-                            await w.CompleteAsync();
-                            await r.CompleteAsync();
-                            return rrr.data;
-                        }
-                    }
+                    return await read(ns);
                 }
             }
         }
