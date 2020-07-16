@@ -1,5 +1,6 @@
 ﻿using Client.Model;
 using Library.Helper;
+using Library.Network;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,7 +19,10 @@ namespace Client.UI.SceneTitle
         {
             this.setCommandWindow(w.scene_title.start_game).setCenter(true);
 
-            listView.addColumn(w.name).addColumn(w.ip).addColumn(w.status);
+            listView.addColumn(w.name)
+                .addColumn(w.ip)
+                .addColumn(w.game_world)
+                .addColumn(w.status);
 
             addButton(w.refresh, () => refreshButtonClicked?.Invoke());
 
@@ -29,9 +33,9 @@ namespace Client.UI.SceneTitle
         {
             Tag = o.code,
             Text = o.name
-        }.addColumn(o.ip + ":" + o.port).addColumn(w.symbol_none)).ToArray());
+        }.addColumn(o.ip + ":" + o.port).addColumn(w.symbol_none).addColumn(w.symbol_none)).ToArray());
 
-        public void refresh(IDictionary<string, int?> map)
+        public void refresh(IDictionary<string, TestServerData> map)
         {
             listView.Items.Cast<ListViewItem>().ToList().ForEach(o =>
             {
@@ -39,7 +43,8 @@ namespace Client.UI.SceneTitle
 
                 if (map.TryGetValue(code, out var value))
                 {
-                    o.SubItems[2].Text = value == null ? w.disconnected : value + "ms";
+                    o.SubItems[2].Text = value?.gameWorldName ?? w.symbol_none;
+                    o.SubItems[3].Text = value == null ? w.disconnected : value.ping + "ms";
                 }
             });
         }

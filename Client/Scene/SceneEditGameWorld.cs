@@ -591,7 +591,6 @@ namespace Client.Scene
             }
         }
 
-
         public class DetailTileMapStatus : Status
         {
             private ZoomableTileMapSprites<DetailTileMapSprites> zoomableTileMapSprites;

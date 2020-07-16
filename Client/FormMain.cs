@@ -1,5 +1,6 @@
 ﻿using Client.Graphic;
 using Client.Helper;
+using Client.Model;
 using Client.Scene;
 using Library;
 using Library.Helper;
@@ -27,24 +28,21 @@ namespace Client
         private GameObject gameRoot;
 
         private Option option;
-
+        private Wording wording;
+        private List<PlayerInfo> players;
         private SpriteRectangle background;
 
-        public FormMain()
+        public FormMain(Option option, Wording wording, List<PlayerInfo> players)
         {
-            loadOption();
+            this.option = option;
+            this.wording = wording;
+            this.players = players;
 
             initWindow();
-
             initSystem();
         }
 
-        private void loadOption()
-        {
-            option = new Option();
-        }
-
-        private async void initSystem()
+        private void initSystem()
         {
             gameRoot = new GameObject();
 
@@ -58,6 +56,8 @@ namespace Client
             {
                 formMain = this,
                 option = option,
+                wording = wording,
+                players = players,
                 sceneManager = gameRoot,
                 gameGraphic = gameGraphic
             };
@@ -69,7 +69,7 @@ namespace Client
                 size = ClientSize
             };
 
-            await gameSystem.init();
+            gameSystem.init();
             gameSystem.sceneToTitle(false);
 
             refreshBuffer();

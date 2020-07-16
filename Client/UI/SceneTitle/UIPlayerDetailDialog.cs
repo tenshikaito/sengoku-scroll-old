@@ -8,13 +8,13 @@ using System.Windows.Forms;
 
 namespace Client.UI.SceneTitle
 {
-    public class UIUserDetailDialog : UIConfirmDialog
+    public class UIPlayerDetailDialog : UIConfirmDialog
     {
         private TextBox tbName;
 
         public string name => tbName.Text;
 
-        public UIUserDetailDialog(GameSystem gs) : base(gs)
+        public UIPlayerDetailDialog(GameSystem gs) : base(gs)
         {
             this.setCommandWindow(w.detail);
 
@@ -25,7 +25,7 @@ namespace Client.UI.SceneTitle
 
             new Label() { Text = w.name }.setRightCenter().setAutoSize().addTo(p);
 
-            tbName = new TextBox() { Text = "user" }.addTo(p);
+            tbName = new TextBox() { Text = "player" }.addTo(p);
 
             addConfirmButtons();
         }

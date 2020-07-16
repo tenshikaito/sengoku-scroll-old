@@ -32,13 +32,13 @@
     <Compile Update="UI\SceneTitle\UIMainMenuWindow.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="UI\SceneTitle\UIPlayerDetailDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\SceneTitle\UIPlayerDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="UI\SceneTitle\UIStartGameDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="UI\SceneTitle\UIUserDetailDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="UI\SceneTitle\UIUserDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="UI\UIConfirmDialog.cs">

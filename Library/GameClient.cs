@@ -8,6 +8,7 @@ using System.IO.Pipelines;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Library
@@ -36,21 +37,29 @@ namespace Library
             pipe = new Pipe();
         }
 
-        public async Task<(bool hasResult, string data)> read(bool isLoop = false)
+        public async Task connect(string ip, int port) => await tcpClient.ConnectAsync(ip, port);
+
+        public async Task listen()
+        {
+            while (isRunning)
+            {
+                var (hasResult, data) = await read();
+
+                if (hasResult) dataReceived?.Invoke(this, data);
+            }
+        }
+
+        public async ValueTask<(bool hasResult, string data)> read()
         {
             try
             {
-                do
-                {
-                    var data = await NetworkHelper.read(networkStream, pipe, false);
+                var data = await NetworkHelper.read(networkStream, pipe, false);
 
-                    return (true, data);
-                }
-                while (isLoop);
+                return (true, data);
             }
             catch (IOException e)
             {
-                Debug.WriteLine(e.ToString());
+                Debug.WriteLine(e);
 
                 disconnect();
 
@@ -60,26 +69,20 @@ namespace Library
             return (false, null);
         }
 
-        public async Task write(string data)
+        public async Task write(string data, CancellationToken ct = default)
         {
             sendDataBytes.Clear();
 
-            var ns = networkStream;
-
-            var r = NetworkHelper.combineDataStream(sendDataBytes, data);
-
-            await ns.WriteAsync(r);
-
-            await ns.FlushAsync();
+            await NetworkHelper.write(networkStream, data, sendDataBytes, ct);
         }
 
         public void disconnect()
         {
-            pipe.Reader.Complete();
-            pipe.Writer.Complete();
-
             networkStream.Close();
             tcpClient.Close();
+
+            pipe.Writer.Complete();
+            pipe.Reader.Complete();
         }
     }
 }

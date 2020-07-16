@@ -22,6 +22,8 @@ namespace Server.Command
 
             try
             {
+                d.gameWorldName = game.gameWorldName;
+
                 await gc.write(nameof(TestServerCommand), d);
 
                 gc.disconnect();
@@ -30,7 +32,7 @@ namespace Server.Command
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.ToString());
+                Debug.WriteLine(e);
             }
         }
     }

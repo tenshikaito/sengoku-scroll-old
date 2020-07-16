@@ -16,8 +16,8 @@ namespace Client
     {
         public FormMain formMain;
 
-        public List<UserInfo> user;
-        public UserInfo currentUser;
+        public List<PlayerInfo> players;
+        public PlayerInfo currentPlayer;
 
         public Option option;
         public Wording wording;
@@ -31,27 +31,55 @@ namespace Client
         public int screenWidth => option.screenWidth;
         public int screenHeight => option.screenHeight;
 
-        public async Task init()
+        public void init()
         {
-            user = await FileHelper.loadUser<List<UserInfo>>();
-
-            var lines = (await FileHelper.loadLines("charset/system.dat")).Union(await FileHelper.loadLines("charset/zh-tw.dat"));
-
-            wording = new Wording("zh-tw", lines.Where(o => !o.StartsWith("#") && !string.IsNullOrWhiteSpace(o)).Select(o =>
-            {
-                var line = o.Split('=');
-                return new KeyValuePair<string, string>(line[0], line[1]);
-            }).ToDictionary(o => o.Key, o => o.Value));
-
             camera = new Camera(screenWidth, screenHeight);
 
             formMain.Resize += (s, e) => camera.setSize(formMain.Width, formMain.Height);
         }
 
-        public void sceneToTitle(bool isLogined) => sceneManager.switchStatus(new SceneTitle(this, isLogined));
+        public SceneTitle sceneToTitle(bool isLogined)
+        {
+            var s = new SceneTitle(this, isLogined);
 
-        public void sceneToEditGame(GameWorld gw) => sceneManager.switchStatus(new SceneEditGameWorld(this, gw));
+            sceneManager.switchStatus(s);
 
-        public void sceneToWaiting() => sceneManager.switchStatus(new SceneWaiting(this, $"{wording.loading} ..."));
+            return s;
+        }
+
+        public SceneGame sceneToGame(GameWorld gw)
+        {
+            var s = new SceneGame(this, gw);
+
+            sceneManager.switchStatus(s);
+
+            return s;
+        }
+
+        public SceneEditGameWorld sceneToEditGame(GameWorld gw)
+        {
+            var s = new SceneEditGameWorld(this, gw);
+
+            sceneManager.switchStatus(s);
+
+            return s;
+        }
+
+        public SceneWaiting sceneToWaiting()
+        {
+            var s = new SceneWaiting(this, $"{wording.loading} ...");
+
+            sceneManager.switchStatus(s);
+
+            return s;
+        }
+
+        public void dispatchSceneToTitle(bool isLogined) => formMain.dispatcher.invoke(() => sceneToTitle(isLogined));
+
+        public void dispatchSceneToGame(GameWorld gw) => formMain.dispatcher.invoke(() => sceneToGame(gw));
+
+        public void dispatchSceneToEditGame(GameWorld gw) => formMain.dispatcher.invoke(() => sceneToEditGame(gw));
+
+        public void dispatchSceneToWaiting(GameWorld gw) => formMain.dispatcher.invoke(() => sceneToWaiting());
     }
 }

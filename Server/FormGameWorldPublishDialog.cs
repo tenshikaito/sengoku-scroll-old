@@ -31,7 +31,7 @@ namespace Server
                 Scrollable = false
             }.init().addTo(panel);
 
-            listView.addColumn(w.name);
+            listView.addColumn(w.game_world);
 
             listView.DoubleClick += (s, e) => onGameMapSelected();
 

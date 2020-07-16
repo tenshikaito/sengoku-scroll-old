@@ -15,7 +15,7 @@ namespace Server
 
         public string code;
 
-        public string username;
+        public string playerName;
 
         public Player player;
 

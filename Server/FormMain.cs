@@ -29,24 +29,13 @@ namespace Server
         private GameSystem gameSystem;
         private Game game;
 
-        public FormMain()
+        public FormMain(Option option, Wording wording)
         {
-            loadOption();
+            this.option = option;
+            this.wording = wording;
 
             initWindow();
-
             initSystem();
-        }
-
-        protected override void OnLoad(EventArgs e)
-        {
-            lvGameWorld.autoResizeColumns();
-        }
-
-        private void loadOption()
-        {
-            option = new Option();
-            wording = new Wording();
         }
 
         private void initWindow()
@@ -91,7 +80,7 @@ namespace Server
             btnStart = new Button().init(w.start, onStartButtonClicked).addTo(p);
             btnStop = new Button() { Enabled = false }.init(w.stop, onStopButtonClicked).addTo(p);
             btnPublish = new Button().init(w.publish, onPublishButtonClicked).addTo(p);
-            btnDelete = new Button().init(w.delete, onDeleteButtonClicked).addTo(p);
+            btnDelete = new Button().init(w.remove, onRemoveButtonClicked).addTo(p);
 
             var tc = new TabControl()
             {
@@ -133,6 +122,11 @@ namespace Server
             };
 
             loadGameWorldList();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            lvGameWorld.autoResizeColumns();
         }
 
         private void onStartButtonClicked()
@@ -209,7 +203,7 @@ namespace Server
             dialog.ShowDialog(this);
         }
 
-        private void onDeleteButtonClicked()
+        private void onRemoveButtonClicked()
         {
             var lvi = lvGameWorld.FocusedItem;
 
@@ -218,7 +212,7 @@ namespace Server
             if (MessageBox.Show("delete?", "confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 new GameWorldProcessor((string)lvi.Tag).game.deleteDirectory();
-                
+
                 lvGameWorld.Items.Remove(lvi);
             }
         }

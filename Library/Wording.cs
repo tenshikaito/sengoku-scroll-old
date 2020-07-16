@@ -1,10 +1,9 @@
 ﻿
-using Library;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Client
+namespace Library
 {
     public partial class Wording : WordingBase
     {
@@ -408,13 +407,23 @@ namespace Client
 
         public string none => this[nameof(none)];
 
+        public string publish => this[nameof(publish)];
+
+        public string start => this[nameof(start)];
+
+        public string stop => this[nameof(stop)];
+
+        public string console => this[nameof(console)];
+
         public string type => this[nameof(type)];
 
         public string width => this[nameof(width)];
 
         public string height => this[nameof(height)];
 
-        public string user => this[nameof(user)];
+        public string player => this[nameof(player)];
+
+        public string game_world => this[nameof(game_world)];
 
         public string main_tile_map => this[nameof(main_tile_map)];
 
@@ -686,7 +695,11 @@ namespace Client
 
             public string edit_game => this[nameof(edit_game)];
 
-            public string select_user => this[nameof(select_user)];
+            public string select_player => this[nameof(select_player)];
+
+            public object connecting => this[nameof(connecting)];
+
+            public object loading => this[nameof(loading)];
 
             public SceneTitle(Wording w, string prefix) : base(w, prefix)
             {

@@ -27,7 +27,7 @@ namespace Library.Helper
         public static GameClient getGameClient(TcpClient tc = null, int dataBufferSize = dataBufferSize)
             => new GameClient(tc ?? new TcpClient(), dataBufferSize);
 
-        public static async Task write(this GameClient gc, string name, BaseData bd) => await gc.write(bd.toCommandString(name));
+        public static async Task write(this GameClient gc, string name, BaseData bd, CancellationToken ct = default) => await gc.write(bd.toCommandString(name), ct);
 
         public static (bool hasResult, string data) splitDataStream(List<byte> receiveDataBytes)
         {
@@ -50,7 +50,7 @@ namespace Library.Helper
             return (true, s);
         }
 
-        public static (bool hasResult, string data) splitDataStream(ref ReadOnlySequence<byte> buffer)
+        public static (bool hasResult, string data) splitDataStream(PipeReader r, ReadOnlySequence<byte> buffer)
         {
             if (buffer.Length < dataLengthByteLength) return (false, null);
 
@@ -58,16 +58,18 @@ namespace Library.Helper
 
             if (buffer.Length - dataLengthByteLength < length) return (false, null);
 
-            var data = buffer.Slice(dataLengthByteLength, length).ToArray();
+            var slice = buffer.Slice(dataLengthByteLength, length);
+
+            var data = slice.ToArray();
+
+            r.AdvanceTo(slice.End);
 
             var s = encoding.GetString(data);
-
-            buffer = buffer.Slice(dataLengthByteLength + length);
 
             return (true, s);
         }
 
-        public static async Task<string> read(NetworkStream ns, Pipe p = null, bool isOnce = true)
+        public static async Task<string> read(NetworkStream ns, Pipe p = null, bool isOnce = true, CancellationToken ct = default)
         {
             p = p ?? new Pipe();
 
@@ -78,18 +80,18 @@ namespace Library.Helper
             {
                 var m = w.GetMemory(dataBufferSize);
 
-                var length = await ns.ReadAsync(m);
+                var length = await ns.ReadAsync(m, ct);
 
                 if (length == 0) return null;
 
                 w.Advance(length);
 
-                await w.FlushAsync();
+                await w.FlushAsync(ct);
 
-                var rr = await r.ReadAsync();
+                var rr = await r.ReadAsync(ct);
                 var buffer = rr.Buffer;
 
-                var rrr = splitDataStream(ref buffer);
+                var rrr = splitDataStream(r, buffer);
 
                 if (rrr.hasResult)
                 {
@@ -101,7 +103,22 @@ namespace Library.Helper
 
                     return rrr.data;
                 }
+                else
+                {
+                    r.AdvanceTo(buffer.Start, buffer.End);
+                }
             }
+        }
+
+        public static async Task write(NetworkStream ns, string data, List<byte> sendDataBytes = null, CancellationToken ct = default)
+        {
+            sendDataBytes = sendDataBytes ?? new List<byte>();
+
+            var r = combineDataStream(sendDataBytes, data);
+
+            await ns.WriteAsync(r, ct);
+
+            await ns.FlushAsync();
         }
 
         public static byte[] combineDataStream(List<byte> sendDataBytes, string data)
@@ -117,7 +134,19 @@ namespace Library.Helper
             return sendDataBytes.ToArray();
         }
 
-        public static async Task<string> fetch(string ip, int port, string data)
+        public static async Task<string> fetch(string ip, int port, string data, CancellationToken ct = default)
+        {
+            await connect(ip, port, async (tc, ns) =>
+            {
+                await write(ns, data, null, ct);
+
+                data = await read(ns, null, true, ct);
+            });
+
+            return data;
+        }
+
+        public static async Task connect(string ip, int port, Func<TcpClient, NetworkStream, Task> getConnection)
         {
             using (var tc = new TcpClient())
             {
@@ -125,13 +154,7 @@ namespace Library.Helper
 
                 using (var ns = tc.GetStream())
                 {
-                    var bytes = combineDataStream(new List<byte>(), data);
-
-                    await ns.WriteAsync(bytes);
-
-                    await ns.FlushAsync();
-
-                    return await read(ns);
+                    await getConnection(tc, ns);
                 }
             }
         }

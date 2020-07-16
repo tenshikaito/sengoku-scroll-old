@@ -21,6 +21,8 @@ namespace Client.UI
         public Action<string> removeButtonClicked;
         public Action<string> editButtonClicked;
 
+        public string selectedValue => listView.FocusedItem == null ? null : (string)listView.FocusedItem.Tag;
+
         public UIEditableDialog(GameSystem gs) : base(gs)
         {
             var tlp = new TableLayoutPanel()

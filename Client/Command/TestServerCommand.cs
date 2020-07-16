@@ -14,7 +14,7 @@ namespace Client.Command
 {
     public class TestServerCommand
     {
-        public async Task send(ServerInfo o, IDictionary<string, int?> map, UIStartGameDialog uiStartGameDialog, Dispatcher dispatcher)
+        public static async Task send(ServerInfo o, IDictionary<string, TestServerData> map, UIStartGameDialog uiStartGameDialog, Dispatcher dispatcher)
         {
             try
             {
@@ -28,12 +28,14 @@ namespace Client.Command
 
                 var c = s.fromJson<TestServerData>();
 
-                map[c.serverCode] = (int)(DateTime.Now - c.timeStamp).TotalMilliseconds;
+                c.ping = (int)(DateTime.Now - c.timeStamp).TotalMilliseconds;
 
-                dispatcher.invoke(()=> uiStartGameDialog.refresh(map));
+                map[c.serverCode] = c;
+
+                dispatcher.invoke(() => uiStartGameDialog.refresh(map));
             }
-            catch(SocketException e)
-            when(e.SocketErrorCode == SocketError.ConnectionRefused)
+            catch (SocketException e)
+            when (e.SocketErrorCode == SocketError.ConnectionRefused)
             {
                 map[o.code] = null;
 

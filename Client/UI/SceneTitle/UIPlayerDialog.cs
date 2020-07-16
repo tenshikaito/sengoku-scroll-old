@@ -9,11 +9,11 @@ using System.Windows.Forms;
 
 namespace Client.UI.SceneTitle
 {
-    public class UIUserDialog : UIEditableDialog
+    public class UIPlayerDialog : UIEditableDialog
     {
         public string name => listView.FocusedItem == null ? null : (string)listView.FocusedItem.Tag;
 
-        public UIUserDialog(GameSystem gs) : base(gs)
+        public UIPlayerDialog(GameSystem gs) : base(gs)
         {
             this.setCommandWindow(w.scene_title.start_game).setCenter(true);
 

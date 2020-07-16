@@ -3,6 +3,8 @@ using Client.Model;
 using Client.UI;
 using Client.UI.SceneTitle;
 using Library;
+using Library.Helper;
+using Library.Network;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,10 +12,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using FileHelper = Client.Helper.FileHelper;
 
 namespace Client.Scene
 {
@@ -21,12 +23,12 @@ namespace Client.Scene
     {
         private UIMainMenuWindow uiMainMenuWindow;
 
-        private UIUserDialog uiUserDialog;
+        private UIPlayerDialog uiPlayerDialog;
 
         private UIStartGameDialog uiStartGameDialog;
         private UIEditGameDialog uiEditGameDialog;
 
-        private UIUserDetailDialog uiUserDetailDialog;
+        private UIPlayerDetailDialog uiPlayerDetailDialog;
         private UIGameServerDetailDialog uiGameServerDetailDialog;
         private UIGameWorldDetailDialog uiGameWorldDetailDialog;
 
@@ -40,93 +42,93 @@ namespace Client.Scene
         public override void start()
         {
             if (isLogined) showMainDialog();
-            else showUserDialog();
+            else showPlayerDialog();
         }
 
         public override void finish()
         {
-            uiUserDialog?.Close();
+            uiPlayerDialog?.Close();
             uiMainMenuWindow?.Close();
         }
 
-        private void showUserDialog()
+        private void showPlayerDialog()
         {
-            if (uiUserDialog == null)
+            if (uiPlayerDialog == null)
             {
-                uiUserDialog = new UIUserDialog(gameSystem)
+                uiPlayerDialog = new UIPlayerDialog(gameSystem)
                 {
-                    addButtonClicked = onUserAddButtonClicked,
-                    removeButtonClicked = onUserRemoveButtonClicked,
-                    editButtonClicked = onUserEditButtonClicked,
-                    okButtonClicked = onUserOkButtonClicked
+                    addButtonClicked = onPlayerAddButtonClicked,
+                    removeButtonClicked = onPlayerRemoveButtonClicked,
+                    editButtonClicked = onPlayerEditButtonClicked,
+                    okButtonClicked = onPlayerOkButtonClicked
                 };
 
-                uiUserDialog.setData(gameSystem.user.Select(o => o.name).ToList());
+                uiPlayerDialog.setData(gameSystem.players.Select(o => o.name).ToList());
             }
 
-            uiUserDialog.Visible = true;
+            uiPlayerDialog.Visible = true;
         }
 
         private void showMainDialog()
         {
-            if (uiMainMenuWindow == null) uiMainMenuWindow = new UIMainMenuWindow(gameSystem, onStartGame, onEditGame, onSelectUser);
+            if (uiMainMenuWindow == null) uiMainMenuWindow = new UIMainMenuWindow(gameSystem, onStartGame, onEditGame, onSelectPlayer);
 
-            uiMainMenuWindow.Text = gameSystem.currentUser.name;
+            uiMainMenuWindow.Text = gameSystem.currentPlayer.name;
             uiMainMenuWindow.Visible = true;
         }
 
-        private void onUserAddButtonClicked()
+        private void onPlayerAddButtonClicked()
         {
-            uiUserDialog.Visible = false;
+            uiPlayerDialog.Visible = false;
 
-            uiUserDetailDialog = new UIUserDetailDialog(gameSystem)
+            uiPlayerDetailDialog = new UIPlayerDetailDialog(gameSystem)
             {
                 Text = gameSystem.wording.add,
                 okButtonClicked = async () =>
                 {
-                    var name = uiUserDetailDialog.name;
+                    var name = uiPlayerDetailDialog.name;
 
-                    if (!checkUser(ref name)) return;
+                    if (!checkPlayer(ref name)) return;
 
-                    gameSystem.user.Add(new UserInfo()
+                    gameSystem.players.Add(new PlayerInfo()
                     {
                         name = name,
                         code = Guid.NewGuid().ToString(),
                         servers = new List<ServerInfo>()
                     });
 
-                    await FileHelper.saveUserInfo(gameSystem.user);
+                    await FileHelper.savePlayer(gameSystem.players);
 
-                    uiUserDialog.setData(gameSystem.user.Select(o => o.name).ToList());
+                    uiPlayerDialog.setData(gameSystem.players.Select(o => o.name).ToList());
 
-                    uiUserDetailDialog.Close();
+                    uiPlayerDetailDialog.Close();
 
-                    uiUserDialog.Visible = true;
+                    uiPlayerDialog.Visible = true;
                 },
                 cancelButtonClicked = () =>
                 {
-                    uiUserDetailDialog.Close();
+                    uiPlayerDetailDialog.Close();
 
-                    uiUserDialog.Visible = true;
+                    uiPlayerDialog.Visible = true;
                 }
             };
 
-            uiUserDetailDialog.Show();
+            uiPlayerDetailDialog.Show();
         }
 
-        private void onUserRemoveButtonClicked(string name)
+        private void onPlayerRemoveButtonClicked(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return;
 
-            var dialog = new UIConfirmDialog(gameSystem, "confirm", $"remove user {name} ?");
+            var dialog = new UIConfirmDialog(gameSystem, "confirm", $"remove player {name} ?");
 
             dialog.okButtonClicked = async () =>
             {
-                gameSystem.user.RemoveAll(o => o.name == name);
+                gameSystem.players.RemoveAll(o => o.name == name);
 
-                await FileHelper.saveUserInfo(gameSystem.user);
+                await FileHelper.savePlayer(gameSystem.players);
 
-                uiUserDialog.setData(gameSystem.user.Select(o => o.name).ToList());
+                uiPlayerDialog.setData(gameSystem.players.Select(o => o.name).ToList());
 
                 dialog.Close();
             };
@@ -134,74 +136,74 @@ namespace Client.Scene
             dialog.ShowDialog(formMain);
         }
 
-        private void onUserEditButtonClicked(string oldName)
+        private void onPlayerEditButtonClicked(string oldName)
         {
-            uiUserDialog.Visible = false;
+            uiPlayerDialog.Visible = false;
 
-            uiUserDetailDialog = new UIUserDetailDialog(gameSystem)
+            uiPlayerDetailDialog = new UIPlayerDetailDialog(gameSystem)
             {
                 Text = gameSystem.wording.edit,
                 okButtonClicked = async () =>
                 {
-                    var newName = uiUserDetailDialog.name;
+                    var newName = uiPlayerDetailDialog.name;
 
-                    if (!checkUser(ref newName)) return;
+                    if (!checkPlayer(ref newName)) return;
 
-                    gameSystem.user.SingleOrDefault(o => o.name == oldName).name = newName;
+                    gameSystem.players.SingleOrDefault(o => o.name == oldName).name = newName;
 
-                    await FileHelper.saveUserInfo(gameSystem.user);
+                    await FileHelper.savePlayer(gameSystem.players);
 
-                    uiUserDialog.setData(gameSystem.user.Select(o => o.name).ToList());
+                    uiPlayerDialog.setData(gameSystem.players.Select(o => o.name).ToList());
 
-                    uiUserDetailDialog.Close();
+                    uiPlayerDetailDialog.Close();
 
-                    uiUserDialog.Visible = true;
+                    uiPlayerDialog.Visible = true;
                 },
                 cancelButtonClicked = () =>
                 {
-                    uiUserDetailDialog.Close();
+                    uiPlayerDetailDialog.Close();
 
-                    uiUserDialog.Visible = true;
+                    uiPlayerDialog.Visible = true;
                 }
             };
 
-            uiUserDetailDialog.Show();
+            uiPlayerDetailDialog.Show();
         }
 
-        private void onUserOkButtonClicked()
+        private void onPlayerOkButtonClicked()
         {
-            var name = uiUserDialog.name;
+            var name = uiPlayerDialog.name;
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                new UIDialog(gameSystem, "alert", "select a user").ShowDialog(uiUserDialog);
+                new UIDialog(gameSystem, "alert", "select a player").ShowDialog(uiPlayerDialog);
 
                 return;
             }
 
-            var user = gameSystem.user.SingleOrDefault(o => o.name == name);
+            var player = gameSystem.players.SingleOrDefault(o => o.name == name);
 
-            if (user == null)
+            if (player == null)
             {
-                new UIConfirmDialog(gameSystem, "error", "select a user").ShowDialog(uiUserDialog);
+                new UIConfirmDialog(gameSystem, "error", "select a player").ShowDialog(uiPlayerDialog);
 
                 return;
             }
 
-            gameSystem.currentUser = user;
+            gameSystem.currentPlayer = player;
 
-            uiUserDialog.Visible = false;
+            uiPlayerDialog.Visible = false;
 
             showMainDialog();
         }
 
-        private bool checkUser(ref string name)
+        private bool checkPlayer(ref string name)
         {
             var n = name;
 
             if (string.IsNullOrWhiteSpace(name = name.Trim())) return false;
 
-            if (gameSystem.user.Any(o => o.name == n))
+            if (gameSystem.players.Any(o => o.name == n))
             {
                 new UIDialog(gameSystem, "error", "name existed").ShowDialog();
 
@@ -237,23 +239,21 @@ namespace Client.Scene
 
         private void testServer()
         {
-            var servers = gameSystem.currentUser.servers;
+            var servers = gameSystem.currentPlayer.servers;
 
-            var map = new ConcurrentDictionary<string, int?>();
+            var map = new ConcurrentDictionary<string, TestServerData>();
 
             uiStartGameDialog.setData(servers);
 
-            Task.Run(async () =>
+            servers.ForEach(async o =>
             {
                 try
                 {
-                    var tasks = servers.Select(o => new TestServerCommand().send(o, map, uiStartGameDialog, dispatcher));
-
-                    await Task.WhenAll(tasks);
+                    await TestServerCommand.send(o, map, uiStartGameDialog, dispatcher);
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e.ToString());
+                    Debug.WriteLine(e);
                 }
             });
         }
@@ -271,7 +271,7 @@ namespace Client.Scene
 
                     if (!checkServer(ref txtName, ref txtIp, ref txtPort, out var port)) return;
 
-                    gameSystem.currentUser.servers.Add(new ServerInfo()
+                    gameSystem.currentPlayer.servers.Add(new ServerInfo()
                     {
                         code = Guid.NewGuid().ToString(),
                         name = txtName,
@@ -279,7 +279,7 @@ namespace Client.Scene
                         port = port
                     });
 
-                    await FileHelper.saveUserInfo(gameSystem.user);
+                    await FileHelper.savePlayer(gameSystem.players);
 
                     loadGameServerList();
 
@@ -309,13 +309,13 @@ namespace Client.Scene
 
                     if (!checkServer(ref txtName, ref txtIp, ref txtPort, out var port)) return;
 
-                    var si = gameSystem.currentUser.servers.SingleOrDefault(o => o.code == code);
+                    var si = gameSystem.currentPlayer.servers.SingleOrDefault(o => o.code == code);
 
                     si.name = txtName;
                     si.ip = txtIp;
                     si.port = port;
 
-                    await FileHelper.saveUserInfo(gameSystem.user);
+                    await FileHelper.savePlayer(gameSystem.players);
 
                     loadGameServerList();
 
@@ -334,15 +334,15 @@ namespace Client.Scene
 
         private void onStartGameRemoveButtonClicked(string code)
         {
-            var name = gameSystem.currentUser.servers.SingleOrDefault(o => o.code == code).name;
+            var name = gameSystem.currentPlayer.servers.SingleOrDefault(o => o.code == code).name;
 
             var dialog = new UIConfirmDialog(gameSystem, "confirm", $"remove {name} ?");
 
             dialog.okButtonClicked = async () =>
             {
-                gameSystem.currentUser.servers.RemoveAll(o => o.code == code);
+                gameSystem.currentPlayer.servers.RemoveAll(o => o.code == code);
 
-                await FileHelper.saveUserInfo(gameSystem.user);
+                await FileHelper.savePlayer(gameSystem.players);
 
                 loadGameServerList();
 
@@ -359,7 +359,41 @@ namespace Client.Scene
 
         private void onStartGameOkButtonClicked()
         {
+            var code = uiStartGameDialog.selectedValue;
 
+            if (code == null) return;
+
+            uiStartGameDialog.Visible = false;
+
+            var si = gameSystem.currentPlayer.servers.SingleOrDefault(o => o.code == code);
+
+            var s = gameSystem.sceneToWaiting();
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await JoinGameCommand.execute(si, gameSystem.currentPlayer.code, s, gameSystem);
+
+                    dispatcher.invoke(() => uiStartGameDialog.Close());
+                }
+                catch (SocketException e)
+                when (e.SocketErrorCode == SocketError.ConnectionRefused)
+                {
+                    MessageBox.Show("server disconnected.");
+
+                    dispatcher.invoke(() =>
+                    {
+                        uiStartGameDialog.Visible = true;
+
+                        gameSystem.sceneManager.switchStatus(this);
+                    });
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                }
+            });
         }
 
         private bool checkServer(ref string txtName, ref string txtIp, ref string txtPort, out int port)
@@ -453,7 +487,7 @@ namespace Client.Scene
 
                     await gw.gameWorldProcessor.map.loadMasterData(gw);
 
-                    dispatcher.invoke(() => gameSystem.sceneToEditGame(gw));
+                    gameSystem.dispatchSceneToEditGame(gw);
                 });
             };
 
@@ -525,14 +559,14 @@ namespace Client.Scene
             loadGameWorldMapList();
         }
 
-        private void onSelectUser()
+        private void onSelectPlayer()
         {
             uiMainMenuWindow.Visible = false;
 
-            showUserDialog();
+            showPlayerDialog();
         }
 
-        private void loadGameServerList() => uiStartGameDialog.setData(gameSystem.currentUser.servers);
+        private void loadGameServerList() => uiStartGameDialog.setData(gameSystem.currentPlayer.servers);
 
         private void loadGameWorldMapList() => uiEditGameDialog.setData(GameWorldProcessor.getMapList());
     }

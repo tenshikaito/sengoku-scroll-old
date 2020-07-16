@@ -9,7 +9,7 @@ namespace Client.UI.SceneTitle
 {
     public class UIMainMenuWindow : UIWindow
     {
-        public UIMainMenuWindow(GameSystem gs, Action startGame, Action editGame, Action selectUser) : base(gs)
+        public UIMainMenuWindow(GameSystem gs, Action startGame, Action editGame, Action selectPlayer) : base(gs)
         {
             this.setCommandWindow(w.scene_title.start).setAutoSizeF().setCenter();
 
@@ -17,7 +17,7 @@ namespace Client.UI.SceneTitle
 
             new Button().init(w.scene_title.edit_game, editGame).setAutoSize().addTo(panel);
 
-            new Button().init(w.scene_title.select_user, selectUser).setAutoSize().addTo(panel);
+            new Button().init(w.scene_title.select_player, selectPlayer).setAutoSize().addTo(panel);
         }
     }
 }

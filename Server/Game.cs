@@ -56,7 +56,8 @@ namespace Server
 
         private Dictionary<string, CommandBase> serverCommandMap => new Dictionary<string, CommandBase>()
         {
-            { nameof(TestServerCommand), new TestServerCommand(this) }
+            { nameof(TestServerCommand), new TestServerCommand(this) },
+            { nameof(JoinGameCommand), new JoinGameCommand(this) }
         };
 
         private Dictionary<string, CommandBase> gameCommandMap => new Dictionary<string, CommandBase>()
@@ -72,13 +73,25 @@ namespace Server
 
             Task.Run(async () =>
             {
-                var (hasResult, data) = await gc.read();
+                try
+                {
+                    var (hasResult, data) = await gc.read();
 
-                var cmd = data.fromCommandString();
+                    var cmd = data.fromCommandString();
 
-                var r = await serverCommandProcessor.execute(gc, cmd.name, cmd.data);
+                    var r = await serverCommandProcessor.execute(gc, cmd.name, cmd.data);
 
-                if (!r) disconnect(gc);
+                    if (!r)
+                    {
+                        Debug.WriteLine("unknown command: " + cmd.name);
+
+                        disconnect(gc);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                }
             });
         }
 
@@ -134,11 +147,16 @@ namespace Server
                 {
                     var cmd = msg.Value.fromCommandString();
 
-                    await gameCommandProcessor.execute(msg.Key, cmd.name, cmd.data);
+                    var r = await gameCommandProcessor.execute(msg.Key, cmd.name, cmd.data);
+
+                    if (!r)
+                    {
+                        Debug.WriteLine("unknown command: " + cmd.name);
+                    }
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e.ToString());
+                    Debug.WriteLine(e);
                 }
 
                 if (messages.IsEmpty) messageLock.Reset();
