@@ -54,7 +54,7 @@ namespace Library.Helper
         {
             if (buffer.Length < dataLengthByteLength) return (false, null);
 
-            var length = BitConverter.ToInt32(buffer.Slice(0, dataLengthByteLength).ToArray(), 0);
+            var length = BitConverter.ToInt32(buffer.Slice(0, dataLengthByteLength).ToArray());
 
             if (buffer.Length - dataLengthByteLength < length) return (false, null);
 
@@ -114,6 +114,8 @@ namespace Library.Helper
         {
             sendDataBytes = sendDataBytes ?? new List<byte>();
 
+            sendDataBytes.Clear();
+
             var r = combineDataStream(sendDataBytes, data);
 
             await ns.WriteAsync(r, ct);
@@ -123,11 +125,11 @@ namespace Library.Helper
 
         public static byte[] combineDataStream(List<byte> sendDataBytes, string data)
         {
-            var buffer = BitConverter.GetBytes(data.Length);
+            var buffer = encoding.GetBytes(data);
 
-            sendDataBytes.AddRange(buffer);
+            var length = BitConverter.GetBytes(buffer.Length);
 
-            buffer = encoding.GetBytes(data);
+            sendDataBytes.AddRange(length);
 
             sendDataBytes.AddRange(buffer);
 

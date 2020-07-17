@@ -176,7 +176,7 @@ namespace Client.Scene
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                new UIDialog(gameSystem, "alert", "select a player").ShowDialog(uiPlayerDialog);
+                new UIDialog(gameSystem, "alert", "select a player").ShowDialog(formMain);
 
                 return;
             }
@@ -452,7 +452,13 @@ namespace Client.Scene
                 {
                     var (name, width, height) = uiGameWorldDetailDialog.value;
 
-                    await onCreateGameWorld(name, width, height);
+                    var r = await onCreateGameWorld(name, width, height);
+
+                    if (!r) return;
+
+                    uiGameWorldDetailDialog.Close();
+
+                    loadGameWorldMapList();
 
                     uiEditGameDialog.Visible = true;
                 },
@@ -520,43 +526,41 @@ namespace Client.Scene
             dialog.ShowDialog(formMain);
         }
 
-        private async Task onCreateGameWorld(string name, string txtWidth, string txtHeight)
+        private async ValueTask<bool> onCreateGameWorld(string name, string txtWidth, string txtHeight)
         {
             name = name.Trim();
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                MessageBox.Show("game_world_name");
-                return;
+                new UIDialog(gameSystem, "error", "game_world_name").ShowDialog(formMain);
+                return false;
             }
             if (!int.TryParse(txtWidth.Trim(), out var width))
             {
-                MessageBox.Show("width_number");
-                return;
+                new UIDialog(gameSystem, "error", "width_number").ShowDialog(formMain);
+                return false;
             }
             if (!int.TryParse(txtHeight.Trim(), out var height))
             {
-                MessageBox.Show("height_number");
-                return;
+                new UIDialog(gameSystem, "error", "height_number").ShowDialog(formMain);
+                return false;
             }
 
             if (width < 100 || height < 100)
             {
-                MessageBox.Show("map size > 100");
-                return;
+                new UIDialog(gameSystem, "error", "map size > 100").ShowDialog(formMain);
+                return false;
             }
 
             var gwp = new GameWorldProcessor(name);
 
             if (!await gwp.map.createDirectory(width, height))
             {
-                MessageBox.Show("create_failed");
-                return;
+                new UIDialog(gameSystem, "error", "create_failed").ShowDialog(formMain);
+                return false;
             }
 
-            uiGameWorldDetailDialog.Close();
-
-            loadGameWorldMapList();
+            return true;
         }
 
         private void onSelectPlayer()

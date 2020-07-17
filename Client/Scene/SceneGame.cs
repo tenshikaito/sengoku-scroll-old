@@ -24,19 +24,25 @@ namespace Client.Scene
     {
         private GameWorld gameWorld;
 
+        private MainTileMapStatus mainTileMapStatus;
+
         private Camera camera => gameWorld.camera;
 
         public SceneGame(GameSystem gs, GameWorld gw) : base(gs)
         {
             gameWorld = gw;
+
+            mainTileMapStatus = new MainTileMapStatus(this);
         }
 
         public override void start()
         {
+            switchStatus(mainTileMapStatus);
         }
 
         public override void finish()
         {
+            mainTileMapStatus.finish();
         }
     }
 

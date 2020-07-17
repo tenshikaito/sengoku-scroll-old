@@ -24,6 +24,8 @@ namespace Client.UI.SceneTitle
                 .addColumn(w.game_world)
                 .addColumn(w.status);
 
+            listView.DoubleClick += (s, e) => btnOk.PerformClick();
+
             addButton(w.refresh, () => refreshButtonClicked?.Invoke());
 
             addConfirmButtons();
