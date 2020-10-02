@@ -1,6 +1,9 @@
 ﻿using Library;
 using Library.Helper;
+using Library.Model;
 using Library.Network;
+using Server.Game.Model;
+using Server.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +14,7 @@ namespace Server.Command
 {
     public class JoinGameCommand : CommandBase
     {
-        public JoinGameCommand(Game g) : base(g)
+        public JoinGameCommand(GameService g) : base(g)
         {
         }
 
@@ -21,14 +24,35 @@ namespace Server.Command
 
             var gw = game.gameWorld;
 
-            var ngw = new GameWorldMap(game.gameWorldName)
+            var ngw = new JoinGameResponseData.GameWorldMapModel(game.gameWorldName)
             {
                 resourcePackageName = gw.resourcePackageName,
                 gameDate = gw.gameDate,
                 masterData = gw.masterData,
                 gameData = gw.gameData,
-                mainTileMap = gw.mainTileMap,
+                tileMap = gw.tileMap,
             };
+
+            var p = game.gameWorld.gameData.player.map.Values.SingleOrDefault(o => o.code == request.playerCode);
+
+            if (p == null)
+            {
+                var gp = game.gameWorld.player.map.Values.SingleOrDefault(o => o.code == request.playerCode) ?? new GamePlayer()
+                {
+                    id = game.gameWorld.player.getNextId(),
+                    playerName = request.playerName,
+                    code = request.playerCode,
+                    gameClient = gc,
+                    player = p = new Player()
+                    {
+                        id = game.gameWorld.gameData.player.getNextId(),
+                        code = request.playerCode
+                    }
+                };
+
+                game.gameWorld.gameData.player[p.id] = p;
+                game.gameWorld.player[gp.id] = gp;
+            }
 
             var response = new JoinGameResponseData()
             {

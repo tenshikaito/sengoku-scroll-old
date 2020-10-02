@@ -12,7 +12,7 @@ namespace Server.Command
 {
     public class TestServerCommand : CommandBase
     {
-        public TestServerCommand(Game g) : base(g)
+        public TestServerCommand(GameService g) : base(g)
         {
         }
 

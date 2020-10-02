@@ -1,4 +1,5 @@
-﻿using Client.Model;
+﻿using Client.Game;
+using Client.Model;
 using Client.Scene;
 using Library;
 using Library.Helper;
@@ -14,7 +15,7 @@ namespace Client.Command
 {
     public class JoinGameCommand
     {
-        public static async Task execute(ServerInfo si, string playerCode, SceneWaiting sw, GameSystem gs)
+        public static async Task execute(ServerInfo si, PlayerInfo pi, SceneWaiting sw, GameSystem gs)
         {
             var w = gs.wording;
 
@@ -30,23 +31,19 @@ namespace Client.Command
 
                 await gc.write(new JoinGameRequestData()
                 {
-                    playerCode = playerCode
+                    playerCode = pi.code,
+                    playerName = pi.name
                 }.toCommandString(nameof(JoinGameCommand)));
 
                 var (hasResult, data) = await gc.read();
 
                 var c = data.fromJson<JoinGameResponseData>();
+
                 var gwp = c.gameWorldMap;
 
-                var gw = new GameWorld(gwp.name)
-                {
-                    resourcePackageName = gwp.resourcePackageName,
-                    gameDate = gwp.gameDate,
-                    masterData = gwp.masterData,
-                    gameData = gwp.gameData,
-                    mainTileMap = gwp.mainTileMap,
-                    camera = new Camera(gs.screenWidth, gs.screenHeight),
-                };
+                var gw = gwp.toJson().fromJson<GameWorld>();
+
+                gw.camera = new Camera(gs.screenWidth, gs.screenHeight);
 
                 gw.init();
 

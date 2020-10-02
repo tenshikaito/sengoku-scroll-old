@@ -1,4 +1,5 @@
-﻿using Client.Helper;
+﻿using Client.Game;
+using Client.Helper;
 using Library;
 using Library.Helper;
 using Library.Model;
@@ -12,9 +13,9 @@ using System.Windows.Forms;
 
 namespace Client.Graphic
 {
-    public abstract class MainTileMapSprites : TileMapSpritesBase
+    public abstract class TileMapSprites : TileMapSpritesBase
     {
-        private MainMapSpritesInfo mapSpritesInfo;
+        private MapSpritesInfo mapSpritesInfo;
 
         private AutoTileSprite tileSprite;
         private SpriteRectangle selector;
@@ -30,16 +31,16 @@ namespace Client.Graphic
 
         public override int tileHeight => tileMapImageInfo.tileSize.Height;
 
-        protected override TileMap map => gameWorld.mainTileMap;
+        protected override TileMap map => gameWorld.tileMap;
 
-        private MainTileMap tileMap => gameWorld.mainTileMap;
+        private TileMap tileMap => gameWorld.tileMap;
 
         protected abstract TileMapImageInfo tileMapImageInfo { get; }
 
         private DateTime lastUpdateTime = DateTime.Now;
         private static TimeSpan nextFrameSpan = TimeSpan.FromMilliseconds(500);
 
-        public MainTileMapSprites(GameSystem gs, GameWorld gw, MainMapSpritesInfo msi, bool isEditor = false)
+        public TileMapSprites(GameSystem gs, GameWorld gw, MapSpritesInfo msi, bool isEditor = false)
             : base(gs, gw, isEditor)
         {
             mapSpritesInfo = msi;
@@ -109,7 +110,7 @@ namespace Client.Graphic
         private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, MainMapTile t, bool isSurface, bool isSurfaceDone)
         {
             var md = gameWorld.masterData;
-            var tt = md.mainTileMapTerrain[isSurface ? t.terrainSurface.Value : t.terrain];
+            var tt = md.tileMapTerrain[isSurface ? t.terrainSurface.Value : t.terrain];
             var s = terrainSprite[tt.imageId];
 
             switch (gameWorld.gameDate.season)
@@ -182,14 +183,12 @@ namespace Client.Graphic
             g.drawRectangle(selector);
         }
 
-        public class MainMapSpritesInfo : MapSpritesInfo
+        public new class MapSpritesInfo : TileMapSpritesBase.MapSpritesInfo
         {
-            protected override TileMap tileMap => gameWorld.mainTileMap;
-            protected override Dictionary<int, Terrain> terrain => gameWorld.masterData.mainTileMapTerrain;
+            protected override TileMap tileMap => gameWorld.tileMap;
+            protected override Dictionary<int, Terrain> terrain => gameWorld.masterData.tileMapTerrain;
 
-            public MainTileMap mainTileMap => gameWorld.mainTileMap;
-
-            public MainMapSpritesInfo(GameWorld gw) : base(gw)
+            public MapSpritesInfo(GameWorld gw) : base(gw)
             {
             }
 
@@ -197,7 +196,7 @@ namespace Client.Graphic
             {
                 if (tileMap.isOutOfBounds(p)) return 0;
 
-                var t = mainTileMap[p];
+                var t = tileMap[p];
                 var y = p.y;
                 var x = p.x;
 
@@ -209,7 +208,7 @@ namespace Client.Graphic
                     else tid = t.terrainSurface.Value;
                 }
 
-                if (!gameWorld.masterData.mainTileMapTerrain.TryGetValue(tid, out var tt)) return 0;
+                if (!gameWorld.masterData.tileMapTerrain.TryGetValue(tid, out var tt)) return 0;
 
                 byte flag = 0;
 
@@ -231,7 +230,7 @@ namespace Client.Graphic
 
                 if (tileMap.isOutOfBounds(p)) return;
 
-                var tt = mainTileMap[p];
+                var tt = tileMap[p];
 
                 var tid = tt.terrain;
 
@@ -248,18 +247,18 @@ namespace Client.Graphic
                     }
                 }
 
-                if (!gameWorld.masterData.mainTileMapTerrain.TryGetValue(tid, out var ttt)) return;
+                if (!gameWorld.masterData.tileMapTerrain.TryGetValue(tid, out var ttt)) return;
 
                 if (t.imageId != ttt.imageId) flag |= direction;
             }
         }
     }
 
-    public class MainTileMapViewSprites : MainTileMapSprites
+    public class MainTileMapViewSprites : TileMapSprites
     {
-        protected override TileMapImageInfo tileMapImageInfo => gameWorld.masterData.mainTileMapViewImageInfo;
+        protected override TileMapImageInfo tileMapImageInfo => gameWorld.masterData.tileMapViewImageInfo;
 
-        public MainTileMapViewSprites(GameSystem gs, GameWorld gw, MainMapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
+        public MainTileMapViewSprites(GameSystem gs, GameWorld gw, MapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
         {
             var ti = gameWorld.masterData.terrainImage;
             var list = ti.Values.ToList();
@@ -284,11 +283,11 @@ namespace Client.Graphic
         }
     }
 
-    public class MainTileMapDetailSprites : MainTileMapSprites
+    public class MainTileMapDetailSprites : TileMapSprites
     {
-        protected override TileMapImageInfo tileMapImageInfo => gameWorld.masterData.mainTileMapDetailImageInfo;
+        protected override TileMapImageInfo tileMapImageInfo => gameWorld.masterData.tileMapDetailImageInfo;
 
-        public MainTileMapDetailSprites(GameSystem gs, GameWorld gw, MainMapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
+        public MainTileMapDetailSprites(GameSystem gs, GameWorld gw, MapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
         {
             var ti = gameWorld.masterData.terrainImage;
             var list = ti.Values.ToList();

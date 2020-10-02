@@ -7,6 +7,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Model\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <None Remove="Model\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="GameData.cs" />
+    <Compile Remove="Helper\ExampleHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Model\Climate.cs" />
+    <Compile Include="Model\Culture.cs" />
+    <Compile Include="Model\Direction4.cs" />
+    <Compile Include="Model\Point.cs" />
+    <Compile Include="Model\Policy.cs" />
+    <Compile Include="Model\Region.cs" />
+    <Compile Include="Model\Relationship.cs" />
+    <Compile Include="Model\Religion.cs" />
+    <Compile Include="Model\Road.cs" />
+    <Compile Include="Model\Terrain.cs" />
+    <Compile Include="Model\TerrainImage.cs" />
+    <Compile Include="Model\Tile.cs" />
+    <Compile Include="Model\TileObject.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="audio\bgm\" />
     <Folder Include="audio\se\" />
     <Folder Include="resource\default\audio\bgm\" />

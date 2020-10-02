@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Library
 {
-    public class GameResourceProcessor
+    public class GameResourceManager
     {
         private const string DirName = "resource";
         private const string ImageDirName = "image";
@@ -19,7 +19,7 @@ namespace Library
         private string packagePath;
         private string packageFullPath;
 
-        public GameResourceProcessor(string packageName = "default")
+        public GameResourceManager(string packageName = "default")
         {
             packageName = packageName ?? "default";
 

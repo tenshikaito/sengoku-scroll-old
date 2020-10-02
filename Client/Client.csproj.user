@@ -8,9 +8,6 @@
     <Compile Update="UI\SceneEditGameWorld\UIEditGameWorldDatabaseWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="UI\SceneEditGameWorld\UIEditGameWorldDetailTileMapListDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="UI\SceneEditGameWorld\UIEditGameWorldDetailTileMapMenuWindow.cs">
       <SubType>Form</SubType>
     </Compile>

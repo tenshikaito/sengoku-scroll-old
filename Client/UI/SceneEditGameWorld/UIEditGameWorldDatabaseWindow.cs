@@ -1,4 +1,5 @@
-﻿using Client.Helper;
+﻿using Client.Game;
+using Client.Helper;
 using Library;
 using Library.Helper;
 using Library.Model;
@@ -27,7 +28,7 @@ namespace Client.UI.SceneEditGameWorld
 
             var tc = tabControl = new TabControl() { MinimumSize = new System.Drawing.Size(720, 480) }.init().setAutoSize().addTo(panel);
 
-            new TabPageTerrain(this, gameWorldMasterData.mainTileMapTerrain, gameWorldMasterData.terrainImage).addTo(tc);
+            new TabPageTerrain(this, gameWorldMasterData.tileMapTerrain, gameWorldMasterData.terrainImage).addTo(tc);
 
             new TabPageRegion(this, gameWorldMasterData.region).addTo(tc);
 
@@ -37,11 +38,11 @@ namespace Client.UI.SceneEditGameWorld
 
             new TabPageRoad(this, gameWorldMasterData.road).addTo(tc);
 
-            new TabPageStronghold(this, gameWorldMasterData.strongholdType, gameWorldMasterData).addTo(tc);
+            //new TabPageStronghold(this, gameWorldMasterData.strongholdType, gameWorldMasterData).addTo(tc);
 
             //new TabPageDetailTileMapInfo(this, gameWorldMasterData.detailTileMapInfo, gameWorldMasterData.detailTileMapTerrain).addTo(tc);
 
-            new TabPageTerrainImage(this, gameWorldMasterData.terrainImage, gameWorldMasterData.mainTileMapTerrain).addTo(tc);
+            new TabPageTerrainImage(this, gameWorldMasterData.terrainImage, gameWorldMasterData.tileMapTerrain).addTo(tc);
 
             addSaveableConfirmButtons();
         }
@@ -921,330 +922,155 @@ namespace Client.UI.SceneEditGameWorld
 
     public partial class UIEditGameWorldDatabaseWindow
     {
-        private class TabPageStronghold : TabPageBase
-        {
-            private MasterData gameData;
-            private Dictionary<int, Stronghold.Type> data;
-            private int? currentId;
+        //private class TabPageStronghold : TabPageBase
+        //{
+        //    private MasterData gameData;
+        //    private Dictionary<int, Stronghold.Type> data;
+        //    private int? currentId;
 
-            private TextBox tbName;
-            private TextBox tbCulture;
-            private TextBox tbIntroduction;
+        //    private TextBox tbName;
+        //    private TextBox tbCulture;
+        //    private TextBox tbIntroduction;
 
-            public TabPageStronghold(
-                UIEditGameWorldDatabaseWindow bw, Dictionary<int, Stronghold.Type> data, MasterData gameData)
-                : base(bw)
-            {
-                this.gameData = gameData;
-                this.data = data;
+        //    public TabPageStronghold(
+        //        UIEditGameWorldDatabaseWindow bw, Dictionary<int, Stronghold.Type> data, MasterData gameData)
+        //        : base(bw)
+        //    {
+        //        this.gameData = gameData;
+        //        this.data = data;
 
-                this.init(w.stronghold_type.text).setAutoSizeP();
+        //        this.init(w.stronghold_type.text).setAutoSizeP();
 
-                var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
+        //        var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
 
-                lv.addColumn(w.id)
-                    .addColumn(w.name)
-                    .addColumn(w.culture.text);
+        //        lv.addColumn(w.id)
+        //            .addColumn(w.name)
+        //            .addColumn(w.culture.text);
 
-                lv.Click += (s, e) =>
-                {
-                    if (lv.FocusedItem == null) return;
+        //        lv.Click += (s, e) =>
+        //        {
+        //            if (lv.FocusedItem == null) return;
 
-                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
-                };
+        //            onListViewClicked(lv, (int)lv.FocusedItem.Tag);
+        //        };
 
-                var p2 = new TableLayoutPanel()
-                {
-                    Dock = DockStyle.Fill,
-                    ColumnCount = 1,
-                    RowCount = 2
-                }.addRowStyle(80).addTo(sc);
+        //        var p2 = new TableLayoutPanel()
+        //        {
+        //            Dock = DockStyle.Fill,
+        //            ColumnCount = 1,
+        //            RowCount = 2
+        //        }.addRowStyle(80).addTo(sc);
 
-                var gb = new GroupBox()
-                {
-                    Dock = DockStyle.Fill,
-                    Text = w.scene_edit_game_world.property
-                }.addTo(p2);
+        //        var gb = new GroupBox()
+        //        {
+        //            Dock = DockStyle.Fill,
+        //            Text = w.scene_edit_game_world.property
+        //        }.addTo(p2);
 
-                var p3 = new TableLayoutPanel()
-                {
-                    Dock = DockStyle.Fill,
-                    ColumnCount = 2,
-                    RowCount = 3,
-                    AutoScroll = true
-                }.addTo(gb);
+        //        var p3 = new TableLayoutPanel()
+        //        {
+        //            Dock = DockStyle.Fill,
+        //            ColumnCount = 2,
+        //            RowCount = 3,
+        //            AutoScroll = true
+        //        }.addTo(gb);
 
-                new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+        //        new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
+        //        tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.culture.text + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbCulture = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
+        //        new Label().init(w.culture.text + ":").setAutoSize().setRightCenter().addTo(p3);
+        //        tbCulture = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
 
-                new Label().init(w.introduction + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbIntroduction = new TextBox().refreshListViewOnClick(lv, refresh).setMultiLine().addTo(p3);
+        //        new Label().init(w.introduction + ":").setAutoSize().setRightCenter().addTo(p3);
+        //        tbIntroduction = new TextBox().refreshListViewOnClick(lv, refresh).setMultiLine().addTo(p3);
 
-                new Label().init("").addTo(p3);
+        //        new Label().init("").addTo(p3);
 
-                initData(lv);
+        //        initData(lv);
 
-                lv.autoResizeColumns();
-            }
+        //        lv.autoResizeColumns();
+        //    }
 
-            private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
-
-            private void onAddButtonClicked(ListView lv)
-            {
-                var max = data.getMaxId(0);
+        //    private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
 
-                if (++max > int.MaxValue) return;
+        //    private void onAddButtonClicked(ListView lv)
+        //    {
+        //        var max = data.getMaxId(0);
 
-                var oo = new Stronghold.Type()
-                {
-                    id = max,
-                    name = w.stronghold_type.text,
-                    introduction = string.Empty
-                };
+        //        if (++max > int.MaxValue) return;
 
-                data[oo.id] = oo;
-
-                var lvi = new ListViewItem()
-                {
-                    Tag = oo.id
-                };
+        //        var oo = new Stronghold.Type()
+        //        {
+        //            id = max,
+        //            name = w.stronghold_type.text,
+        //            introduction = string.Empty
+        //        };
 
-                lv.Items.Add(setRow(lvi, oo));
+        //        data[oo.id] = oo;
 
-                lv.autoResizeColumns();
-            }
+        //        var lvi = new ListViewItem()
+        //        {
+        //            Tag = oo.id
+        //        };
 
-            private void onDeleteButtonClicked(ListView lv, int id)
-            {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
-
-                data.Remove(id);
-
-                if (currentId == id) currentId = null;
-
-                lv.autoResizeColumns();
-            }
-
-            private ListViewItem setRow(ListViewItem lvi, Stronghold.Type o)
-            {
-                lvi.Text = o.id.ToString();
-
-                return lvi.addColumn(o.name).addColumn(o.culture != null && gameData.culture.TryGetValue(o.culture.Value, out var c) ? $"{c.id}:{c.name}" : w.none);
-            }
-
-            private void refresh(ListView lv)
-            {
-                if (currentId != null)
-                {
-                    var oo = data[(int)currentId];
-
-                    oo.name = tbName.Text;
-                    oo.culture = int.TryParse(tbCulture.Text, out var c) ? c : (int?)null;
-                    oo.introduction = tbIntroduction.Text;
-
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
-
-                    if (lvi != null)
-                    {
-                        lvi.SubItems.Clear();
-
-                        setRow(lvi, oo);
-
-                        lv.autoResizeColumns();
-                    }
-                }
-            }
+        //        lv.Items.Add(setRow(lvi, oo));
 
-            private void onListViewClicked(ListView lv, int id)
-            {
-                refresh(lv);
+        //        lv.autoResizeColumns();
+        //    }
 
-                currentId = id;
-                var o = data[id];
+        //    private void onDeleteButtonClicked(ListView lv, int id)
+        //    {
+        //        lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
 
-                tbName.Text = o.name;
-                tbCulture.Text = o.culture?.ToString() ?? string.Empty;
-                tbIntroduction.Text = o.introduction;
-            }
-        }
-    }
+        //        data.Remove(id);
 
-    public partial class UIEditGameWorldDatabaseWindow
-    {
-        private partial class TabPageDetailTileMapInfo : TabPageBase
-        {
-            private Dictionary<int, DetailTileMapInfo> data;
-            private Dictionary<int, Terrain> terrain;
-            private int? currentId;
+        //        if (currentId == id) currentId = null;
 
-            private TextBox tbName;
-            private TextBox tbMapWidth;
-            private TextBox tbMapHeight;
-            private ComboBox cbTerrain;
+        //        lv.autoResizeColumns();
+        //    }
 
-            public TabPageDetailTileMapInfo(
-                UIEditGameWorldDatabaseWindow bw, Dictionary<int, DetailTileMapInfo> data, Dictionary<int, Terrain> terrain)
-                : base(bw)
-            {
-                this.data = data;
-                this.terrain = terrain;
+        //    private ListViewItem setRow(ListViewItem lvi, Stronghold.Type o)
+        //    {
+        //        lvi.Text = o.id.ToString();
 
-                this.init(w.detail_tile_map).setAutoSizeP();
+        //        return lvi.addColumn(o.name).addColumn(o.culture != null && gameData.culture.TryGetValue(o.culture.Value, out var c) ? $"{c.id}:{c.name}" : w.none);
+        //    }
 
-                bw.tabControl.SelectedIndexChanged += (s, e) =>
-                {
-                    if (bw.tabControl.SelectedTab == this) refresh();
-                };
+        //    private void refresh(ListView lv)
+        //    {
+        //        if (currentId != null)
+        //        {
+        //            var oo = data[(int)currentId];
 
-                var (sc, pl, lv) = createIndexControl(onAddButtonClicked, onDeleteButtonClicked);
+        //            oo.name = tbName.Text;
+        //            oo.culture = int.TryParse(tbCulture.Text, out var c) ? c : (int?)null;
+        //            oo.introduction = tbIntroduction.Text;
 
-                lv.addColumn(w.id)
-                    .addColumn(w.name)
-                    .addColumn(w.width)
-                    .addColumn(w.height)
-                    .addColumn(w.terrain.text);
+        //            var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
 
-                lv.Click += (s, e) =>
-                {
-                    if (lv.FocusedItem == null) return;
+        //            if (lvi != null)
+        //            {
+        //                lvi.SubItems.Clear();
 
-                    onListViewClicked(lv, (int)lv.FocusedItem.Tag);
-                };
+        //                setRow(lvi, oo);
 
-                var p2 = new TableLayoutPanel()
-                {
-                    Dock = DockStyle.Fill,
-                    ColumnCount = 1,
-                    RowCount = 2
-                }.addRowStyle(80).addRowStyle(20).addTo(sc);
+        //                lv.autoResizeColumns();
+        //            }
+        //        }
+        //    }
 
-                var gb = new GroupBox()
-                {
-                    Dock = DockStyle.Fill,
-                    Text = w.scene_edit_game_world.property
-                }.addTo(p2);
+        //    private void onListViewClicked(ListView lv, int id)
+        //    {
+        //        refresh(lv);
 
-                var p3 = new TableLayoutPanel()
-                {
-                    Dock = DockStyle.Fill,
-                    ColumnCount = 2,
-                    RowCount = 2,
-                    AutoScroll = true
-                }.addTo(gb);
+        //        currentId = id;
+        //        var o = data[id];
 
-                new Label().init(w.name + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbName = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init(w.width + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbMapWidth = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init(w.height + ":").setAutoSize().setRightCenter().addTo(p3);
-                tbMapHeight = new TextBox().refreshListViewOnClick(lv, refresh).addTo(p3);
-
-                new Label().init(w.terrain.text + ":").setAutoSize().setRightCenter().addTo(p3);
-                cbTerrain = new ComboBox().initDropDownList<int>().addTo(p3);
-
-                new Label().init("").addTo(p3);
-
-                initData(lv);
-
-                lv.autoResizeColumns();
-
-                refresh();
-            }
-
-            private void initData(ListView lv) => data.Values.ToList().ForEach(o => lv.Items.Add(setRow(new ListViewItem() { Tag = o.id }, o)));
-
-            private void refresh() => cbTerrain.setDropDownList(terrain.Select(o => new KeyValuePair<int, string>(o.Key, o.Value.name)).ToList());
-
-            private void onAddButtonClicked(ListView lv)
-            {
-                var max = data.getMaxId(0);
-
-                if (++max > int.MaxValue) return;
-
-                var oo = new DetailTileMapInfo()
-                {
-                    id = max,
-                    name = w.detail_tile_map,
-                    size = new TileMap.Size(100, 100),
-                };
-
-                data[oo.id] = oo;
-
-                var lvi = new ListViewItem()
-                {
-                    Tag = oo.id
-                };
-
-                lv.Items.Add(setRow(lvi, oo));
-
-                lv.autoResizeColumns();
-            }
-
-            private void onDeleteButtonClicked(ListView lv, int id)
-            {
-                lv.Items.Remove(lv.Items.Cast<ListViewItem>().First(o => (int)o.Tag == id));
-
-                data.Remove(id);
-
-                if (currentId == id) currentId = null;
-
-                lv.autoResizeColumns();
-            }
-
-            private ListViewItem setRow(ListViewItem lvi, DetailTileMapInfo o)
-            {
-                lvi.Text = o.id.ToString();
-
-                lvi.addColumn(o.name);
-                lvi.addColumn(o.size.column.ToString());
-                lvi.addColumn(o.size.row.ToString());
-                lvi.addColumn(terrain.TryGetValue(o.terrainId, out var t) ? t.name : w.symbol_unselected);
-
-                return lvi;
-            }
-
-            private void refresh(ListView lv)
-            {
-                if (currentId != null)
-                {
-                    var oo = data[(int)currentId];
-
-                    oo.name = tbName.Text;
-                    oo.size.column = int.TryParse(tbMapWidth.Text, out var width) ? width : 100;
-                    oo.size.row = int.TryParse(tbMapHeight.Text, out var height) ? height : 100;
-                    if (cbTerrain.SelectedValue != null) oo.terrainId = (int)cbTerrain.SelectedValue;
-
-                    var lvi = lv.Items.Cast<ListViewItem>().FirstOrDefault(o => (int)o.Tag == currentId);
-
-                    if (lvi != null)
-                    {
-                        lvi.SubItems.Clear();
-
-                        setRow(lvi, oo);
-
-                        lv.autoResizeColumns();
-                    }
-                }
-            }
-
-            private void onListViewClicked(ListView lv, int id)
-            {
-                refresh(lv);
-
-                currentId = id;
-                var o = data[id];
-
-                tbName.Text = o.name;
-                tbMapWidth.Text = o.size.column.ToString();
-                tbMapHeight.Text = o.size.row.ToString();
-                cbTerrain.SelectedValue = o.terrainId;
-            }
-        }
+        //        tbName.Text = o.name;
+        //        tbCulture.Text = o.culture?.ToString() ?? string.Empty;
+        //        tbIntroduction.Text = o.introduction;
+        //    }
+        //}
     }
 
     public partial class UIEditGameWorldDatabaseWindow

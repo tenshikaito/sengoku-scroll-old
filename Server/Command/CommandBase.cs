@@ -10,9 +10,9 @@ namespace Server.Command
 {
     public abstract class CommandBase
     {
-        protected Game game;
+        protected GameService game;
 
-        public CommandBase(Game g) => game = g;
+        public CommandBase(GameService g) => game = g;
 
         public abstract Task execute(GameClient gc, string data);
     }

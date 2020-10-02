@@ -27,7 +27,7 @@ namespace Server
         private TextBox tbConsoleInput;
 
         private GameSystem gameSystem;
-        private Game game;
+        private GameService game;
 
         public FormMain(Option option, Wording wording)
         {
@@ -140,7 +140,7 @@ namespace Server
                 return;
             }
 
-            game = new Game(option, (string)gameName.Tag);
+            game = new GameService(option, (string)gameName.Tag);
 
             game.start();
 

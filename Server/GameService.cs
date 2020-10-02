@@ -2,6 +2,7 @@
 using Library.Helper;
 using Library.Network;
 using Server.Command;
+using Server.Game;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-    public class Game
+    public class GameService
     {
         public ReaderWriterLockSlim @lock = new ReaderWriterLockSlim();
 
@@ -39,7 +40,7 @@ namespace Server
 
         public string gameWorldName { get; }
 
-        public Game(Option o, string gameWorldName)
+        public GameService(Option o, string gameWorldName)
         {
             this.gameWorldName = gameWorldName;
 
@@ -104,7 +105,7 @@ namespace Server
             messageLock.Set();
         }
 
-        public Game bind(int port)
+        public GameService bind(int port)
         {
             gameServer.bind(port);
 

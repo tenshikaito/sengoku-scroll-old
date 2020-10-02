@@ -13,16 +13,12 @@ namespace Library
         public Dictionary<int, Religion> religion;
         public Dictionary<int, Road> road;
 
-        public Dictionary<int, Terrain> mainTileMapTerrain;
-        public Dictionary<int, Terrain> detailTileMapTerrain;
-        public Dictionary<int, Stronghold.Type> strongholdType;
+        public Dictionary<int, Terrain> tileMapTerrain;
+        //public Dictionary<int, Stronghold.Type> strongholdType;
 
         public Dictionary<int, TerrainImage> terrainImage;
-        public Dictionary<int, DetailTileMapInfo> detailTileMapInfo;
 
-        public TileMapImageInfo mainTileMapViewImageInfo;
-        public TileMapImageInfo mainTileMapDetailImageInfo;
-        public TileMapImageInfo detailTileMapViewImageInfo;
-        public TileMapImageInfo detailTileMapDetailImageInfo;
+        public TileMapImageInfo tileMapViewImageInfo;
+        public TileMapImageInfo tileMapDetailImageInfo;
     }
 }

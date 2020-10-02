@@ -1,4 +1,5 @@
 ﻿using Library.Helper;
+using Library.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,6 @@ namespace Library.Network
     public class JoinGameRequestData : BaseData
     {
         public string playerCode;
-    }
-
-    public class JoinGameResponseData : BaseData
-    {
-        public GameWorldMap gameWorldMap;
+        public string playerName;
     }
 }

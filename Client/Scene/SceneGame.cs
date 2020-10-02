@@ -1,4 +1,5 @@
 ﻿using Client.Command;
+using Client.Game;
 using Client.Graphic;
 using Client.Helper;
 using Client.Model;
@@ -75,8 +76,8 @@ namespace Client.Scene
 
         public class MainTileMapStatus : Status
         {
-            private ZoomableTileMapSprites<MainTileMapSprites> zoomableTileMapSprites;
-            private MainTileMapSprites.MainMapSpritesInfo mainMapSpritesInfo;
+            private ZoomableTileMapSprites<TileMapSprites> zoomableTileMapSprites;
+            private TileMapSprites.MapSpritesInfo mainMapSpritesInfo;
 
             private UITileInfoPanel uiTileInfoPanel;
 
@@ -86,13 +87,13 @@ namespace Client.Scene
 
             private Status currentStatus;
 
-            public MainTileMapSprites tileMap => zoomableTileMapSprites.tileMapSprites;
+            public TileMapSprites tileMap => zoomableTileMapSprites.tileMapSprites;
 
             public MainTileMapStatus(SceneGame s) : base(s)
             {
-                mainMapSpritesInfo = new MainTileMapSprites.MainMapSpritesInfo(s.gameWorld);
+                mainMapSpritesInfo = new TileMapSprites.MapSpritesInfo(s.gameWorld);
 
-                zoomableTileMapSprites = new ZoomableTileMapSprites<MainTileMapSprites>();
+                zoomableTileMapSprites = new ZoomableTileMapSprites<TileMapSprites>();
 
                 addChild(zoomableTileMapSprites);
 
@@ -121,7 +122,7 @@ namespace Client.Scene
                 var s = scene;
                 var msi = mainMapSpritesInfo;
 
-                zoomableTileMapSprites.setTileMap(new List<MainTileMapSprites>()
+                zoomableTileMapSprites.setTileMap(new List<TileMapSprites>()
                 {
                     new MainTileMapViewSprites(s.gameSystem, s.gameWorld, msi, true),
                     new MainTileMapDetailSprites(s.gameSystem, s.gameWorld, msi, true)
@@ -150,7 +151,7 @@ namespace Client.Scene
             public override void mouseMoved(MouseEventArgs e)
             {
                 var gw = scene.gameWorld;
-                var tm = gw.mainTileMap;
+                var tm = gw.tileMap;
 
                 var cursorPos = tileMap.cursorPosition;
 
@@ -162,7 +163,7 @@ namespace Client.Scene
                 }
 
                 var t = tm[cursorPos];
-                var mt = gw.masterData.mainTileMapTerrain;
+                var mt = gw.masterData.tileMapTerrain;
 
                 mt.TryGetValue(t.terrainSurface ?? t.terrain, out var tt); ;
 
@@ -234,7 +235,7 @@ namespace Client.Scene
 
                 protected GameWorld gameWorld => scene.gameWorld;
 
-                protected MainTileMap tileMap => gameStatus.mainMapSpritesInfo.mainTileMap;
+                protected TileMap tileMap => gameWorld.tileMap;
 
                 public Status(MainTileMapStatus s) => gameStatus = s;
             }
@@ -302,7 +303,7 @@ namespace Client.Scene
 
                 public override void mousePressed(MouseEventArgs e)
                 {
-                    if (gameWorld.mainTileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
+                    if (gameWorld.tileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
 
                     startPoint = e.Location;
 

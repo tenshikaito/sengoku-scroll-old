@@ -1,8 +1,8 @@
 ﻿using Client.Command;
+using Client.Game;
 using Client.Model;
 using Client.UI;
 using Client.UI.SceneTitle;
-using Library;
 using Library.Helper;
 using Library.Network;
 using System;
@@ -373,7 +373,7 @@ namespace Client.Scene
             {
                 try
                 {
-                    await JoinGameCommand.execute(si, gameSystem.currentPlayer.code, s, gameSystem);
+                    await JoinGameCommand.execute(si, gameSystem.currentPlayer, s, gameSystem);
 
                     dispatcher.invoke(() => uiStartGameDialog.Close());
                 }

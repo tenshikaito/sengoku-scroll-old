@@ -114,8 +114,6 @@ namespace Library.Helper
         {
             sendDataBytes = sendDataBytes ?? new List<byte>();
 
-            sendDataBytes.Clear();
-
             var r = combineDataStream(sendDataBytes, data);
 
             await ns.WriteAsync(r, ct);

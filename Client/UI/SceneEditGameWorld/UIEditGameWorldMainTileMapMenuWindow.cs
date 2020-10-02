@@ -23,7 +23,6 @@ namespace Client.UI.SceneEditGameWorld
             Action brush,
             Action rectangle,
             Action fill,
-            Action detailTileMap,
             Action<int> onTerrainSelected) : base(gs)
         {
             this.setCommandWindow(w.main_tile_map).setAutoSizeF().setCenter();
@@ -71,8 +70,6 @@ namespace Client.UI.SceneEditGameWorld
             }).setButtonStyle().setAutoSize().addTo(p));
 
             p = new FlowLayoutPanel().init(FlowDirection.LeftToRight).setAutoSizeP().addTo(panel);
-
-            new Button().init(w.detail_tile_map, detailTileMap).setAutoSize().addTo(p);
 
             var tc = new TabControl() { MinimumSize = new Size(360, 540) }.init().addTo(panel);
 
