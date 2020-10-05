@@ -13,20 +13,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="GameData.cs" />
-    <Compile Remove="Helper\ExampleHelper.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <Compile Include="Model\AskJobApply.cs" />
+    <Compile Include="Model\Building.cs" />
     <Compile Include="Model\Climate.cs" />
     <Compile Include="Model\Culture.cs" />
     <Compile Include="Model\Direction4.cs" />
+    <Compile Include="Model\Force.cs" />
+    <Compile Include="Model\Player.cs" />
     <Compile Include="Model\Point.cs" />
     <Compile Include="Model\Policy.cs" />
+    <Compile Include="Model\Province.cs" />
     <Compile Include="Model\Region.cs" />
     <Compile Include="Model\Relationship.cs" />
     <Compile Include="Model\Religion.cs" />
     <Compile Include="Model\Road.cs" />
+    <Compile Include="Model\Stronghold.cs" />
     <Compile Include="Model\Terrain.cs" />
     <Compile Include="Model\TerrainImage.cs" />
     <Compile Include="Model\Tile.cs" />
@@ -38,6 +39,7 @@
     <Folder Include="audio\se\" />
     <Folder Include="resource\default\audio\bgm\" />
     <Folder Include="resource\default\audio\se\" />
+    <Folder Include="View\" />
   </ItemGroup>
 
   <ItemGroup>

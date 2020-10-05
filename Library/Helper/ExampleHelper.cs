@@ -6,32 +6,37 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Library.GameWorldData;
 using Region = Library.Model.Region;
 
 namespace Library.Helper
 {
     public static class ExampleHelper
     {
+        public static GameDate getGameDate() => new GameDate().addDay(1);
+
         public static GameData getGameData() => new GameData()
         {
             force = new IncreasedIdDictionary<Force>().init(),
             province = new IncreasedIdDictionary<Province>().init(),
             stronghold = new IncreasedIdDictionary<Stronghold>().init(),
+            player = new IncreasedIdDictionary<Player>().init()
         };
 
-        public static MainTileMap getMainTileMap(int width, int height) => new MainTileMap(new TileMap.Size(width, height))
+        public static TileMap getTileMap(int width, int height) => new TileMap(new TileMapBase.Size(width, height))
         {
             terrain = new byte[width * height],
             region = new byte[width * height],
             terrainSurface = new Dictionary<int, byte>(),
             road = new Dictionary<int, int>(),
             territory = new Dictionary<int, int>(),
-            stronghold = new Dictionary<int, int>()
+            stronghold = new Dictionary<int, int>(),
+            tileFunctionType = new Dictionary<int, TileFunctionType>()
         };
 
         public static MasterData getMasterData() => new MasterData()
         {
-            mainTileMapTerrain = new Dictionary<int, Terrain>()
+            tileMapTerrain = new Dictionary<int, Terrain>()
             {
                 { 0, new Terrain()
                 {
@@ -271,17 +276,17 @@ namespace Library.Helper
             },
             road = new Dictionary<int, Road>(),
 
-            strongholdType = new Dictionary<int, Stronghold.Type>()
-            {
-                { 1, new Stronghold.Type()
-                {
-                    id = 1,
-                    name = "城",
-                    culture = null,
-                    introduction = "介绍"
-                }
-                }
-            },
+            //strongholdType = new Dictionary<int, Stronghold.Type>()
+            //{
+            //    { 1, new Stronghold.Type()
+            //    {
+            //        id = 1,
+            //        name = "城",
+            //        culture = null,
+            //        introduction = "介绍"
+            //    }
+            //    }
+            //},
 
             terrainImage = new Dictionary<int, TerrainImage>()
             {
@@ -839,40 +844,17 @@ namespace Library.Helper
                 },
             },
 
-            mainTileMapViewImageInfo = new TileMapImageInfo()
+            tileMapViewImageInfo = new TileMapImageInfo()
             {
                 id = 1,
                 name = "default view map",
                 tileSize = new Size(24, 24),
             },
-            mainTileMapDetailImageInfo = new TileMapImageInfo()
+            tileMapDetailImageInfo = new TileMapImageInfo()
             {
                 id = 2,
                 name = "default detail map",
                 tileSize = new Size(48, 48),
-            },
-            detailTileMapViewImageInfo = new TileMapImageInfo()
-            {
-                id = 1,
-                name = "default view map",
-                tileSize = new Size(24, 24),
-            },
-            detailTileMapDetailImageInfo = new TileMapImageInfo()
-            {
-                id = 2,
-                name = "default detail map",
-                tileSize = new Size(48, 48),
-            },
-            detailTileMapInfo = new Dictionary<int, DetailTileMapInfo>()
-            {
-                { 1, new DetailTileMapInfo()
-                {
-                    id = 1,
-                    name = "plain",
-                    size = new TileMap.Size(100, 100),
-                    terrainId = 0
-                }
-                }
             }
         };
     }

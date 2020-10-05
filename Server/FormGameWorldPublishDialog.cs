@@ -35,7 +35,7 @@ namespace Server
 
             listView.DoubleClick += (s, e) => onGameMapSelected();
 
-            var data = GameWorldProcessor.getMapList();
+            var data = GameWorldManager.getMapList();
 
             listView.Items.AddRange(data.Select(o => new ListViewItem() { Tag = o, Text = o }).ToArray());
 

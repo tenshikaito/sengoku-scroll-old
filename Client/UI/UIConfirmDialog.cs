@@ -15,6 +15,12 @@ namespace Client.UI
 
         protected Button btnCancel = new Button();
 
+        public bool isBtnCancelEnabled
+        {
+            get => btnCancel.Enabled;
+            set => btnCancel.Enabled = value;
+        }
+
         public UIConfirmDialog(GameSystem gs) : base(gs)
         {
             CancelButton = btnCancel;

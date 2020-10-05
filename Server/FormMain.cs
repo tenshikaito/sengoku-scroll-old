@@ -1,5 +1,6 @@
 ﻿using Library;
 using Library.Helper;
+using Server.Game;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -172,7 +173,7 @@ namespace Server
 
             var publish = new Action<string>(name =>
             {
-                GameWorldProcessor.publishMap(name);
+                GameWorldManager.publishMap(name);
 
                 loadGameWorldList();
 
@@ -181,7 +182,7 @@ namespace Server
 
             dialog.selectGameWorldMap = name =>
             {
-                var gameWorldList = GameWorldProcessor.getGameList();
+                var gameWorldList = GameWorldManager.getGameList();
 
                 if (gameWorldList.Contains(name))
                 {
@@ -211,7 +212,7 @@ namespace Server
 
             if (MessageBox.Show("delete?", "confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                new GameWorldProcessor((string)lvi.Tag).game.deleteDirectory();
+                new GameWorldManager((string)lvi.Tag).game.delete();
 
                 lvGameWorld.Items.Remove(lvi);
             }
@@ -219,7 +220,7 @@ namespace Server
 
         private void loadGameWorldList()
         {
-            var list = GameWorldProcessor.getGameList();
+            var list = GameWorldManager.getGameList();
 
             lvGameWorld.Items.Clear();
 

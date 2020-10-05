@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Library.GameWorldData;
 
 namespace Client.UI.SceneEditGameWorld
 {
@@ -20,7 +21,7 @@ namespace Client.UI.SceneEditGameWorld
 
         public UIEditGameWorldDatabaseWindow(GameSystem gs, GameWorld gw) : base(gs)
         {
-            gameWorldMasterData = gw.masterData.toJson().fromJson<MasterData>();
+            gameWorldMasterData = gw.gameWorldData.masterData.toJson().fromJson<MasterData>();
 
             MaximizeBox = false;
 

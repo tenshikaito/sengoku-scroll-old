@@ -44,8 +44,8 @@ namespace Library.Model
         public int currencyType;
 
         public string introduction;
-
-        public FinancialReporting financialReporting;
+#warning todo public FinancialReporting financialReporting;
+        //public FinancialReporting financialReporting;
 
         public bool isForceCapital;
 

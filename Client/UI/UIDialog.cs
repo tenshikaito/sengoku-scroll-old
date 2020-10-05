@@ -13,6 +13,12 @@ namespace Client.UI
 
         protected Button btnOk = new Button();
 
+        public bool isBtnOkEnabled
+        {
+            get => btnOk.Enabled;
+            set => btnOk.Enabled = value;
+        }
+
         public UIDialog(GameSystem gs) : base(gs)
         {
             AcceptButton = btnOk;

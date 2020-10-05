@@ -118,11 +118,11 @@ namespace Server
 
             var gw = new GameWorld(gameWorldName);
 
-            gw.init();
+            var gwp = gw.gameWorldManager;
 
-            var gwp = gw.gameWorldProcessor;
+            var gm = await gwp.game.loadGameWorldData();
 
-            gameWorld = await gwp.game.loadGameData(await gwp.game.loadMasterData(gw));
+            gw.init(gm);
 
             _ = Task.Run(processMessage);
 

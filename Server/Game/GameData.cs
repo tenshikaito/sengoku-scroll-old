@@ -1,5 +1,5 @@
 ﻿using Library;
-using Server.Game.Model;
+using Library.Model;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

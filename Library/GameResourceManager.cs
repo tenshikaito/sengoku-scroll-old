@@ -21,9 +21,7 @@ namespace Library
 
         public GameResourceManager(string packageName = "default")
         {
-            packageName = packageName ?? "default";
-
-            this.packageName = packageName;
+            this.packageName = packageName = packageName ?? "default";
 
             packagePath = $"{DirName}/{packageName}";
             packageFullPath = $"{Directory.GetCurrentDirectory()}/{packagePath}";

@@ -18,22 +18,25 @@ namespace Library
         public Dictionary<int, int> stronghold;
         public Dictionary<int, int> unit;
 
-        public MainMapTile this[int index] => new MainMapTile()
+        public Dictionary<int, TileFunctionType> tileFunctionType;
+
+        public MapTile this[int index] => new MapTile()
         {
             terrain = terrain[index],
             terrainSurface = terrainSurface.TryGetValue(index, out var ts) ? (byte?)ts : null,
             region = region[index],
+            functionType = tileFunctionType.TryGetValue(index, out var ft) ? (TileFunctionType?)ft : null
         };
 
-        public MainMapTile this[MapPoint p] => this[getIndex(p)];
+        public MapTile this[MapPoint p] => this[getIndex(p)];
 
         public TileMap(Size s) : base(s)
         {
         }
 
-        public void each(Action<int, MainMapTile> foreachCallback) => each(0, count, foreachCallback);
+        public void each(Action<int, MapTile> foreachCallback) => each(0, count, foreachCallback);
 
-        public void each(int startIndex, int length, Action<int, MainMapTile> foreachCallback)
+        public void each(int startIndex, int length, Action<int, MapTile> foreachCallback)
         {
             for (int i = startIndex, l = count; i < length; ++i)
             {

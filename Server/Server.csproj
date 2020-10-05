@@ -12,6 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="GameWorldManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Library\Library.csproj" />
   </ItemGroup>
 
@@ -22,6 +26,10 @@
     <None Update="option.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helper\" />
   </ItemGroup>
 
 </Project>

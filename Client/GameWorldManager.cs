@@ -1,4 +1,5 @@
 ﻿using Client.Game;
+using Client.Game.Model;
 using Client.Helper;
 using Library;
 using Library.Helper;
@@ -11,13 +12,13 @@ using static Library.Helper.FileHelper;
 
 namespace Client
 {
-    public class GameWorldProcessor : Library.GameWorldManager
+    public class GameWorldManager : Library.GameWorldManager
     {
         public Part map { get; }
 
         public Part game { get; }
 
-        public GameWorldProcessor(string gameWorldName)
+        public GameWorldManager(string gameWorldName)
         {
             map = new Part(MapDirName, gameWorldName);
             game = new Part(GameDirName, gameWorldName);
@@ -43,25 +44,23 @@ namespace Client
 
                 var gd = ExampleHelper.getGameData();
 
-                await saveMasterData(new GameWorldMap(gameWorldName)
+                await saveGameWorld(new GameWorld.Model()
                 {
-                    gameDate = new GameDate().addDay(60),
-                    masterData = md,
-                    tileMap = tm,
+                    gameWorldData = new GameWorldData(gameWorldName)
+                    {
+                        gameDate = new GameDate().addDay(1),
+                        masterData = md,
+                        tileMap = tm
+                    },
                 });
-
-                await saveGameData(gd);
 
                 return true;
             }
 
-            public async Task saveGameData(GameData gd)
+            private Task saveGameWorld(GameWorld.Model model)
             {
-                var path = fullPath;
-
-                await save(path + GameDateName, gd);
+                throw new NotImplementedException();
             }
-
         }
     }
 }

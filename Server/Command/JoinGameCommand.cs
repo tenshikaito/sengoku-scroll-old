@@ -2,7 +2,6 @@
 using Library.Helper;
 using Library.Model;
 using Library.Network;
-using Server.Game.Model;
 using Server.Model;
 using System;
 using System.Collections.Generic;
@@ -23,17 +22,18 @@ namespace Server.Command
             var request = data.fromJson<JoinGameRequestData>();
 
             var gw = game.gameWorld;
+            var gwd = gw.gameWorldData;
 
-            var ngw = new JoinGameResponseData.GameWorldMapModel(game.gameWorldName)
+            var ngw = new GameWorldData(game.gameWorldName)
             {
-                resourcePackageName = gw.resourcePackageName,
-                gameDate = gw.gameDate,
-                masterData = gw.masterData,
-                gameData = gw.gameData,
-                tileMap = gw.tileMap,
+                resourcePackageName = gwd.resourcePackageName,
+                gameDate = gwd.gameDate,
+                masterData = gwd.masterData,
+                gameData = gwd.gameData,
+                tileMap = gwd.tileMap,
             };
 
-            var p = game.gameWorld.gameData.player.map.Values.SingleOrDefault(o => o.code == request.playerCode);
+            var p = game.gameWorld.gameWorldData.gameData.player.map.Values.SingleOrDefault(o => o.code == request.playerCode);
 
             if (p == null)
             {
@@ -45,18 +45,18 @@ namespace Server.Command
                     gameClient = gc,
                     player = p = new Player()
                     {
-                        id = game.gameWorld.gameData.player.getNextId(),
+                        id = game.gameWorld.gameWorldData.gameData.player.getNextId(),
                         code = request.playerCode
                     }
                 };
 
-                game.gameWorld.gameData.player[p.id] = p;
+                game.gameWorld.gameWorldData.gameData.player[p.id] = p;
                 game.gameWorld.player[gp.id] = gp;
             }
 
             var response = new JoinGameResponseData()
             {
-                gameWorldMap = ngw,
+                gameWorldData = ngw,
             };
 
             await gc.write(response.toJson());

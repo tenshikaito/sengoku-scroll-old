@@ -31,9 +31,9 @@ namespace Client.Graphic
 
         public override int tileHeight => tileMapImageInfo.tileSize.Height;
 
-        protected override TileMap map => gameWorld.tileMap;
+        protected override TileMap map => gameWorldData.tileMap;
 
-        private TileMap tileMap => gameWorld.tileMap;
+        private TileMap tileMap => map;
 
         protected abstract TileMapImageInfo tileMapImageInfo { get; }
 
@@ -71,7 +71,7 @@ namespace Client.Graphic
 
                 var terrainSprite = null as Dictionary<int, TileSpriteAnimation>;
 
-                switch (gameWorld.gameDate.season)
+                switch (gameWorldData.gameDate.season)
                 {
                     case GameDate.Season.spring: terrainSprite = terrainSpriteSpring; break;
                     case GameDate.Season.summer: terrainSprite = terrainSpriteSummer; break;
@@ -107,13 +107,13 @@ namespace Client.Graphic
             if (p == cursorPosition) drawCursor(g, sx, sy);
         }
 
-        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, MainMapTile t, bool isSurface, bool isSurfaceDone)
+        private void drawTerrain(GameGraphic g, MapPoint p, int x, int y, MapTile t, bool isSurface, bool isSurfaceDone)
         {
-            var md = gameWorld.masterData;
+            var md = gameWorldData.masterData;
             var tt = md.tileMapTerrain[isSurface ? t.terrainSurface.Value : t.terrain];
             var s = terrainSprite[tt.imageId];
 
-            switch (gameWorld.gameDate.season)
+            switch (gameWorldData.gameDate.season)
             {
                 case GameDate.Season.spring:
                     if (terrainSpriteSpring.TryGetValue(tt.imageId, out var s1)) s = s1;
@@ -185,9 +185,6 @@ namespace Client.Graphic
 
         public new class MapSpritesInfo : TileMapSpritesBase.MapSpritesInfo
         {
-            protected override TileMap tileMap => gameWorld.tileMap;
-            protected override Dictionary<int, Terrain> terrain => gameWorld.masterData.tileMapTerrain;
-
             public MapSpritesInfo(GameWorld gw) : base(gw)
             {
             }
@@ -208,7 +205,7 @@ namespace Client.Graphic
                     else tid = t.terrainSurface.Value;
                 }
 
-                if (!gameWorld.masterData.tileMapTerrain.TryGetValue(tid, out var tt)) return 0;
+                if (!gameWorldData.masterData.tileMapTerrain.TryGetValue(tid, out var tt)) return 0;
 
                 byte flag = 0;
 
@@ -247,7 +244,7 @@ namespace Client.Graphic
                     }
                 }
 
-                if (!gameWorld.masterData.tileMapTerrain.TryGetValue(tid, out var ttt)) return;
+                if (!gameWorldData.masterData.tileMapTerrain.TryGetValue(tid, out var ttt)) return;
 
                 if (t.imageId != ttt.imageId) flag |= direction;
             }
@@ -256,11 +253,11 @@ namespace Client.Graphic
 
     public class MainTileMapViewSprites : TileMapSprites
     {
-        protected override TileMapImageInfo tileMapImageInfo => gameWorld.masterData.tileMapViewImageInfo;
+        protected override TileMapImageInfo tileMapImageInfo => gameWorldData.masterData.tileMapViewImageInfo;
 
         public MainTileMapViewSprites(GameSystem gs, GameWorld gw, MapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
         {
-            var ti = gameWorld.masterData.terrainImage;
+            var ti = gameWorldData.masterData.terrainImage;
             var list = ti.Values.ToList();
 
             terrainSprite = ti.Where(o => o.Value.animationView != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationView));
@@ -285,11 +282,11 @@ namespace Client.Graphic
 
     public class MainTileMapDetailSprites : TileMapSprites
     {
-        protected override TileMapImageInfo tileMapImageInfo => gameWorld.masterData.tileMapDetailImageInfo;
+        protected override TileMapImageInfo tileMapImageInfo => gameWorldData.masterData.tileMapDetailImageInfo;
 
         public MainTileMapDetailSprites(GameSystem gs, GameWorld gw, MapSpritesInfo msi, bool isEditor = false) : base(gs, gw, msi, isEditor)
         {
-            var ti = gameWorld.masterData.terrainImage;
+            var ti = gameWorldData.masterData.terrainImage;
             var list = ti.Values.ToList();
 
             terrainSprite = ti.Where(o => o.Value.animationDetail != null).ToDictionary(o => o.Key, o => new TileSpriteAnimation(o.Value.animationDetail));

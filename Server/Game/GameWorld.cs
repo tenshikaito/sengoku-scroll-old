@@ -6,25 +6,29 @@ using System.Text;
 
 namespace Server.Game
 {
-    public class GameWorld : GameWorldMap
+    public class GameWorld
     {
         public IncreasedIdDictionary<GamePlayer> player = new IncreasedIdDictionary<GamePlayer>();
 
-        public GameOption gameOption = new GameOption();
+        public GameWorldData gameWorldData;
 
-        public GameData gameData;
+        public string name { get; private set; }
 
-        public GameWorldProcessor gameWorldProcessor { get; private set; }
-        public GameResourceManager gameResourceProcessor { get; private set; }
+        public GameWorldManager gameWorldManager { get; private set; }
+        public GameResourceManager gameResourceManager { get; private set; }
 
-        public GameWorld(string name) : base(name)
+        public GameWorld(string name)
         {
+            this.name = name;
+
+            gameWorldManager = new GameWorldManager(name);
         }
 
-        public void init()
+        public void init(GameWorldData gm)
         {
-            gameWorldProcessor = new GameWorldProcessor(name);
-            gameResourceProcessor = new GameResourceManager(resourcePackageName);
+            gameWorldData = gm;
+
+            gameResourceManager = new GameResourceManager(gameWorldData.resourcePackageName);
         }
     }
 }

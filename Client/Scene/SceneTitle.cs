@@ -3,6 +3,7 @@ using Client.Game;
 using Client.Model;
 using Client.UI;
 using Client.UI.SceneTitle;
+using Library;
 using Library.Helper;
 using Library.Network;
 using System;
@@ -450,9 +451,17 @@ namespace Client.Scene
                 Visible = true,
                 okButtonClicked = async () =>
                 {
+                    uiGameWorldDetailDialog.Cursor = Cursors.WaitCursor;
+
+                    uiGameWorldDetailDialog.isBtnOkEnabled = uiGameWorldDetailDialog.isBtnCancelEnabled = false;
+
                     var (name, width, height) = uiGameWorldDetailDialog.value;
 
                     var r = await onCreateGameWorld(name, width, height);
+
+                    uiGameWorldDetailDialog.isBtnOkEnabled = uiGameWorldDetailDialog.isBtnCancelEnabled = true;
+
+                    uiGameWorldDetailDialog.Cursor = Cursors.Default;
 
                     if (!r) return;
 
@@ -489,9 +498,7 @@ namespace Client.Scene
                         camera = new Camera(gameSystem.option.screenWidth, gameSystem.option.screenHeight),
                     };
 
-                    gw.init();
-
-                    await gw.gameWorldProcessor.map.loadMasterData(gw);
+                    gw.init(await gw.gameWorldManager.map.loadGameWorldData());
 
                     gameSystem.dispatchSceneToEditGame(gw);
                 });
@@ -508,11 +515,11 @@ namespace Client.Scene
             {
                 dialog.Close();
 
-                var gwp = new GameWorldProcessor(name);
+                var gwp = new GameWorldManager(name);
 
                 try
                 {
-                    gwp.map.deleteDirectory();
+                    gwp.map.delete();
                 }
                 catch (Exception e)
                 {
@@ -546,15 +553,21 @@ namespace Client.Scene
                 return false;
             }
 
-            if (width < 100 || height < 100)
+            if (width < Constant.MapMinSize || height < Constant.MapMinSize)
             {
-                new UIDialog(gameSystem, "error", "map size > 100").ShowDialog(formMain);
+                new UIDialog(gameSystem, "error", $"map size > {Constant.MapMinSize}").ShowDialog(formMain);
                 return false;
             }
 
-            var gwp = new GameWorldProcessor(name);
+            if (width > Constant.MapMaxSize || height > Constant.MapMaxSize)
+            {
+                new UIDialog(gameSystem, "error", $"map size < {Constant.MapMaxSize}").ShowDialog(formMain);
+                return false;
+            }
 
-            if (!await gwp.map.createDirectory(width, height))
+            var gwp = new GameWorldManager(name);
+
+            if (!await gwp.map.create(width, height))
             {
                 new UIDialog(gameSystem, "error", "create_failed").ShowDialog(formMain);
                 return false;
@@ -572,6 +585,6 @@ namespace Client.Scene
 
         private void loadGameServerList() => uiStartGameDialog.setData(gameSystem.currentPlayer.servers);
 
-        private void loadGameWorldMapList() => uiEditGameDialog.setData(GameWorldProcessor.getMapList());
+        private void loadGameWorldMapList() => uiEditGameDialog.setData(GameWorldManager.getMapList());
     }
 }

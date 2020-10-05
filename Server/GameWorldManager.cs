@@ -10,13 +10,13 @@ using static Library.Helper.FileHelper;
 
 namespace Server
 {
-    public class GameWorldProcessor : Library.GameWorldManager
+    public class GameWorldManager : Library.GameWorldManager
     {
         public Part map { get; }
 
         public Part game { get; }
 
-        public GameWorldProcessor(string gameWorldName)
+        public GameWorldManager(string gameWorldName)
         {
             map = new Part(MapDirName, gameWorldName);
             game = new Part(GameDirName, gameWorldName);
@@ -28,13 +28,9 @@ namespace Server
             {
             }
 
-            public async Task<T> loadGameData<T>(T gw) where T : GameWorld
+            public async Task<GameData> loadGameData()
             {
-                await loadMasterData(gw);
-
-                gw.gameData = await load<GameData>(fullPath + MainMapName);
-
-                return gw;
+                return await load<GameData>(fullPath + MapName);
             }
         }
     }

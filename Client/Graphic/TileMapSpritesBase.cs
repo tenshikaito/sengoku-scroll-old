@@ -29,7 +29,7 @@ namespace Client.Graphic
 
         protected bool isEditor;
 
-        protected GameOption gameOption => gameWorld.gameOption;
+        protected GameWorldData gameWorldData => gameWorld.gameWorldData;
         protected abstract TileMap map { get; }
 
         protected Camera camera => gameWorld.camera;
@@ -122,8 +122,9 @@ namespace Client.Graphic
             private Dictionary<int, byte> terrainSurfaceBorder = new Dictionary<int, byte>();
 
             protected GameWorld gameWorld;
-            protected abstract TileMap tileMap { get; }
-            protected abstract Dictionary<int, Terrain> terrain { get; }
+            protected GameWorldData gameWorldData => gameWorld.gameWorldData;
+            protected TileMap tileMap => gameWorldData.tileMap;
+            protected Dictionary<int, Terrain> terrain => gameWorldData.masterData.tileMapTerrain;
 
             public MapSpritesInfo(GameWorld gw) => gameWorld = gw;
 

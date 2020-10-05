@@ -25,7 +25,7 @@ namespace Client.Scene
     {
         private GameWorld gameWorld;
 
-        private MainTileMapStatus mainTileMapStatus;
+        private TileMapStatus mainTileMapStatus;
 
         private Camera camera => gameWorld.camera;
 
@@ -33,7 +33,7 @@ namespace Client.Scene
         {
             gameWorld = gw;
 
-            mainTileMapStatus = new MainTileMapStatus(this);
+            mainTileMapStatus = new TileMapStatus(this);
         }
 
         public override void start()
@@ -74,7 +74,7 @@ namespace Client.Scene
             }
         }
 
-        public class MainTileMapStatus : Status
+        public class TileMapStatus : Status
         {
             private ZoomableTileMapSprites<TileMapSprites> zoomableTileMapSprites;
             private TileMapSprites.MapSpritesInfo mainMapSpritesInfo;
@@ -89,7 +89,7 @@ namespace Client.Scene
 
             public TileMapSprites tileMap => zoomableTileMapSprites.tileMapSprites;
 
-            public MainTileMapStatus(SceneGame s) : base(s)
+            public TileMapStatus(SceneGame s) : base(s)
             {
                 mainMapSpritesInfo = new TileMapSprites.MapSpritesInfo(s.gameWorld);
 
@@ -151,7 +151,8 @@ namespace Client.Scene
             public override void mouseMoved(MouseEventArgs e)
             {
                 var gw = scene.gameWorld;
-                var tm = gw.tileMap;
+                var gm = gw.gameWorldData;
+                var tm = gm.tileMap;
 
                 var cursorPos = tileMap.cursorPosition;
 
@@ -163,7 +164,7 @@ namespace Client.Scene
                 }
 
                 var t = tm[cursorPos];
-                var mt = gw.masterData.tileMapTerrain;
+                var mt = gm.masterData.tileMapTerrain;
 
                 mt.TryGetValue(t.terrainSurface ?? t.terrain, out var tt); ;
 
@@ -227,7 +228,7 @@ namespace Client.Scene
 
             public class Status : GameObject
             {
-                protected MainTileMapStatus gameStatus;
+                protected TileMapStatus gameStatus;
 
                 protected SceneGame scene => gameStatus.scene;
 
@@ -235,14 +236,16 @@ namespace Client.Scene
 
                 protected GameWorld gameWorld => scene.gameWorld;
 
-                protected TileMap tileMap => gameWorld.tileMap;
+                protected GameWorldData gameWorldData => gameWorld.gameWorldData;
 
-                public Status(MainTileMapStatus s) => gameStatus = s;
+                protected TileMap tileMap => gameWorldData.tileMap;
+
+                public Status(TileMapStatus s) => gameStatus = s;
             }
 
             public class PointerStatus : Status
             {
-                public PointerStatus(MainTileMapStatus s) : base(s)
+                public PointerStatus(TileMapStatus s) : base(s)
                 {
                 }
 
@@ -254,7 +257,7 @@ namespace Client.Scene
 
             public class DrawTileStatus : Status
             {
-                public DrawTileStatus(MainTileMapStatus s) : base(s)
+                public DrawTileStatus(TileMapStatus s) : base(s)
                 {
                 }
 
@@ -292,7 +295,7 @@ namespace Client.Scene
                 public Point? startPoint;
                 public SpriteRectangle selector;
 
-                public DrawTileRectangleStatus(MainTileMapStatus s) : base(s)
+                public DrawTileRectangleStatus(TileMapStatus s) : base(s)
                 {
                     selector = new SpriteRectangle()
                     {
@@ -303,7 +306,7 @@ namespace Client.Scene
 
                 public override void mousePressed(MouseEventArgs e)
                 {
-                    if (gameWorld.tileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
+                    if (gameWorldData.tileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
 
                     startPoint = e.Location;
 
@@ -375,8 +378,6 @@ namespace Client.Scene
                     gameSystem.gameGraphic.drawRectangle(selector);
                 }
             }
-
         }
-
     }
 }

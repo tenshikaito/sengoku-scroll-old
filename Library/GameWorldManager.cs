@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Region = Library.Model.Region;
 using static Library.Helper.FileHelper;
 
 namespace Library
@@ -18,13 +17,17 @@ namespace Library
     {
         protected const string MapDirName = "map";
         protected const string GameDirName = "game";
+        protected const string Extension = "ssm";
 
-        protected const string MainMapName = "/main_map.dat";
-        protected const string DetailMapName = "/detail_map.dat";
-        protected const string DetailMapDataName = "/detail_map_data.dat";
-        protected const string MasterDataName = "/master_data.dat";
-        protected const string GameDateName = "/game_date.dat";
-        protected const string GameDataName = "/game_data.dat";
+        public Part map { get; }
+
+        public Part game { get; }
+
+        public GameWorldManager(string gameWorldName)
+        {
+            map = new Part(MapDirName, gameWorldName);
+            game = new Part(GameDirName, gameWorldName);
+        }
 
         public static List<string> getMapList() => getFileList(MapDirName);
 
@@ -32,25 +35,22 @@ namespace Library
 
         protected static List<string> getFileList(string dirName)
         {
-            var currentDirPath = Directory.GetCurrentDirectory();
-            var path = $"{currentDirPath}/{dirName}";
+            var path = $"{Directory.GetCurrentDirectory()}/{dirName}";
 
             Directory.CreateDirectory(path);
 
-            return Directory.EnumerateDirectories(path).Select(o => new DirectoryInfo(o).Name).ToList();
+            return Directory.EnumerateFiles(path, $"*.{Extension}").Select(o => Path.GetFileNameWithoutExtension(o)).ToList();
         }
 
         public static void publishMap(string name)
         {
             var currentDirPath = Directory.GetCurrentDirectory();
-            var path = $"{currentDirPath}/{GameDirName}/{name}";
-            var mapPath = $"{currentDirPath}/{MapDirName}/{name}";
+            var path = $"{currentDirPath}/{GameDirName}/{name}.{Extension}";
+            var mapPath = $"{currentDirPath}/{MapDirName}/{name}.{Extension}";
 
-            if (Directory.Exists(path)) Directory.Delete(path, true);
+            if (File.Exists(path)) File.Delete(path);
 
-            Directory.CreateDirectory(path);
-
-            Directory.EnumerateFiles(mapPath).Select(o => new FileInfo(o)).ToList().ForEach(o => o.CopyTo($"{path}/{o.Name}"));
+            new FileInfo(mapPath).CopyTo(path);
         }
 
         public class Part
@@ -58,7 +58,7 @@ namespace Library
             public string dirName { get; }
             public string gameWorldName { get; }
 
-            public string path => $"{dirName}/{gameWorldName}";
+            public string path => $"{dirName}/{gameWorldName}.{Extension}";
 
             public string fullPath => $"{Directory.GetCurrentDirectory()}/{path}";
 
@@ -68,29 +68,37 @@ namespace Library
                 this.gameWorldName = gameWorldName;
             }
 
-            public string getFilePath(string fileName, bool isAbsolute = false)
-                => isAbsolute ? $"{fullPath}/{fileName}" : $"{path}/{fileName}";
+            public void delete() => File.Delete(fullPath);
 
-            public void deleteDirectory() => Directory.Delete(fullPath, true);
-
-            public async Task<T> loadMasterData<T>(T gw) where T : GameWorldMap
+            public async Task<GameWorldData> loadGameWorldData()
             {
-                var path = fullPath;
-
-                gw.tileMap = await load<TileMap>(path + MainMapName);
-                gw.gameDate = await load<GameDate>(path + GameDateName);
-                gw.masterData = await load<MasterData>(path + MasterDataName);
-
-                return gw;
+                return await load<GameWorldData>(fullPath);
             }
 
-            public async Task saveMasterData(GameWorldMap gw)
+            public async Task saveGameWorldData(GameWorldData gwd)
             {
-                var path = fullPath;
+                await save(fullPath, gwd);
+            }
 
-                await save(path + MainMapName, gw.tileMap);
-                await save(path + GameDateName, gw.gameDate);
-                await save(path + MasterDataName, gw.masterData);
+            public async ValueTask<bool> create(int width, int height)
+            {
+                if (File.Exists(path)) return false;
+
+                var md = ExampleHelper.getMasterData();
+
+                var tm = ExampleHelper.getTileMap(width, height);
+
+                var gd = ExampleHelper.getGameData();
+
+                await saveGameWorldData(new GameWorldData(gameWorldName)
+                {
+                    gameDate = ExampleHelper.getGameDate(),
+                    tileMap = tm,
+                    masterData = md,
+                    gameData = gd
+                });
+
+                return true;
             }
         }
     }

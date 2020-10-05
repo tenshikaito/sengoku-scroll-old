@@ -1,16 +1,15 @@
 ﻿using Client.Model;
 using Library;
+using Library.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Client.Game
 {
-    public class GameWorld : GameWorldMap
+    public class GameWorld
     {
-        public GameOption gameOption = new GameOption();
-
-        public GameData gameData;
+        public GameWorldData gameWorldData;
 
         public Player currentPlayer;
 
@@ -18,17 +17,19 @@ namespace Client.Game
 
         public Cache cache = new Cache();
 
-        public GameWorldProcessor gameWorldProcessor { get; private set; }
+        public GameWorldManager gameWorldManager { get; private set; }
         public GameResourceManager gameResourceManager { get; private set; }
 
-        public GameWorld(string name) : base(name)
+        public GameWorld(string name)
         {
+            gameWorldManager = new GameWorldManager(name);
         }
 
-        public void init()
+        public void init(GameWorldData gwd)
         {
-            gameWorldProcessor = new GameWorldProcessor(name);
-            gameResourceManager = new GameResourceManager(resourcePackageName);
+            gameWorldData = gwd;
+
+            gameResourceManager = new GameResourceManager(gwd.resourcePackageName);
         }
     }
 }

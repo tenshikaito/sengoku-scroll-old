@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Library.GameWorldData;
 using Region = Library.Model.Region;
 
 namespace Client.Helper
@@ -19,6 +20,7 @@ namespace Client.Helper
             force = new IncreasedIdDictionary<Force>().init(),
             province = new IncreasedIdDictionary<Province>().init(),
             stronghold = new IncreasedIdDictionary<Stronghold>().init(),
+            player = new IncreasedIdDictionary<Player>().init()
         };
 
         public static TileMap getTileMap(int width, int height) => new TileMap(new TileMapBase.Size(width, height))

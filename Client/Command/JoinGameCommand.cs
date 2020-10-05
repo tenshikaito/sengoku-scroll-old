@@ -39,13 +39,13 @@ namespace Client.Command
 
                 var c = data.fromJson<JoinGameResponseData>();
 
-                var gwp = c.gameWorldMap;
+                var gwd = c.gameWorldData;
 
-                var gw = gwp.toJson().fromJson<GameWorld>();
+                var gw = new GameWorld(gwd.name);
 
                 gw.camera = new Camera(gs.screenWidth, gs.screenHeight);
 
-                gw.init();
+                gw.init(gwd);
 
                 gs.dispatchSceneToGame(gw);
             });

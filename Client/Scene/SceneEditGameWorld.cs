@@ -32,6 +32,7 @@ namespace Client.Scene
         private DrawContent drawContent = DrawContent.terrain;
         private int drawContentId = 0;
 
+        private GameWorldData gameMap => gameWorld.gameWorldData;
         private Camera camera => gameWorld.camera;
 
         public SceneEditGameWorld(GameSystem gs, GameWorld gw) : base(gs)
@@ -109,7 +110,7 @@ namespace Client.Scene
 
         private void saveDatabase()
         {
-            gameWorld.masterData = uiEditGameWorldDatabaseWindow.gameWorldMasterData;
+            gameMap.masterData = uiEditGameWorldDatabaseWindow.gameWorldMasterData;
         }
 
         private async void onSaveButtonClicked()
@@ -153,7 +154,7 @@ namespace Client.Scene
 
         private async Task save()
         {
-            await gameWorld.gameWorldProcessor.map.saveMasterData(gameWorld);
+            await gameWorld.gameWorldManager.map.saveGameWorldData(gameMap);
         }
 
         public enum DrawMode
@@ -252,8 +253,8 @@ namespace Client.Scene
                 setDrawMode(DrawMode.pointer);
 
                 uiEditGameWorldMainTileMapMenuWindow.setTerrain(
-                    scene.gameWorld.masterData.tileMapTerrain.Values.ToList(),
-                    scene.gameWorld.masterData.terrainImage);
+                    scene.gameMap.masterData.tileMapTerrain.Values.ToList(),
+                    scene.gameMap.masterData.terrainImage);
             }
 
             public override void finish()
@@ -264,7 +265,8 @@ namespace Client.Scene
             public override void mouseMoved(MouseEventArgs e)
             {
                 var gw = scene.gameWorld;
-                var tm = gw.tileMap;
+                var gwd = gw.gameWorldData;
+                var tm = gwd.tileMap;
 
                 var cursorPos = tileMap.cursorPosition;
 
@@ -276,7 +278,7 @@ namespace Client.Scene
                 }
 
                 var t = tm[cursorPos];
-                var mt = gw.masterData.tileMapTerrain;
+                var mt = gwd.masterData.tileMapTerrain;
 
                 mt.TryGetValue(t.terrainSurface ?? t.terrain, out var tt); ;
 
@@ -331,7 +333,9 @@ namespace Client.Scene
 
                 protected GameWorld gameWorld => scene.gameWorld;
 
-                protected TileMap tileMap => gameWorld.tileMap;
+                protected GameWorldData gameMap => scene.gameMap;
+
+                protected TileMap tileMap => gameMap.tileMap;
 
                 public Status(TileMapStatus s) => gameStatus = s;
             }
@@ -370,7 +374,7 @@ namespace Client.Scene
 
                             var tid = (byte)scene.drawContentId;
 
-                            var t = scene.gameWorld.masterData.tileMapTerrain[tid];
+                            var t = scene.gameMap.masterData.tileMapTerrain[tid];
 
                             tileMap.setTerrain(p, tid, t.isSurface);
 
@@ -399,7 +403,7 @@ namespace Client.Scene
 
                 public override void mousePressed(MouseEventArgs e)
                 {
-                    if (gameWorld.tileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
+                    if (gameMap.tileMap.isOutOfBounds(gameStatus.tileMap.cursorPosition)) return;
 
                     startPoint = e.Location;
 
@@ -425,7 +429,7 @@ namespace Client.Scene
                             var tr = gameStatus.tileMap.getTileLocation(trp);
                             var bl = gameStatus.tileMap.getTileLocation(blp);
 
-                            var tm = gameWorld.tileMap;
+                            var tm = gameMap.tileMap;
 
                             tm.checkBound(ref tl);
                             tm.checkBound(ref tr);
@@ -437,7 +441,7 @@ namespace Client.Scene
                             var width = tr.x - tl.x;
                             var height = bl.y - tl.y;
                             var tid = (byte)scene.drawContentId;
-                            var t = scene.gameWorld.masterData.tileMapTerrain[tid];
+                            var t = scene.gameMap.masterData.tileMapTerrain[tid];
 
                             tm.eachRectangle(tl, new TileMap.Size(height, width), o =>
                             {
@@ -493,7 +497,7 @@ namespace Client.Scene
                     var t = tileMap[p];
 
                     var tdid = (byte)scene.drawContentId;
-                    var td = scene.gameWorld.masterData.tileMapTerrain[tdid];
+                    var td = scene.gameMap.masterData.tileMapTerrain[tdid];
 
                     selectedTerrainId = t.terrain;
                     selectedTerrainSurfaceId = t.terrainSurface;
