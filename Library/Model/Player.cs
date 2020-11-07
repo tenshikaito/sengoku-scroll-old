@@ -81,10 +81,12 @@ namespace Library.Model
 
         public int? mount;
 
-        public void init()
+        public Player init()
         {
             ability = abilityList.ToDictionary(o => o, o => new Ability() { value = 1 });
             skill = skillList.ToDictionary(o => o, o => new Skill());
+
+            return this;
         }
 
         public enum Status : byte

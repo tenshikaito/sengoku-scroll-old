@@ -17,10 +17,11 @@ namespace Library.Helper
 {
     public static class NetworkHelper
     {
-        public const int dataLengthByteLength = 4;
-        public const int dataBufferSize = 10240;
+        public const int dataBufferSize = Constant.dataBufferLength;
 
         public static readonly Encoding encoding = Encoding.UTF8;
+
+        private const int dataLengthByteLength = 4;
 
         public static string getIp(this TcpClient tc) => tc.Client.RemoteEndPoint.ToString();
 

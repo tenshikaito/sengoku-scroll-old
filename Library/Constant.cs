@@ -6,7 +6,8 @@ namespace Library
 {
     public static class Constant
     {
-        public const int MapMinSize = 100;
-        public const int MapMaxSize = 5000;
+        public const int mapMinSize = 100;
+        public const int mapMaxSize = 5000;
+        public const int dataBufferLength = 10240;
     }
 }

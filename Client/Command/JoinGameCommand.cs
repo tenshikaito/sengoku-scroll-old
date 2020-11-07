@@ -17,6 +17,8 @@ namespace Client.Command
     {
         public static async Task execute(ServerInfo si, PlayerInfo pi, SceneWaiting sw, GameSystem gs)
         {
+            // 流程：将自身的身份信息发送到服务端、在服务端自动创建好角色后将角色信息返回
+
             var w = gs.wording;
 
             var dispatcher = gs.formMain.dispatcher;
@@ -37,13 +39,14 @@ namespace Client.Command
 
                 var (hasResult, data) = await gc.read();
 
-                var c = data.fromJson<JoinGameResponseData>();
+                var r = data.fromJson<JoinGameResponseData>();
 
-                var gwd = c.gameWorldData;
+                var gwd = r.gameWorldData;
 
                 var gw = new GameWorld(gwd.name);
 
                 gw.camera = new Camera(gs.screenWidth, gs.screenHeight);
+                gw.currentPlayer = r.player;
 
                 gw.init(gwd);
 

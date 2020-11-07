@@ -47,7 +47,7 @@ namespace Server.Command
                     {
                         id = game.gameWorld.gameWorldData.gameData.player.getNextId(),
                         code = request.playerCode
-                    }
+                    }.init()
                 };
 
                 game.gameWorld.gameWorldData.gameData.player[p.id] = p;

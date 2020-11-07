@@ -15,7 +15,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Region = Library.Model.Region;
 
 namespace Client
 {
@@ -70,7 +69,8 @@ namespace Client
             };
 
             gameSystem.init();
-            gameSystem.sceneToTitle(false);
+            
+            gameSystem.sceneToTitlePlayer();
 
             refreshBuffer();
         }

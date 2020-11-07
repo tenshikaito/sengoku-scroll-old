@@ -28,10 +28,10 @@ namespace Library
         }
 
         public string getSystemImageFilePath(string fileName, bool isAbsolute = false)
-            => isAbsolute ? $"{packagePath}/{ImageDirName}/system/{fileName}" : $"{packageFullPath}/{ImageDirName}/system/{fileName}";
+            => isAbsolute ? $"{packageFullPath}/{ImageDirName}/system/{fileName}" : $"{packagePath}/{ImageDirName}/system/{fileName}";
 
         public string getTileMapImageFilePath(string fileName, bool isAbsolute = false)
-            => isAbsolute ? $"{packagePath}/{ImageDirName}/tilemap/{fileName}" : $"{packageFullPath}/{ImageDirName}/tilemap/{fileName}";
+            => isAbsolute ? $"{packageFullPath}/{ImageDirName}/tilemap/{fileName}" : $"{packagePath}/{ImageDirName}/tilemap/{fileName}";
 
     }
 }

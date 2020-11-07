@@ -35,7 +35,7 @@ namespace Client.UI.SceneTitle
         {
             Tag = o.code,
             Text = o.name
-        }.addColumn(o.ip + ":" + o.port).addColumn(w.symbol_none).addColumn(w.symbol_none)).ToArray());
+        }.addColumn($"{o.ip}:{o.port}").addColumn(w.symbol_none).addColumn(w.symbol_none)).ToArray());
 
         public void refresh(IDictionary<string, TestServerData> map)
         {

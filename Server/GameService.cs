@@ -124,6 +124,8 @@ namespace Server
 
             gw.init(gm);
 
+            gameWorld = gw;
+
             _ = Task.Run(processMessage);
 
             gameServer.bind(option.port).start();

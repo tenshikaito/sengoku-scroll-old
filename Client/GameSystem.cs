@@ -39,9 +39,36 @@ namespace Client
             formMain.Resize += (s, e) => camera.setSize(formMain.Width, formMain.Height);
         }
 
-        public SceneTitle sceneToTitle(bool isLogined)
+        public SceneTitlePlayer sceneToTitlePlayer()
         {
-            var s = new SceneTitle(this, isLogined);
+            var s = new SceneTitlePlayer(this);
+
+            sceneManager.switchStatus(s);
+
+            return s;
+        }
+
+        public SceneTitleMain sceneToTitleMain()
+        {
+            var s = new SceneTitleMain(this);
+
+            sceneManager.switchStatus(s);
+
+            return s;
+        }
+
+        public SceneTitleStartGame sceneToTitleStartGame()
+        {
+            var s = new SceneTitleStartGame(this);
+
+            sceneManager.switchStatus(s);
+
+            return s;
+        }
+
+        public SceneTitleEditGame sceneToTitleEditGame()
+        {
+            var s = new SceneTitleEditGame(this);
 
             sceneManager.switchStatus(s);
 
@@ -75,12 +102,8 @@ namespace Client
             return s;
         }
 
-        public void dispatchSceneToTitle(bool isLogined) => formMain.dispatcher.invoke(() => sceneToTitle(isLogined));
-
         public void dispatchSceneToGame(GameWorld gw) => formMain.dispatcher.invoke(() => sceneToGame(gw));
 
         public void dispatchSceneToEditGame(GameWorld gw) => formMain.dispatcher.invoke(() => sceneToEditGame(gw));
-
-        public void dispatchSceneToWaiting(GameWorld gw) => formMain.dispatcher.invoke(() => sceneToWaiting());
     }
 }

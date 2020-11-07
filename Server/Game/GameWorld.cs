@@ -8,7 +8,7 @@ namespace Server.Game
 {
     public class GameWorld
     {
-        public IncreasedIdDictionary<GamePlayer> player = new IncreasedIdDictionary<GamePlayer>();
+        public IncreasedIdDictionary<GamePlayer> player = new IncreasedIdDictionary<GamePlayer>().init();
 
         public GameWorldData gameWorldData;
 

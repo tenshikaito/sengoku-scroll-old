@@ -139,7 +139,7 @@ namespace Client.Scene
 
                 uiConfirmDialog = null;
 
-                gameSystem.sceneToTitle(true);
+                gameSystem.sceneToTitleEditGame();
             };
 
             dialog.cancelButtonClicked = () =>
