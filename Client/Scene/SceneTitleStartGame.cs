@@ -194,8 +194,6 @@ namespace Client.Scene
                 return;
             }
 
-            uiStartGameDialog.Visible = false;
-
             var si = gameSystem.currentPlayer.servers.SingleOrDefault(o => o.code == code);
 
             var s = gameSystem.sceneToWaiting();
@@ -205,8 +203,6 @@ namespace Client.Scene
                 try
                 {
                     await JoinGameCommand.execute(si, gameSystem.currentPlayer, s, gameSystem);
-
-                    dispatcher.invoke(() => uiStartGameDialog.Close());
                 }
                 catch (SocketException e)
                 when (e.SocketErrorCode == SocketError.ConnectionRefused)

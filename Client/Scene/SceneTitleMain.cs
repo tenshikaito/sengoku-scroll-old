@@ -17,20 +17,16 @@ namespace Client.Scene
 
         public override void start()
         {
-            showMainDialog();
+            uiMainMenuWindow = new UIMainMenuWindow(gameSystem, onStartGame, onEditGame, onSelectPlayer)
+            {
+                Text = gameSystem.currentPlayer.name,
+                Visible = true
+            };
         }
 
         public override void finish()
         {
             uiMainMenuWindow?.Close();
-        }
-
-        public void showMainDialog()
-        {
-            if (uiMainMenuWindow == null) uiMainMenuWindow = new UIMainMenuWindow(gameSystem, onStartGame, onEditGame, onSelectPlayer);
-
-            uiMainMenuWindow.Text = gameSystem.currentPlayer.name;
-            uiMainMenuWindow.Visible = true;
         }
 
         private void onStartGame()

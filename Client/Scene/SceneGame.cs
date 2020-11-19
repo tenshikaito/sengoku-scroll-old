@@ -1,20 +1,13 @@
-﻿using Client.Command;
-using Client.Game;
+﻿using Client.Game;
 using Client.Graphic;
 using Client.Helper;
-using Client.Model;
 using Client.UI;
-using Client.UI.SceneTitle;
 using Library;
-using Library.Helper;
-using Library.Network;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -79,6 +72,7 @@ namespace Client.Scene
             private ZoomableTileMapSprites<TileMapSprites> zoomableTileMapSprites;
             private TileMapSprites.MapSpritesInfo mainMapSpritesInfo;
 
+            private UIPlayerInfoPanel uiPlayerInfoPanel;
             private UITileInfoPanel uiTileInfoPanel;
 
             private PointerStatus pointerStatus;
@@ -97,8 +91,10 @@ namespace Client.Scene
 
                 addChild(zoomableTileMapSprites);
 
+                uiPlayerInfoPanel = new UIPlayerInfoPanel(s.gameSystem, s.gameWorld, new Point(s.formMain.Width - 540, 30));
                 uiTileInfoPanel = new UITileInfoPanel(s.gameSystem, new Point(30, s.formMain.Height - 108));
 
+                addChild(uiPlayerInfoPanel);
                 addChild(uiTileInfoPanel);
 
                 loadMap();
@@ -124,8 +120,8 @@ namespace Client.Scene
 
                 zoomableTileMapSprites.setTileMap(new List<TileMapSprites>()
                 {
-                    new MainTileMapViewSprites(s.gameSystem, s.gameWorld, msi, true),
-                    new MainTileMapDetailSprites(s.gameSystem, s.gameWorld, msi, true)
+                    new MainTileMapViewSprites(s.gameSystem, s.gameWorld, msi, false),
+                    new MainTileMapDetailSprites(s.gameSystem, s.gameWorld, msi, false)
                 });
             }
 
@@ -300,7 +296,7 @@ namespace Client.Scene
                     selector = new SpriteRectangle()
                     {
                         color = Color.White,
-                        width = 1,
+                        boundSize = 1,
                     };
                 }
 

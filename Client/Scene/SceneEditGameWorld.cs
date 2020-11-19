@@ -397,7 +397,7 @@ namespace Client.Scene
                     selector = new SpriteRectangle()
                     {
                         color = Color.White,
-                        width = 1,
+                        boundSize = 1,
                     };
                 }
 

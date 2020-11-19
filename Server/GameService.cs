@@ -26,7 +26,7 @@ namespace Server
         private HashSet<GameClient> connectedClient = new HashSet<GameClient>();
         private Dictionary<int, GamePlayer> onlinePlayer = new Dictionary<int, GamePlayer>();
 
-        private ConcurrentQueue<KeyValuePair<GameClient, string>> messages = new ConcurrentQueue<KeyValuePair<GameClient, string>>();
+        private readonly ConcurrentQueue<(GameClient gameClient, string data)> messages = new ConcurrentQueue<(GameClient, string)>();
 
         private ManualResetEventSlim messageLock = new ManualResetEventSlim(false);
 
@@ -100,7 +100,7 @@ namespace Server
 
         private void onDataReceived(GameClient gc, string data)
         {
-            messages.Enqueue(new KeyValuePair<GameClient, string>(gc, data));
+            messages.Enqueue((gc, data));
 
             messageLock.Set();
         }
@@ -148,9 +148,9 @@ namespace Server
 
                 try
                 {
-                    var cmd = msg.Value.fromCommandString();
+                    var cmd = msg.data.fromCommandString();
 
-                    var r = await gameCommandProcessor.execute(msg.Key, cmd.name, cmd.data);
+                    var r = await gameCommandProcessor.execute(msg.gameClient, cmd.name, cmd.data);
 
                     if (!r)
                     {

@@ -52,7 +52,7 @@ namespace Client.Graphic
             selector = new SpriteRectangle()
             {
                 color = Color.White,
-                width = size,
+                boundSize = size,
                 size = new Size(tileWidth - size, tileHeight - size)
             };
 
@@ -93,16 +93,11 @@ namespace Client.Graphic
 
             drawTerrain(g, p, sx, sy, tile, false, false);
 
-            if (!isEditor)
-            {
-                var playerLocation = gameWorld.currentPlayer.location;
-
-                if (playerLocation.x == fx && playerLocation.y == fy) drawCurrentCharacter(g, sx, sy);
-            }
-
             var strongholdId = tileMap.stronghold.getId(tileMap, p);
 
             if (strongholdId != null) drawStronghold(g, sx, sy, (int)strongholdId);
+
+            if (!isEditor) drawPlayer(g, p, sx, sy);
 
             if (p == cursorPosition) drawCursor(g, sx, sy);
         }
@@ -155,8 +150,24 @@ namespace Client.Graphic
             }
         }
 
-        private void drawCurrentCharacter(GameGraphic g, int x, int y)
+        private void drawPlayer(GameGraphic g, MapPoint p, int sx, int sy)
         {
+            var map = gameWorld.gameWorldData.gameData.player.map.Values;
+
+            if (map.Any(o => o.location == p))
+            {
+                g.drawRectangle(new SpriteRectangle()
+                {
+                    position = new Point(sx, sy),
+                    color = Color.Red,
+                    isFill = true,
+                    size = new Size()
+                    {
+                        Width = tileWidth,
+                        Height = tileHeight
+                    }
+                });
+            }
         }
 
         private Dictionary<int, TileSpriteAnimation> strongholdSprite = new Dictionary<int, TileSpriteAnimation>();

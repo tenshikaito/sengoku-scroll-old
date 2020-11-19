@@ -10,7 +10,7 @@ namespace Client.Graphic
     public class SpriteRectangle : SpriteBase
     {
         public Size size;
-        public float width = 1;
+        public float boundSize = 1;
         public bool isFill;
 
         public Rectangle rectangle => new Rectangle(displayPosition, size);

@@ -54,7 +54,7 @@ namespace Client
         public void drawRectangle(SpriteRectangle s)
         {
             if (s.isFill) g.FillRectangle(getSolidBrush(s.color), new RectangleF(s.position, s.size));
-            else g.DrawRectangle(getPen(s.color, s.width), s.rectangle);
+            else g.DrawRectangle(getPen(s.color, s.boundSize), s.rectangle);
         }
 
         public SizeF measureDefaultText(SpriteText s) => g.MeasureString(s.text, s.font);

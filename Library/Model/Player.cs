@@ -17,17 +17,14 @@ namespace Library.Model
         public int force { get; set; }
 
         public int stronghold { get; set; }
-        public int? inStronghold;
         public int home;
         public int culture;
         public int religion;
-        public int blood;
         public Policy policy = Policy.none;
+        public string title;
         public string position;
-        public int kani;
-        public int yakushoku;
         public int salary;
-        public DateTime joinTime;
+        public TimeSpan? joinTime;
         /// <summary>功勋</summary>
         public int contribution;
 
@@ -36,8 +33,6 @@ namespace Library.Model
         public Status status = Status.normal;
         public int unitId;
         public bool isShip;
-
-        public bool isInStronghold => inStronghold != null;
 
         public Dictionary<Ability.Type, Ability> ability { get; set; }
         public Dictionary<Skill.Type, Skill> skill { get; set; }
@@ -72,8 +67,8 @@ namespace Library.Model
         /// <summary>不可用字典、因为同一种类型可能存在placing状态的数据</summary>
         public List<int> items;
 
-        public int maxLoadWight { get; set; }
-        public int maxLoadVolume { get; set; }
+        public int maxLoadWight;
+        public int maxLoadVolume;
 
         public int? weapon;
 

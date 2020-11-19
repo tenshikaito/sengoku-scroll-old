@@ -27,11 +27,12 @@ namespace Library
             packageFullPath = $"{Directory.GetCurrentDirectory()}/{packagePath}";
         }
 
-        public string getSystemImageFilePath(string fileName, bool isAbsolute = false)
-            => isAbsolute ? $"{packageFullPath}/{ImageDirName}/system/{fileName}" : $"{packagePath}/{ImageDirName}/system/{fileName}";
+        public string getSystemImageFilePath(string fileName) => $"{packagePath}/{ImageDirName}/system/{fileName}";
 
-        public string getTileMapImageFilePath(string fileName, bool isAbsolute = false)
-            => isAbsolute ? $"{packageFullPath}/{ImageDirName}/tilemap/{fileName}" : $"{packagePath}/{ImageDirName}/tilemap/{fileName}";
+        public string getSystemImageFileAbsolutePath(string fileName) => $"{packageFullPath}/{ImageDirName}/system/{fileName}";
 
+        public string getTileMapImageFilePath(string fileName) => $"{packagePath}/{ImageDirName}/tilemap/{fileName}";
+
+        public string getTileMapImageFileAbsolutePath(string fileName) => $"{packageFullPath}/{ImageDirName}/tilemap/{fileName}";
     }
 }

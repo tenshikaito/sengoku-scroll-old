@@ -7,3 +7,4 @@
 /.vs
 /bin/Debug
 /bin/netcoreapp3.1
+/bin/net5.0-windows

@@ -23,16 +23,6 @@ namespace Client.Scene
 
         public override void start()
         {
-            onEditGame();
-        }
-
-        public override void finish()
-        {
-            uiEditGameDialog.Close();
-        }
-
-        private void onEditGame()
-        {
             uiEditGameDialog = new UIEditGameDialog(gameSystem)
             {
                 Visible = true,
@@ -47,6 +37,11 @@ namespace Client.Scene
             };
 
             loadGameWorldMapList();
+        }
+
+        public override void finish()
+        {
+            uiEditGameDialog.Close();
         }
 
         private void onEditGameAddButtonClicked()
